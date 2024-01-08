@@ -1,20 +1,14 @@
 package org.example.librarymanagement.security.config;
 
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.example.librarymanagement.appuser.AppUserService;
-import org.example.librarymanagement.security.PasswordEncoder;
+import org.example.librarymanagement.account.appUser.AppUserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -33,7 +27,7 @@ public class SecurityConfiguration{
 
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
-        RequestMatcher matcher = new AntPathRequestMatcher("/api/v*/registration/**", HttpMethod.POST.toString());
+        RequestMatcher matcher = new AntPathRequestMatcher("/api/v1/registration/**");
         httpSecurity
                 .authenticationProvider(daoAuthenticationProvider())
                 .csrf(AbstractHttpConfigurer::disable)

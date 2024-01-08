@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="your-name" id="create-app-user-table">
+            <createTable tableName="app_user">
+                <column name="app_user_id" type="BIGINT">
+                    <constraints primaryKey="true" nullable="false" primaryKeyName="pk_app_user_id"/>
+                </column>
+                <column name="first_name" type="VARCHAR(255)"/>
+                <column name="last_name" type="VARCHAR(255)"/>
+                <column name="email" type="VARCHAR(255)">
+                    <constraints nullable="false"/>
+                </column>
+                <column name="phone_number" type="VARCHAR(11)">
+                    <constraints nullable="false"/>
+                </column>
+                <column name="password" type="VARCHAR(255)">
+                    <constraints nullable="false"/>
+                </column>
+                <column name="creation_date" type="TIMESTAMP"/>
+                <column name="role" type="VARCHAR(50)"/>
+                <column name="locked" type="BOOLEAN"/>
+                <column name="enabled" type="BOOLEAN"/>
+            </createTable>
+    </changeSet>
+
+    <changeSet author="your-name" id="create-confirmation-token-table">
+            <createTable tableName="confirmation_token">
+                <column name="id" type="BIGINT">
+                    <constraints primaryKey="true" nullable="false" primaryKeyName="pk_confirmation_token_id"/>
+                </column>
+                <column name="token" type="VARCHAR(255)">
+                    <constraints nullable="false"/>
+                </column>
+                <column name="local_date_time" type="TIMESTAMP">
+                    <constraints nullable="false"/>
+                </column>
+                <column name="expires_at" type="TIMESTAMP">
+                    <constraints nullable="false"/>
+                </column>
+                <column name="confirmed_at" type="TIMESTAMP"/>
+                <column name="app_user_id" type="BIGINT">
+                    <constraints nullable="false"/>
+                </column>
+            </createTable>
+    </changeSet>
+
+    <changeSet author="your-name" id="add-foreign-key-to-confirmation-token">
+        <addForeignKeyConstraint baseColumnNames="app_user_id"
+                                 baseTableName="confirmation_token"
+                                 constraintName="fk_app_user_id"
+                                 referencedColumnNames="app_user_id"
+                                 referencedTableName="app_user"/>
+    </changeSet>
+</databaseChangeLog>

@@ -2,12 +2,8 @@ package org.example.librarymanagement.registration;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.librarymanagement.appuser.AppUser;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/registration")
@@ -17,8 +13,13 @@ public class RegistrationController {
     private final RegistrationService registrationService;
 
     @PostMapping()
-    public ResponseEntity<AppUser> register(@Valid @RequestBody RegistrationRequest request){
-        AppUser appUser = registrationService.register(request);
+    public ResponseEntity<String> register(@Valid @RequestBody RegistrationRequest request){
+        String appUser = registrationService.register(request);
         return ResponseEntity.ok(appUser);
+    }
+
+    @GetMapping("/confirm")
+    public ResponseEntity<String> confirmToken(@RequestParam("token") String token){
+        return ResponseEntity.ok(registrationService.confirmToken(token));
     }
 }

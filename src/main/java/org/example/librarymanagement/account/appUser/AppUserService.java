@@ -1,4 +1,4 @@
-package org.example.librarymanagement.appuser;
+package org.example.librarymanagement.account.appUser;
 
 import lombok.RequiredArgsConstructor;
 import org.example.librarymanagement.registration.token.ConfirmationToken;
@@ -15,32 +15,36 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
-public class AppUserService implements UserDetailsService {
+public class AppUserService implements UserDetailsService{
 
     private final String USER_NOT_FOUND_MESSAGE = "User with email %s is not found";
     private final AppUserRepository appUserRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private  final ConfirmationTokenService confirmationTokenService;
 
-    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return appUserRepository.findByEmail(email)
+        return (UserDetails) appUserRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, email)));
     }
 
     @Transactional
-    public AppUser signupUser(AppUser appUser){
+    public String signupUser(AppUser appUser){
         boolean isUserExist = appUserRepository.findByEmail(appUser.getEmail())
                 .isPresent();
+        String token = null;
 
         if(isUserExist){
             throw new IllegalStateException("Email is registered already!");
         }
 
         createUser(appUser);
-        createToken(appUser);
+        token = createToken(appUser);
 
-        return appUser;
+        return token;
+    }
+
+    public void enableAppUser(String email){
+        appUserRepository.enableAppUser(email);
     }
 
     private void createUser(AppUser appUser){
@@ -50,7 +54,7 @@ public class AppUserService implements UserDetailsService {
         appUserRepository.save(appUser);
     }
 
-    private void createToken(AppUser appUser){
+    private String createToken(AppUser appUser){
         String token = UUID.randomUUID().toString();
 
         ConfirmationToken confirmationToken = new ConfirmationToken(
@@ -60,5 +64,7 @@ public class AppUserService implements UserDetailsService {
                 appUser);
 
         confirmationTokenService.saveConfirmationToken(confirmationToken);
+
+        return token;
     }
 }

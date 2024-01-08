@@ -1,11 +1,10 @@
 package org.example.librarymanagement.registration.token;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.librarymanagement.appuser.AppUser;
+import org.example.librarymanagement.account.appUser.AppUser;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +15,13 @@ import java.time.LocalDateTime;
 public class ConfirmationToken {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "token_id_seq")
+    @SequenceGenerator(
+            name = "token_id_seq",
+            sequenceName = "global_id_sequence",
+            allocationSize = 1
+    )
     private Long id;
 
     @Column(nullable = false)

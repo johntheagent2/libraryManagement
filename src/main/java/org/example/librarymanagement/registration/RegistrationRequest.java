@@ -1,10 +1,9 @@
 package org.example.librarymanagement.registration;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.NotFound;
+import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDateTime;
 
@@ -19,10 +18,17 @@ public class RegistrationRequest {
     @NotNull(message = "First Name should not be empty!")
     private String lastName;
 
+    @NotNull(message = "Address should not be empty!")
+    private String address;
+
     @Email(message = "Invalid email address")
     private String email;
 
-    @Min(value = 8, message = "Should be at least 8 characters")
+    @Length(min = 10, max = 11, message = "Phone number should be from 10 to 11 characters")
+    @Pattern(regexp = "[0-9]+", message = "Invalid phone number")
+    private String phoneNumber;
+
+    @Length(min = 8, max = 16, message = "Password should be from 8 to 16 characters")
     private String password;
 
     private LocalDateTime creationDate;
