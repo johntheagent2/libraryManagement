@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ResourceBundle;
 
 @Service
 @AllArgsConstructor
@@ -22,6 +23,7 @@ public class RegistrationService {
     private final AppUserService appUserService;
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailSenderService emailSenderService;
+    private final ResourceBundle resourceBundle;
 
     public UserDTO register(RegistrationRequestDTO request) throws MessagingException, TemplateException, IOException {
         return appUserService.signupUser(new AppUser(
@@ -38,7 +40,7 @@ public class RegistrationService {
     @Transactional
     public String confirmToken(String token){
         ConfirmationToken confirmationToken = confirmationTokenService.findConfirmationToken(token)
-                .orElseThrow(() -> new IllegalStateException("Token not found"));
+                .orElseThrow(() -> new IllegalStateException(resourceBundle.getString("confirmation-token.token.token-not-found")));
 
         verifyExpiryDate(confirmationToken);
 
@@ -51,7 +53,7 @@ public class RegistrationService {
     @Transactional
     public String confirmOtpToken(String otp){
         ConfirmationToken confirmationToken = confirmationTokenService.findConfirmationOTP(otp)
-                .orElseThrow(() -> new IllegalStateException("Token not found"));
+                .orElseThrow(() -> new IllegalStateException(resourceBundle.getString("confirmation-token.otp.token-expired")));
 
         verifyExpiryDate(confirmationToken);
 

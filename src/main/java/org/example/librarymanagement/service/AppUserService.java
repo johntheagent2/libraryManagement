@@ -4,6 +4,7 @@ import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.example.librarymanagement.common.emailSender.EmailSenderService;
+import org.example.librarymanagement.config.message.MessageConfig;
 import org.example.librarymanagement.dto.UserDTO;
 import org.example.librarymanagement.model.account.appUser.AppUser;
 import org.example.librarymanagement.repository.AppUserRepository;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.ResourceBundle;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -25,6 +27,7 @@ import java.util.UUID;
 public class AppUserService implements UserDetailsService{
 
     private final String USER_NOT_FOUND_MESSAGE = "User with email %s is not found";
+    private final ResourceBundle messageConfig;
     private final AppUserRepository appUserRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
@@ -32,7 +35,7 @@ public class AppUserService implements UserDetailsService{
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return (UserDetails) appUserRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, email)));
+                .orElseThrow(() -> new IllegalStateException(messageConfig.getString("user.email.email-not-found")));
     }
 
     @Transactional

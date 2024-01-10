@@ -6,8 +6,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.librarymanagement.dto.UserDTO;
 import org.example.librarymanagement.dto.RegistrationRequestDTO;
+import org.example.librarymanagement.exception.ApiRequestException;
 import org.example.librarymanagement.service.RegistrationService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -38,5 +40,10 @@ public class RegistrationController {
     @PutMapping("/resend")
     public ResponseEntity<String> resendToken(@RequestParam("email") String email) throws MessagingException, TemplateException, IOException {
         return ResponseEntity.ok(registrationService.resendToken(email));
+    }
+
+    @GetMapping
+    public ResponseEntity<String> testException(){
+        throw new ApiRequestException("Error Test");
     }
 }
