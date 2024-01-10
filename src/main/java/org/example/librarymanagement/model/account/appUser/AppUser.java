@@ -32,4 +32,9 @@ public class AppUser extends Account {
         this.lastName = lastName;
         this.address = address;
     }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
 }

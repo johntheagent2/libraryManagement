@@ -4,8 +4,8 @@ import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.example.librarymanagement.common.emailSender.EmailSenderService;
-import org.example.librarymanagement.config.message.MessageConfig;
 import org.example.librarymanagement.dto.UserDTO;
+import org.example.librarymanagement.exception.serviceException.ServiceException;
 import org.example.librarymanagement.model.account.appUser.AppUser;
 import org.example.librarymanagement.repository.AppUserRepository;
 import org.example.librarymanagement.model.token.ConfirmationToken;
@@ -26,16 +26,16 @@ import java.util.UUID;
 @Service
 public class AppUserService implements UserDetailsService{
 
-    private final String USER_NOT_FOUND_MESSAGE = "User with email %s is not found";
-    private final ResourceBundle messageConfig;
+    private final ResourceBundle resourceBundle;
     private final AppUserRepository appUserRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailSenderService emailSenderService;
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return (UserDetails) appUserRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException(messageConfig.getString("user.email.email-not-found")));
+        return appUserRepository.findByEmail(email)
+                .orElseThrow(() -> new ServiceException("user.email.email-not-found",
+                        resourceBundle.getString("user.email.email-not-found")));
     }
 
     @Transactional
@@ -47,12 +47,13 @@ public class AppUserService implements UserDetailsService{
         String otp;
 
         if(isUserExist){
-            throw new IllegalStateException("Email is registered already!");
+            throw new ServiceException("user.email.email-existed",
+                    resourceBundle.getString("user.email.email-existed"));
         }
 
         createUser(appUser);
-        token = createToken(appUser);
-        otp = creatOTP(appUser);
+        token = createToken();
+        otp = creatOTP();
 
         ConfirmationToken confirmationToken = new ConfirmationToken(
                 token,
@@ -76,6 +77,22 @@ public class AppUserService implements UserDetailsService{
         return userDTO;
     }
 
+    public void resendVerification(ConfirmationToken token){
+        LocalDateTime newExpires =  LocalDateTime.now().plusMinutes(15);
+        String userEmail = token.getAppUser().getEmail();
+
+        token.setExpiresAt(newExpires);
+        token.setToken(createToken());
+        token.setOtp(creatOTP());
+
+        try{
+            confirmationTokenService.saveConfirmationToken(token);
+            emailSenderService.sendConfirmationMail(token.getToken(), token.getOtp(), userEmail);
+        } catch (MessagingException | TemplateException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void enableAppUser(String email){
         appUserRepository.enableAppUser(email);
     }
@@ -87,13 +104,13 @@ public class AppUserService implements UserDetailsService{
         appUserRepository.save(appUser);
     }
 
-    private String createToken(AppUser appUser){
+    private String createToken(){
         String token = UUID.randomUUID().toString();
 
         return token;
     }
 
-    private String creatOTP(AppUser appUser){
+    private String creatOTP(){
         int otpLength = 6;
 
         Random random = new Random();

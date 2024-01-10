@@ -1,5 +1,7 @@
 package org.example.librarymanagement.exception;
 
+import org.example.librarymanagement.exception.serviceException.ServiceException;
+import org.example.librarymanagement.exception.validationException.ApiRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,8 +33,8 @@ public class ApiExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    @ExceptionHandler(IllegalStateException.class)
-    public Map<Map<String, Object>, ArrayList<ApiException>> handleTokenException(IllegalStateException exception){
+    @ExceptionHandler(Exception.class)
+    public Map<Map<String, Object>, ArrayList<ApiException>> handleTokenException(ServiceException exception){
         Map<Map<String, Object>, ArrayList<ApiException>> errorMap = new HashMap<>();
 
         Map<String, Object> apiHeader = createApiHeader(HttpStatus.NOT_ACCEPTABLE);
@@ -40,7 +42,7 @@ public class ApiExceptionHandler {
 
         apiExceptions.add(new ApiException(
                 exception.getMessage(),
-                exception.getClass().descriptorString()));
+                exception.getMessageKey()));
 
         errorMap.put(apiHeader, apiExceptions);
 

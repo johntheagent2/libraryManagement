@@ -4,6 +4,7 @@ import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.dto.UserDTO;
+import org.example.librarymanagement.exception.serviceException.ServiceException;
 import org.example.librarymanagement.model.account.appUser.AppUser;
 import org.example.librarymanagement.model.account.Role;
 import org.example.librarymanagement.common.emailSender.EmailSenderService;
@@ -22,7 +23,6 @@ public class RegistrationService {
 
     private final AppUserService appUserService;
     private final ConfirmationTokenService confirmationTokenService;
-    private final EmailSenderService emailSenderService;
     private final ResourceBundle resourceBundle;
 
     public UserDTO register(RegistrationRequestDTO request) throws MessagingException, TemplateException, IOException {
@@ -40,7 +40,8 @@ public class RegistrationService {
     @Transactional
     public String confirmToken(String token){
         ConfirmationToken confirmationToken = confirmationTokenService.findConfirmationToken(token)
-                .orElseThrow(() -> new IllegalStateException(resourceBundle.getString("confirmation-token.token.token-not-found")));
+                .orElseThrow(() -> new ServiceException("confirmation-token.link.link-not-found",
+                        resourceBundle.getString("confirmation-token.link.link-not-found")));
 
         verifyExpiryDate(confirmationToken);
 
@@ -53,7 +54,8 @@ public class RegistrationService {
     @Transactional
     public String confirmOtpToken(String otp){
         ConfirmationToken confirmationToken = confirmationTokenService.findConfirmationOTP(otp)
-                .orElseThrow(() -> new IllegalStateException(resourceBundle.getString("confirmation-token.otp.token-expired")));
+                .orElseThrow(() -> new ServiceException("confirmation-token.otp.otp-expired",
+                        resourceBundle.getString("confirmation-token.otp.otp-expired")));
 
         verifyExpiryDate(confirmationToken);
 
@@ -66,22 +68,22 @@ public class RegistrationService {
         LocalDateTime expiredDateTime = confirmationToken.getExpiresAt();
 
         if(confirmationToken.getConfirmedAt() != null) {
-            throw new IllegalStateException("Token has already confirmed!");
+            throw new ServiceException("confirmation-token.link.link-already-confirmed",
+                    resourceBundle.getString("confirmation-token.link.link-already-confirmed"));
         }
 
         if (expiredDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("Token is expired!");
+            throw new ServiceException("confirmation-token.link.link-expired",
+                    resourceBundle.getString("confirmation-token.link.link-expired"));
         }
     }
 
-    public String resendToken(String email) throws MessagingException, TemplateException, IOException {
+    public String resendToken(String email) {
         ConfirmationToken confirmationToken = confirmationTokenService.findConfirmationTokenByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("Token not found"));
+                .orElseThrow(() -> new ServiceException("confirmation-token.link.link-not-found",
+                        resourceBundle.getString("confirmation-token.link.link-not-found")));
 
-        LocalDateTime newExpires =  LocalDateTime.now().plusMinutes(15);
-        confirmationTokenService.setNewExpired(confirmationToken.getToken(), newExpires);
-//        emailSenderService.sendConfirmationMail(confirmationToken.getToken(),
-//                confirmationToken.getAppUser().getEmail());
+        appUserService.resendVerification(confirmationToken);
         return "updated";
     }
 }
