@@ -43,7 +43,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     }
 
     @Transactional
-    public void signupUser(AppUser appUser) throws MessagingException, TemplateException, IOException {
+    public void signupUser(AppUser appUser){
         boolean isUserExist = appUserRepository.findByEmail(appUser.getEmail())
                 .isPresent();
         UserDTO userDTO;
@@ -76,7 +76,15 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
         confirmationTokenService.saveConfirmationToken(confirmationToken);
 
-        emailSenderService.sendConfirmationMail(token, otp, appUser.getEmail());
+        try {
+            emailSenderService.sendConfirmationMail(token, otp, appUser.getEmail());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (TemplateException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void resendVerification(ConfirmationToken token){

@@ -1,9 +1,8 @@
 package org.example.librarymanagement.exception;
 
+import jakarta.mail.MessagingException;
 import org.example.librarymanagement.exception.dto.ApiExceptionResponse;
-import org.example.librarymanagement.exception.exception.ApiRequestException;
-import org.example.librarymanagement.exception.exception.BadRequestException;
-import org.example.librarymanagement.exception.exception.NotFoundException;
+import org.example.librarymanagement.exception.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -47,6 +46,30 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiExceptionResponse> handleBadRequestException(BadRequestException exception){
         ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse(exception.getMessage(), exception.getErrorCode());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(apiExceptionResponse);
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = {IOException.class})
+    public ResponseEntity<ApiExceptionResponse> handleIOException(IOException exception) {
+        ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse(exception.getMessage(), "IO_ERROR_CODE");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(apiExceptionResponse);
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = {TemplateException.class})
+    public ResponseEntity<ApiExceptionResponse> handleTemplateException(TemplateException exception) {
+        ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse(exception.getMessage(), "TEMPLATE_ERROR_CODE");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(apiExceptionResponse);
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = {MessagingException.class})
+    public ResponseEntity<ApiExceptionResponse> handleMessagingException(MessagingException exception) {
+        ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse(exception.getMessage(), "MESSAGING_ERROR_CODE");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(apiExceptionResponse);
     }
 }
