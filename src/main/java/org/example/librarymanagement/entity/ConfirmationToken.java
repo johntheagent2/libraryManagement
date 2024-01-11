@@ -1,10 +1,9 @@
-package org.example.librarymanagement.model.token;
+package org.example.librarymanagement.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.librarymanagement.model.account.appUser.AppUser;
 
 import java.time.LocalDateTime;
 
@@ -49,3 +48,4 @@ public class ConfirmationToken {
         this.appUser = appUser;
     }
 }
+

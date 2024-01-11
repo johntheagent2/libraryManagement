@@ -1,4 +1,4 @@
-package org.example.librarymanagement.exception.validationException;
+package org.example.librarymanagement.exception.exception;
 
 public class ApiRequestException extends RuntimeException{
     public ApiRequestException(String message) {

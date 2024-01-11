@@ -1,4 +1,4 @@
-package org.example.librarymanagement.dto;
+package org.example.librarymanagement.dto.response;
 
 import lombok.Builder;
 import lombok.Data;

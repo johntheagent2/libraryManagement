@@ -1,6 +1,6 @@
 package org.example.librarymanagement.repository;
 
-import org.example.librarymanagement.model.token.ConfirmationToken;
+import org.example.librarymanagement.entity.ConfirmationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
