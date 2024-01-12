@@ -2,16 +2,13 @@ package org.example.librarymanagement.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.example.librarymanagement.enumeration.Role;
 import org.example.librarymanagement.common.validator.phoneNumber.ValidPhoneNumber;
 import org.hibernate.validator.constraints.Length;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @Getter
-public class RegistrationDTO {
+public class RegistrationRequest {
 
     @NotNull(message = "First Name should not be empty!")
     @Length(max = 50, message = "First name should be max 50 characters")

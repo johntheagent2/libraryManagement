@@ -4,8 +4,7 @@ import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.librarymanagement.dto.request.RegistrationDTO;
-import org.example.librarymanagement.service.Imp.RegistrationServiceImp;
+import org.example.librarymanagement.dto.request.RegistrationRequest;
 import org.example.librarymanagement.service.RegistrationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/v1/registration")
+@RequestMapping("${default-mapping}/registration")
 @RequiredArgsConstructor
 public class RegistrationController {
 
     private final RegistrationService registrationService;
 
     @PostMapping()
-    public ResponseEntity<Void> register(@Valid @RequestBody RegistrationDTO request) throws MessagingException, TemplateException, IOException {
+    public ResponseEntity<Void> register(@Valid @RequestBody RegistrationRequest request) throws MessagingException, TemplateException, IOException {
         registrationService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

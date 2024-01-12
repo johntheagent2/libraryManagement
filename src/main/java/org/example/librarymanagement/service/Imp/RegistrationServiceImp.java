@@ -1,10 +1,9 @@
 package org.example.librarymanagement.service.Imp;
 
-import freemarker.template.TemplateException;
-import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.common.emailSender.EmailSenderService;
-import org.example.librarymanagement.dto.request.RegistrationDTO;
+import org.example.librarymanagement.config.security.jwtConfig.JwtService;
+import org.example.librarymanagement.dto.request.RegistrationRequest;
 import org.example.librarymanagement.entity.ConfirmationToken;
 import org.example.librarymanagement.entity.AppUser;
 import org.example.librarymanagement.enumeration.Role;
@@ -17,7 +16,6 @@ import org.example.librarymanagement.service.RegistrationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
@@ -26,14 +24,14 @@ import java.util.ResourceBundle;
 public class RegistrationServiceImp implements RegistrationService {
 
     private final AppUserService appUserService;
-    private final AppUserRepository appUserRepository;
     private final ConfirmationTokenService confirmationTokenService;
     private final ResourceBundle resourceBundle;
     private final EmailSenderService emailSenderService;
+    private final JwtService jwtService;
 
 
     @Transactional
-    public void register(RegistrationDTO request){
+    public void register(RegistrationRequest request){
         if(appUserService.findByEmail(request.getEmail()).isPresent()){
             throw new BadRequestException("user.email.email-existed",
                     resourceBundle.getString("user.email.email-existed"));
@@ -54,6 +52,9 @@ public class RegistrationServiceImp implements RegistrationService {
         ConfirmationToken confirmationToken = confirmationTokenService.createToken(appUser);
 
         confirmationTokenService.saveConfirmationToken(confirmationToken);
+
+        String jwtToken = jwtService.generateToken(appUser.toUserDetails());
+        System.out.println(jwtToken);
 
 //        emailSenderService.sendConfirmationMail(
 //                confirmationToken.getToken(),
