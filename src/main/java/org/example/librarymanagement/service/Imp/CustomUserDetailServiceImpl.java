@@ -27,13 +27,11 @@ public class CustomUserDetailServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        CustomUserDetails userDetails = adminService.findByEmail(email)
+        return adminService.findByEmail(email)
                 .map(CustomUserDetails::new)
                 .orElseGet(() -> appUserService.findByEmail(email)
                         .map(CustomUserDetails::new)
                         .orElseThrow(() -> new NotFoundException("user.email.email-not-found",
                                 resourceBundle.getString("user.email.email-not-found"))));
-
-        return userDetails;
     }
 }
