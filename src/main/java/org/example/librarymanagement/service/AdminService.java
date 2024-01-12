@@ -1,4 +1,10 @@
 package org.example.librarymanagement.service;
 
-interface AdminService {
+import org.example.librarymanagement.entity.Admin;
+
+import java.util.Optional;
+
+public interface AdminService {
+
+    Optional<Admin> findByEmail(String email);
 }

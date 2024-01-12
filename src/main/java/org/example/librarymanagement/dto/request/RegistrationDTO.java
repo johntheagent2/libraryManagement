@@ -35,8 +35,4 @@ public class RegistrationDTO {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,16}$",
     message = "At least one uppercase letter, one lowercase letter, one number and one special character")
     private String password;
-
-    private Role role;
-
-    private LocalDateTime creationDate;
 }

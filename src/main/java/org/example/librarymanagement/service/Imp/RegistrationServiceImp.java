@@ -3,12 +3,14 @@ package org.example.librarymanagement.service.Imp;
 import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
+import org.example.librarymanagement.common.emailSender.EmailSenderService;
 import org.example.librarymanagement.dto.request.RegistrationDTO;
 import org.example.librarymanagement.entity.ConfirmationToken;
 import org.example.librarymanagement.entity.AppUser;
 import org.example.librarymanagement.enumeration.Role;
 import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.example.librarymanagement.exception.exception.NotFoundException;
+import org.example.librarymanagement.repository.AppUserRepository;
 import org.example.librarymanagement.service.AppUserService;
 import org.example.librarymanagement.service.ConfirmationTokenService;
 import org.example.librarymanagement.service.RegistrationService;
@@ -24,11 +26,20 @@ import java.util.ResourceBundle;
 public class RegistrationServiceImp implements RegistrationService {
 
     private final AppUserService appUserService;
+    private final AppUserRepository appUserRepository;
     private final ConfirmationTokenService confirmationTokenService;
     private final ResourceBundle resourceBundle;
+    private final EmailSenderService emailSenderService;
 
-    public void register(RegistrationDTO request) throws MessagingException, TemplateException, IOException {
-        appUserService.signupUser(new AppUser(
+
+    @Transactional
+    public void register(RegistrationDTO request){
+        if(appUserService.findByEmail(request.getEmail()).isPresent()){
+            throw new BadRequestException("user.email.email-existed",
+                    resourceBundle.getString("user.email.email-existed"));
+        }
+
+        AppUser appUser = new AppUser(
                 request.getFirstName(),
                 request.getLastName(),
                 request.getAddress(),
@@ -36,7 +47,19 @@ public class RegistrationServiceImp implements RegistrationService {
                 request.getPhoneNumber(),
                 request.getPassword(),
                 Role.USER,
-                LocalDateTime.now()));
+                LocalDateTime.now());
+
+        appUserService.saveUser(appUser);
+
+        ConfirmationToken confirmationToken = confirmationTokenService.createToken(appUser);
+
+        confirmationTokenService.saveConfirmationToken(confirmationToken);
+
+//        emailSenderService.sendConfirmationMail(
+//                confirmationToken.getToken(),
+//                confirmationToken.getOtp(),
+//                request.getEmail());
+
     }
 
     @Transactional
@@ -82,6 +105,12 @@ public class RegistrationServiceImp implements RegistrationService {
                 .orElseThrow(() -> new NotFoundException("confirmation-token.link.link-not-found",
                         resourceBundle.getString("confirmation-token.link.link-not-found")));
 
-        appUserService.resendVerification(confirmationToken);
+        confirmationToken = confirmationTokenService.refreshToken(confirmationToken);
+
+        emailSenderService.sendConfirmationMail(
+                confirmationToken.getToken(),
+                confirmationToken.getOtp(),
+                confirmationToken.getAppUser().getEmail()
+        );
     }
 }

@@ -7,7 +7,7 @@ public class IOException extends RuntimeException{
 
     private final String errorCode;
 
-    public IOException(String message, String errorCode){
+    public IOException(String errorCode, String message){
         super(message);
         this.errorCode = errorCode;
     }

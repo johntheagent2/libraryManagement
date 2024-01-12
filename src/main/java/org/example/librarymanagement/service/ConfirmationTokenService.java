@@ -11,6 +11,12 @@ public interface ConfirmationTokenService {
 
     void saveConfirmationToken(ConfirmationToken token);
 
+    ConfirmationToken createToken(AppUser appUser);
+
+    ConfirmationToken refreshToken(ConfirmationToken token);
+
+    Optional<ConfirmationToken> findConfirmationTokenByEmail(String email);
+
     Optional<ConfirmationToken> findConfirmationToken(String token);
 
     Optional<ConfirmationToken> findConfirmationOTP(String otp);
@@ -18,7 +24,4 @@ public interface ConfirmationTokenService {
     void setNewExpired(String token, LocalDateTime newExpires);
 
     void remove(ConfirmationToken token);
-
-    Optional<ConfirmationToken> findConfirmationTokenByEmail(String email);
-
 }

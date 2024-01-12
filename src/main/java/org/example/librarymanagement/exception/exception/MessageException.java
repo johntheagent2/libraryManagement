@@ -7,7 +7,7 @@ public class MessageException extends RuntimeException{
 
     private final String errorCode;
 
-    public MessageException(String message, String errorCode){
+    public MessageException(String errorCode, String message){
         super(message);
         this.errorCode = errorCode;
     }

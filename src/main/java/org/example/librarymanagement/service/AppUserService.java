@@ -6,14 +6,13 @@ import org.example.librarymanagement.entity.AppUser;
 import org.example.librarymanagement.entity.ConfirmationToken;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public interface AppUserService {
 
-    void signupUser(AppUser appUser) throws MessagingException, TemplateException, IOException;
+    void saveUser(AppUser appUser);
 
     void enableAppUser(String email);
 
-    void resendVerification(ConfirmationToken token);
-
-    void saveUser(AppUser appUser);
+    Optional<AppUser> findByEmail(String email);
 }

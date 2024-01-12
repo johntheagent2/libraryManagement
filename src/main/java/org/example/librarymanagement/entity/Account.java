@@ -51,6 +51,10 @@ public class Account{
         this.password = password;
     }
 
+    public UserDetails toUserDetails(){
+        return new CustomUserDetails(this);
+    }
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
