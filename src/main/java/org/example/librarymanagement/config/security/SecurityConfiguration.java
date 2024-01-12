@@ -55,9 +55,4 @@ public class SecurityConfiguration{
         return provider;
     }
 
-    @Bean
-    public static BCryptPasswordEncoder bCryptPasswordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-
 }
