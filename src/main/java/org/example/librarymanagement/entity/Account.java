@@ -1,9 +1,10 @@
-package org.example.librarymanagement.model.account;
+package org.example.librarymanagement.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.librarymanagement.enumeration.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,27 +18,31 @@ import java.util.List;
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @MappedSuperclass
-public class Account implements UserDetails {
+public class Account{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_generator")
     @SequenceGenerator(name = "account_generator", sequenceName = "account_generator", allocationSize = 1)
     @Column(name = "id")
     private Long appUserID;
 
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
     private Role role;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
     private Boolean locked = false;
+
     public Account(String email, String phoneNumber, String password, Role role, LocalDateTime creationDate) {
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -46,33 +51,11 @@ public class Account implements UserDetails {
         this.password = password;
     }
 
-    @Override
+    public UserDetails toUserDetails(){
+        return new CustomUserDetails(this);
+    }
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 }

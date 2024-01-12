@@ -1,11 +1,10 @@
 package org.example.librarymanagement.service;
 
-import lombok.AllArgsConstructor;
-import org.example.librarymanagement.repository.AdminRepository;
-import org.springframework.stereotype.Service;
+import org.example.librarymanagement.entity.Admin;
 
-@Service
-@AllArgsConstructor
-public class AdminService {
-    private AdminRepository adminRepository;
+import java.util.Optional;
+
+public interface AdminService {
+
+    Optional<Admin> findByEmail(String email);
 }

@@ -1,9 +1,8 @@
-package org.example.librarymanagement.model.account.appUser;
+package org.example.librarymanagement.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.librarymanagement.model.account.Account;
-import org.example.librarymanagement.model.account.Role;
+import org.example.librarymanagement.enumeration.Role;
 
 import java.time.LocalDateTime;
 
@@ -14,15 +13,16 @@ import java.time.LocalDateTime;
 @Table(name = "app_user")
 public class AppUser extends Account {
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
 
-    @Column(name = "address")
+    @Column(name = "address", nullable = false, length = 50)
     private String address;
 
+    @Column(name = "enabled")
     private Boolean enabled = false;
 
 
@@ -33,7 +33,6 @@ public class AppUser extends Account {
         this.address = address;
     }
 
-    @Override
     public boolean isEnabled() {
         return enabled;
     }

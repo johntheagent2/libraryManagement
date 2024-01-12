@@ -1,41 +1,27 @@
 package org.example.librarymanagement.service;
 
-import lombok.AllArgsConstructor;
-import org.example.librarymanagement.model.token.ConfirmationToken;
-import org.example.librarymanagement.repository.ConfirmationTokenRepository;
-import org.springframework.stereotype.Service;
+
+import org.example.librarymanagement.entity.AppUser;
+import org.example.librarymanagement.entity.ConfirmationToken;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-@Service
-@AllArgsConstructor
-public class ConfirmationTokenService {
+public interface ConfirmationTokenService {
 
-    private final ConfirmationTokenRepository confirmationTokenRepository;
+    void saveConfirmationToken(ConfirmationToken token);
 
-    public void saveConfirmationToken(ConfirmationToken token){
-        confirmationTokenRepository.save(token);
-    }
+    ConfirmationToken createToken(AppUser appUser);
 
-    public Optional<ConfirmationToken> findConfirmationToken(String token){
-        return confirmationTokenRepository.findConfirmationTokenByToken(token);
-    }
+    ConfirmationToken refreshToken(ConfirmationToken token);
 
-    public Optional<ConfirmationToken> findConfirmationOTP(String otp){
-        return confirmationTokenRepository.findConfirmationTokenByOtp(otp);
-    }
+    Optional<ConfirmationToken> findConfirmationTokenByEmail(String email);
 
-    public void setNewExpired(String token, LocalDateTime newExpires){
-        confirmationTokenRepository.updateTokenExpiresByToken(token, newExpires);
-    }
+    Optional<ConfirmationToken> findConfirmationToken(String token);
 
-    public void remove(ConfirmationToken token){
-        confirmationTokenRepository.deleteById(token.getId());
-    }
+    Optional<ConfirmationToken> findConfirmationOTP(String otp);
 
-    public Optional<ConfirmationToken> findConfirmationTokenByEmail(String email){
-        return confirmationTokenRepository.findConfirmationTokenByAppUser_Email(email);
-    }
+    void setNewExpired(String token, LocalDateTime newExpires);
 
+    void remove(ConfirmationToken token);
 }

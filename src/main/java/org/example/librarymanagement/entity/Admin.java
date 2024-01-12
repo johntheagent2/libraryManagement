@@ -1,12 +1,11 @@
-package org.example.librarymanagement.model.account.admin;
+package org.example.librarymanagement.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.librarymanagement.model.account.Account;
-import org.example.librarymanagement.model.account.Role;
+import org.example.librarymanagement.enumeration.Role;
 
 import java.time.LocalDateTime;
 

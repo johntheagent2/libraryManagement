@@ -1,9 +1,10 @@
-package org.example.librarymanagement.config.security.config;
+package org.example.librarymanagement.config.security;
 
 import jakarta.servlet.Filter;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.config.security.jwtConfig.JwtAuthenticationFilter;
 import org.example.librarymanagement.service.AppUserService;
+import org.example.librarymanagement.service.Imp.CustomUserDetailServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,7 +28,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class SecurityConfiguration{
 
-    private final AppUserService appUserService;
+    private final CustomUserDetailServiceImpl appUserService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
