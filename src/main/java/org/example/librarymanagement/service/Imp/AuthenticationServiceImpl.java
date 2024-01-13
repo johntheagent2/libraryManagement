@@ -26,6 +26,7 @@ public class AuthenticationServiceImpl {
         UserDetails account = customUserDetailService.loadUserByUsername(authRequest.getEmail());
 
         String jwtToken = jwtService.generateToken(account);
+
         return AuthenticationResponse.builder()
                 .jwtToken(jwtToken)
                 .build();

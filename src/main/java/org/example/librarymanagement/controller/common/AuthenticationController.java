@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.example.librarymanagement.dto.request.AuthenticationRequest;
 import org.example.librarymanagement.dto.response.AuthenticationResponse;
 import org.example.librarymanagement.service.Imp.AuthenticationServiceImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,9 @@ public class AuthenticationController {
 
     @PostMapping
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authRequest){
-        return ResponseEntity.ok(authenticationService.authenticate(authRequest));
+        System.out.println(authRequest.getEmail() + " " + authRequest.getPassword());
+        AuthenticationResponse authenticationResponse = authenticationService.authenticate(authRequest);
+        System.out.println(authenticationResponse.getJwtToken());
+        return ResponseEntity.status(HttpStatus.OK).body(authenticationResponse);
     }
 }
