@@ -20,9 +20,8 @@ public class AuthenticationController {
 
     @PostMapping
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authRequest){
-        System.out.println(authRequest.getEmail() + " " + authRequest.getPassword());
-        AuthenticationResponse authenticationResponse = authenticationService.authenticate(authRequest);
-        System.out.println(authenticationResponse.getJwtToken());
-        return ResponseEntity.status(HttpStatus.OK).body(authenticationResponse);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(authenticationService.authenticate(authRequest));
     }
 }
