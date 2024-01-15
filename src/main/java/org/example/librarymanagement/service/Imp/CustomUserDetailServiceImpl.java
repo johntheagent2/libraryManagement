@@ -27,6 +27,7 @@ public class CustomUserDetailServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        
         return adminService.findByEmail(email)
                 .map(CustomUserDetails::new)
                 .orElseGet(() -> appUserService.findByEmail(email)

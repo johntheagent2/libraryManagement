@@ -1,12 +1,10 @@
 package org.example.librarymanagement.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Builder
 @AllArgsConstructor
+@Getter
 public class AuthenticationResponse {
     private final String jwtToken;
 }

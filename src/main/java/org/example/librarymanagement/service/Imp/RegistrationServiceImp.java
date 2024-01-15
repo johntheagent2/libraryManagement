@@ -27,7 +27,6 @@ public class RegistrationServiceImp implements RegistrationService {
     private final ConfirmationTokenService confirmationTokenService;
     private final ResourceBundle resourceBundle;
     private final EmailSenderService emailSenderService;
-    private final JwtService jwtService;
 
 
     @Transactional
@@ -52,9 +51,6 @@ public class RegistrationServiceImp implements RegistrationService {
         ConfirmationToken confirmationToken = confirmationTokenService.createToken(appUser);
 
         confirmationTokenService.saveConfirmationToken(confirmationToken);
-
-        String jwtToken = jwtService.generateToken(appUser.toUserDetails());
-        System.out.println(jwtToken);
 
 //        emailSenderService.sendConfirmationMail(
 //                confirmationToken.getToken(),

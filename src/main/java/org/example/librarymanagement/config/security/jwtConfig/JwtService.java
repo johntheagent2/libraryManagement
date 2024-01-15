@@ -19,7 +19,7 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private final String SECRET_KEY = "BD3766C71B8F7A7F27A5F0EE9474DE8006E9EA13E6A0B666C80F8C54C80379E5";
+    private final String SECRET_KEY = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
     public String extractEmail(String token){
         return extractClaim(token, Claims::getSubject);
@@ -28,6 +28,14 @@ public class JwtService {
     public <T> T extractClaim(String token, Function<Claims, T> claimResolver){
         final Claims claims = extractAllClaim(token);
         return claimResolver.apply(claims);
+    }
+
+    private Claims extractAllClaim(String token){
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigninKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public String generateToken(UserDetails userDetails){
@@ -43,14 +51,14 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(currentTime)
-                .setExpiration(currentTime)
+                .setExpiration(expirationTime)
                 .signWith(getSigninKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails){
         final String email = extractEmail(token);
-        return userDetails.getUsername().equals(email) && !isTokenExpired(token);
+        return email.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
@@ -59,14 +67,6 @@ public class JwtService {
 
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
-    }
-
-    private Claims extractAllClaim(String token){
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigninKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
     }
 
     private Key getSigninKey() {
