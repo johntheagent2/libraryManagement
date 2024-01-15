@@ -22,18 +22,11 @@ public class AppUser extends Account {
     @Column(name = "address", nullable = false, length = 50)
     private String address;
 
-    @Column(name = "enabled")
-    private Boolean enabled = false;
-
 
     public AppUser(String firstName, String lastName, String address, String email, String phoneNumber, String password, Role role, LocalDateTime creationDate) {
         super(email, phoneNumber, password, role, creationDate);
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
     }
 }

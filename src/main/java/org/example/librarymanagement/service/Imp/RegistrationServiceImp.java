@@ -104,10 +104,10 @@ public class RegistrationServiceImp implements RegistrationService {
 
         confirmationToken = confirmationTokenService.refreshToken(confirmationToken);
 
-        emailSenderService.sendConfirmationMail(
-                confirmationToken.getToken(),
-                confirmationToken.getOtp(),
-                confirmationToken.getAppUser().getEmail()
-        );
+//        emailSenderService.sendConfirmationMail(
+//                confirmationToken.getToken(),
+//                confirmationToken.getOtp(),
+//                confirmationToken.getAppUser().getEmail()
+//        );
     }
 }

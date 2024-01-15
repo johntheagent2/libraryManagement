@@ -1,6 +1,7 @@
 package org.example.librarymanagement.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,8 +16,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
+@NoArgsConstructor
 @MappedSuperclass
 public class Account{
     @Id
@@ -43,6 +44,9 @@ public class Account{
 
     private Boolean locked = false;
 
+    @Column(name = "enabled")
+    private Boolean enabled = false;
+
     public Account(String email, String phoneNumber, String password, Role role, LocalDateTime creationDate) {
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -58,4 +62,10 @@ public class Account{
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+
 }

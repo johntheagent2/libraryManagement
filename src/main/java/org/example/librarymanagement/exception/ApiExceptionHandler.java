@@ -52,7 +52,7 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = {IOException.class})
     public ResponseEntity<ApiExceptionResponse> handleIOException(IOException exception) {
-        ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse(exception.getMessage(), "IO_ERROR_CODE");
+        ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse(exception.getMessage(), exception.getErrorCode());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(apiExceptionResponse);
     }
@@ -60,16 +60,32 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = {TemplateException.class})
     public ResponseEntity<ApiExceptionResponse> handleTemplateException(TemplateException exception) {
-        ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse(exception.getMessage(), "TEMPLATE_ERROR_CODE");
+        ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse(exception.getMessage(), exception.getErrorCode());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(apiExceptionResponse);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = {MessagingException.class})
-    public ResponseEntity<ApiExceptionResponse> handleMessagingException(MessagingException exception) {
-        ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse(exception.getMessage(), "MESSAGING_ERROR_CODE");
+    public ResponseEntity<ApiExceptionResponse> handleMessagingException(MessageException exception) {
+        ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse(exception.getMessage(), exception.getErrorCode());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(apiExceptionResponse);
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(value = {UnauthorizedException.class})
+    public ResponseEntity<ApiExceptionResponse> handleUnauthorizedException(UnauthorizedException exception) {
+        ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse(exception.getMessage(), exception.getErrorCode());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(apiExceptionResponse);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {BadCredentialException.class})
+    public ResponseEntity<ApiExceptionResponse> handleBadCredential(BadCredentialException exception) {
+        ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse(exception.getMessage(), exception.getErrorCode());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(apiExceptionResponse);
     }
 }
