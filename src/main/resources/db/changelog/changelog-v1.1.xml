@@ -38,6 +38,9 @@
             <column name="enabled" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
+            <column name="count_wrong_login" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 

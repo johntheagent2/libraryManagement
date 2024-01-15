@@ -5,6 +5,7 @@ import org.example.librarymanagement.entity.Account;
 import org.example.librarymanagement.entity.Admin;
 import org.example.librarymanagement.entity.CustomUserDetails;
 import org.example.librarymanagement.exception.exception.NotFoundException;
+import org.example.librarymanagement.exception.exception.UnauthorizedException;
 import org.example.librarymanagement.repository.AdminRepository;
 import org.example.librarymanagement.repository.AppUserRepository;
 import org.example.librarymanagement.service.AdminService;
@@ -36,7 +37,12 @@ public class CustomUserDetailServiceImpl implements UserDetailsService {
                                 resourceBundle.getString("user.email.email-not-found"))));
 
         if(userDetails.isEnabled()){
-            return userDetails;
+            if(userDetails.getAccount().getCountWrongLogin() < 3){
+                return userDetails;
+            }else {
+                throw new UnauthorizedException("user.account.login-exceeded",
+                        resourceBundle.getString("user.account.login-exceeded"));
+            }
         }else{
             throw new NotFoundException("user.account.account-not-enabled",
                     resourceBundle.getString("user.account.account-not-enabled"));

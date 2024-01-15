@@ -47,6 +47,9 @@ public class Account{
     @Column(name = "enabled")
     private Boolean enabled = false;
 
+    @Column(name = "count_wrong_login")
+    private int countWrongLogin = 0;
+
     public Account(String email, String phoneNumber, String password, Role role, LocalDateTime creationDate) {
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -67,5 +70,7 @@ public class Account{
         return enabled;
     }
 
-
+    public void wrongLoginCount(){
+        countWrongLogin++;
+    }
 }

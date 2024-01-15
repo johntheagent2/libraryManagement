@@ -20,6 +20,7 @@ import java.util.function.Function;
 public class JwtService {
 
     private final String SECRET_KEY = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
+    private final int EXPIRATION_TIME = 1000 * 60 * 5; //Expires time is: 5 minutes
 
     public String extractEmail(String token){
         return extractClaim(token, Claims::getSubject);
@@ -45,7 +46,7 @@ public class JwtService {
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails){
 
         Date currentTime = new Date(System.currentTimeMillis());
-        Date expirationTime = new Date(currentTime.getTime() + 1000 * 60 * 24);
+        Date expirationTime = new Date(currentTime.getTime() + EXPIRATION_TIME);
 
         return Jwts.builder()
                 .setClaims(extraClaims)

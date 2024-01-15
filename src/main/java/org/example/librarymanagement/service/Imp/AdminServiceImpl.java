@@ -13,6 +13,12 @@ import java.util.Optional;
 public class AdminServiceImpl implements AdminService {
     private AdminRepository adminRepository;
 
+
+    @Override
+    public void saveAdmin(Admin admin) {
+        adminRepository.save(admin);
+    }
+
     @Override
     public Optional<Admin> findByEmail(String email) {
         return adminRepository.findByEmail(email);
