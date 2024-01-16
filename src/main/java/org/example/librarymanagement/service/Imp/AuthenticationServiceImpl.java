@@ -33,6 +33,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest authRequest) {
         CustomUserDetails account;
         String jwtToken;
+        String refreshToken;
+        String jti;
 
         try{
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -40,7 +42,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     authRequest.getPassword()));
 
             account = (CustomUserDetails) customUserDetailService.loadUserByUsername(authRequest.getEmail());
-            jwtToken = jwtService.generateToken(account);
+
+            jti = jwtService.generateJti();
+            jwtToken = jwtService.generateToken(account, jti);
+            refreshToken = jwtService.generateRefreshToken(account, jti);
         }catch (BadCredentialsException e){
             updateCountWrongLogin(authRequest.getEmail());
             throw new NotFoundException("user.account.password-incorrect",
@@ -48,6 +53,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return AuthenticationResponse.builder()
                 .jwtToken(jwtToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 

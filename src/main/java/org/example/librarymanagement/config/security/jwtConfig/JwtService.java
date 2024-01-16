@@ -10,20 +10,22 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
 
     private final String SECRET_KEY = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
-    private final int EXPIRATION_TIME = 1000 * 60 * 5; //Expires time is: 5 minutes
+    private final int ACCESS_TOKEN_EXPIRATION_TIME = 1000 * 60 * 5; // Access token expires in 5 minutes
+    private final int REFRESH_TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 7; // Refresh token expires in 7 days
 
     public String extractEmail(String token){
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public String extractJti(String token){
+        return extractClaim(token, Claims::getId);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimResolver){
@@ -39,22 +41,30 @@ public class JwtService {
                 .getBody();
     }
 
-    public String generateToken(UserDetails userDetails){
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(UserDetails userDetails, String jti){
+        return generateToken(new HashMap<>(), userDetails, ACCESS_TOKEN_EXPIRATION_TIME);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails){
+    public String generateRefreshToken(UserDetails userDetails, String jti){
+        return generateToken(new HashMap<>(), userDetails, REFRESH_TOKEN_EXPIRATION_TIME);
+    }
 
-        Date currentTime = new Date(System.currentTimeMillis());
-        Date expirationTime = new Date(currentTime.getTime() + EXPIRATION_TIME);
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, long expirationTime){
+
+        Date current = new Date(System.currentTimeMillis());
+        Date expiration = new Date(current.getTime() + expirationTime);
 
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
-                .setIssuedAt(currentTime)
-                .setExpiration(expirationTime)
+                .setIssuedAt(current)
+                .setExpiration(expiration)
                 .signWith(getSigninKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String generateJti(){
+        return UUID.randomUUID().toString();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails){

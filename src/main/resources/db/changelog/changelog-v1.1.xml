@@ -46,7 +46,7 @@
 
     <!-- Create the Admin table -->
     <changeSet id="createAdminTable" author="JohnCao" runOnChange="true">
-        <createTable tableName="admin">
+        <createTable tableName="app_admin">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -88,6 +88,30 @@
             </column>
             <column name="confirmed_at" type="TIMESTAMP"/>
             <column name="app_user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!--Create table session-->
+    <changeSet id="create-session-table" author="your_author">
+        <createTable tableName="session">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="jti" type="VARCHAR(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="creation_date" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expiration_date" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_active" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
         </createTable>

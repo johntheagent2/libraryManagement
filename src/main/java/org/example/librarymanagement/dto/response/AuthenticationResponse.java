@@ -7,4 +7,5 @@ import lombok.*;
 @Getter
 public class AuthenticationResponse {
     private final String jwtToken;
+    private final String refreshToken;
 }
