@@ -5,6 +5,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.enumeration.Role;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @Table(name = "app_admin")
 public class Admin extends Account {
 
-    public Admin(String email, String phoneNumber, String password, Role role, LocalDateTime creationDate){
-        super(email, phoneNumber, password, role, creationDate);
+    public Admin(String email, String phoneNumber, String password, Role role, AccountStatus status, LocalDateTime creationDate){
+        super(email, phoneNumber, password, role, status, creationDate);
     }
 }

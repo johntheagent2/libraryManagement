@@ -4,6 +4,7 @@ import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.librarymanagement.dto.request.OtpVerificationRequest;
 import org.example.librarymanagement.dto.request.RegistrationRequest;
 import org.example.librarymanagement.service.RegistrationService;
 import org.springframework.http.HttpStatus;
@@ -25,15 +26,15 @@ public class RegistrationController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/confirm")
+    @PutMapping("/confirm")
     public ResponseEntity<Void> confirmToken(@RequestParam("token") String token){
         registrationService.confirmToken(token);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-    @GetMapping("/confirm-otp")
-    public ResponseEntity<Void> confirmOtpToken(@RequestBody String token){
-        registrationService.confirmOtpToken(token);
+    @PutMapping("/confirm-otp")
+    public ResponseEntity<Void> confirmOtpToken(@RequestBody OtpVerificationRequest token){
+        registrationService.confirmOtpToken(token.getOtp());
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 

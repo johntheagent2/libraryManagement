@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.example.librarymanagement.entity.Account;
 import org.example.librarymanagement.entity.Admin;
 import org.example.librarymanagement.entity.CustomUserDetails;
+import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.exception.exception.NotFoundException;
 import org.example.librarymanagement.exception.exception.UnauthorizedException;
 import org.example.librarymanagement.repository.AdminRepository;
@@ -36,7 +37,9 @@ public class CustomUserDetailServiceImpl implements UserDetailsService {
                         .orElseThrow(() -> new NotFoundException("user.email.email-not-found",
                                 resourceBundle.getString("user.email.email-not-found"))));
 
-        if(userDetails.isEnabled()){
+        Account account = userDetails.getAccount();
+
+        if(userDetails.isEnabled() && account.getStatus().equals(AccountStatus.ACTIVE)){
             if(userDetails.getAccount().getCountWrongLogin() < 3){
                 return userDetails;
             }else {

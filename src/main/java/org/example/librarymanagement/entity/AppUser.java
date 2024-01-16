@@ -2,6 +2,7 @@ package org.example.librarymanagement.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.enumeration.Role;
 
 import java.time.LocalDateTime;
@@ -23,8 +24,8 @@ public class AppUser extends Account {
     private String address;
 
 
-    public AppUser(String firstName, String lastName, String address, String email, String phoneNumber, String password, Role role, LocalDateTime creationDate) {
-        super(email, phoneNumber, password, role, creationDate);
+    public AppUser(String firstName, String lastName, String address, String email, String phoneNumber, String password, Role role, AccountStatus status, LocalDateTime creationDate) {
+        super(email, phoneNumber, password, role, status, creationDate);
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;

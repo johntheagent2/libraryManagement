@@ -42,14 +42,14 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails, String jti){
-        return generateToken(new HashMap<>(), userDetails, ACCESS_TOKEN_EXPIRATION_TIME);
+        return generateToken(new HashMap<>(), userDetails, jti, ACCESS_TOKEN_EXPIRATION_TIME);
     }
 
     public String generateRefreshToken(UserDetails userDetails, String jti){
-        return generateToken(new HashMap<>(), userDetails, REFRESH_TOKEN_EXPIRATION_TIME);
+        return generateToken(new HashMap<>(), userDetails, jti, REFRESH_TOKEN_EXPIRATION_TIME);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, long expirationTime){
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, String jti, long expirationTime){
 
         Date current = new Date(System.currentTimeMillis());
         Date expiration = new Date(current.getTime() + expirationTime);
@@ -57,6 +57,7 @@ public class JwtService {
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
+                .setId(jti)
                 .setIssuedAt(current)
                 .setExpiration(expiration)
                 .signWith(getSigninKey(), SignatureAlgorithm.HS256)
@@ -76,8 +77,12 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    private Date extractExpiration(String token) {
+    public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    public Date extractIssueAt(String token){
+        return extractClaim(token, Claims::getIssuedAt);
     }
 
     private Key getSigninKey() {

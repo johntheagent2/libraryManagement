@@ -12,7 +12,11 @@ public interface AppUserService {
 
     void saveUser(AppUser appUser);
 
-    void enableAppUser(String email);
+    void updateUser(AppUser appUser);
+
+    void verifyUser(AppUser user);
 
     Optional<AppUser> findByEmail(String email);
+
+    void resetWrongLoginCounter(String email);
 }

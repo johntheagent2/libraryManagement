@@ -29,6 +29,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final CustomUserDetailServiceImpl customUserDetailService;
     private final AppUserServiceImpl appUserService;
     private final AdminServiceImpl adminService;
+    private final SessionServiceImpl sessionService;
 
     public AuthenticationResponse authenticate(AuthenticationRequest authRequest) {
         CustomUserDetails account;
@@ -46,15 +47,29 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             jti = jwtService.generateJti();
             jwtToken = jwtService.generateToken(account, jti);
             refreshToken = jwtService.generateRefreshToken(account, jti);
+            sessionService.saveSession(refreshToken);
         }catch (BadCredentialsException e){
             updateCountWrongLogin(authRequest.getEmail());
             throw new NotFoundException("user.account.password-incorrect",
                     resourceBundle.getString("user.account.password-incorrect"));
         }
+
+        resetWrongLoginCounter(authRequest.getEmail());
         return AuthenticationResponse.builder()
                 .jwtToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    public void resetWrongLoginCounter(String email) {
+        CustomUserDetails account = (CustomUserDetails) customUserDetailService.loadUserByUsername(email);
+        Account currentAccount = account.getAccount();
+
+        if (currentAccount instanceof AppUser) {
+            appUserService.resetWrongLoginCounter(email);
+        } else if (currentAccount instanceof Admin) {
+//            TODO: add update admin instead of using saveAdmin()
+        }
     }
 
     public void updateCountWrongLogin(String email){
@@ -63,10 +78,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         if(currentAccount instanceof AppUser appUser){
             appUser.wrongLoginCount();
-            appUserService.saveUser(appUser);
+            appUserService.updateUser(appUser);
         }else if(currentAccount instanceof Admin admin){
-            admin.wrongLoginCount();
-            adminService.saveAdmin(admin);
+//            TODO: add update admin instead of using saveAdmin()
         }
     }
 }

@@ -2,6 +2,7 @@ package org.example.librarymanagement.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.example.librarymanagement.enumeration.AccountStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -37,7 +38,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return !account.getLocked();
+        return !account.getStatus().equals(AccountStatus.BLOCKED);
     }
 
     @Override

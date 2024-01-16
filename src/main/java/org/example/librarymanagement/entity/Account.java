@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.enumeration.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -42,19 +43,22 @@ public class Account{
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
-    private Boolean locked = false;
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AccountStatus status;
 
     @Column(name = "enabled")
-    private Boolean enabled = false;
+    private Boolean enabled = true;
 
     @Column(name = "count_wrong_login")
     private int countWrongLogin = 0;
 
-    public Account(String email, String phoneNumber, String password, Role role, LocalDateTime creationDate) {
+    public Account(String email, String phoneNumber, String password, Role role, AccountStatus status, LocalDateTime creationDate) {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.creationDate = creationDate;
         this.role = role;
+        this.status = status;
         this.password = password;
     }
 

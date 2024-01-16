@@ -6,6 +6,7 @@ import org.example.librarymanagement.config.security.jwtConfig.JwtService;
 import org.example.librarymanagement.dto.request.RegistrationRequest;
 import org.example.librarymanagement.entity.ConfirmationToken;
 import org.example.librarymanagement.entity.AppUser;
+import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.enumeration.Role;
 import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.example.librarymanagement.exception.exception.NotFoundException;
@@ -44,6 +45,7 @@ public class RegistrationServiceImp implements RegistrationService {
                 request.getPhoneNumber(),
                 request.getPassword(),
                 Role.USER,
+                AccountStatus.UNVERIFIED,
                 LocalDateTime.now());
 
         appUserService.saveUser(appUser);
@@ -68,7 +70,7 @@ public class RegistrationServiceImp implements RegistrationService {
         verifyExpiryDate(confirmationToken);
 
         confirmationTokenService.remove(confirmationToken);
-        appUserService.enableAppUser(confirmationToken.getAppUser().getEmail());
+        appUserService.verifyUser(confirmationToken.getAppUser());
     }
 
     @Transactional
@@ -80,7 +82,7 @@ public class RegistrationServiceImp implements RegistrationService {
         verifyExpiryDate(confirmationToken);
 
         confirmationTokenService.remove(confirmationToken);
-        appUserService.enableAppUser(confirmationToken.getAppUser().getEmail());
+        appUserService.verifyUser(confirmationToken.getAppUser());
     }
 
     public void verifyExpiryDate(ConfirmationToken confirmationToken){

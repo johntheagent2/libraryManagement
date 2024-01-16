@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 
 @Data
 @Entity
@@ -20,14 +22,17 @@ public class Session {
     private String jti;
 
     @Column(name = "creation_date", nullable = false)
-    private String creationDate;
-
-    @Column(name = "update_date", nullable = false)
-    private String updateDate;
+    private Date creationDate;
 
     @Column(name = "expiration_date", nullable = false)
-    private String expirationDate;
+    private Date expirationDate;
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
+
+    public Session(String jti, Date creationDate, Date expirationDate) {
+        this.jti = jti;
+        this.creationDate = creationDate;
+        this.expirationDate = expirationDate;
+    }
 }

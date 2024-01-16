@@ -38,6 +38,9 @@
             <column name="enabled" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
+            <column name="status" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
             <column name="count_wrong_login" type="SMALLINT">
                 <constraints nullable="false"/>
             </column>
@@ -94,7 +97,7 @@
     </changeSet>
 
     <!--Create table session-->
-    <changeSet id="create-session-table" author="your_author">
+    <changeSet id="create-session-table" author="your_name">
         <createTable tableName="session">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
@@ -102,13 +105,10 @@
             <column name="jti" type="VARCHAR(255)">
                 <constraints unique="true" nullable="false"/>
             </column>
-            <column name="creation_date" type="VARCHAR(255)">
+            <column name="creation_date" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="update_date" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="expiration_date" type="VARCHAR(255)">
+            <column name="expiration_date" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
             <column name="is_active" type="BOOLEAN">
