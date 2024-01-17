@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class AdminServiceImpl implements AdminService {
+public class AdminServiceImpl implements AdminService{
     private AdminRepository adminRepository;
 
 

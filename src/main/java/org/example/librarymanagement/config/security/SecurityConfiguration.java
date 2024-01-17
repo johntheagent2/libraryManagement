@@ -2,34 +2,29 @@ package org.example.librarymanagement.config.security;
 
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.config.security.jwtConfig.JwtAuthenticationFilter;
-import org.example.librarymanagement.service.Imp.CustomUserDetailServiceImpl;
+import org.example.librarymanagement.enumeration.Role;
+import org.example.librarymanagement.service.CustomUserDetailFacade;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatchers;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @AllArgsConstructor
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfiguration{
 
-    private final CustomUserDetailServiceImpl appUserService;
+    private final CustomUserDetailFacade appUserService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtAuthenticationFilter jwtAuthFilter;
 
@@ -41,7 +36,8 @@ public class SecurityConfiguration{
                 .authenticationProvider(daoAuthenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/registration/**", "/api/v1/auth/**").permitAll()
-//                        .requestMatchers("/controller/common/**").permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/user/**").hasRole("USER")
                         .anyRequest().authenticated())
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

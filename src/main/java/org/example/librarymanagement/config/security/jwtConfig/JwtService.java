@@ -7,12 +7,11 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.example.librarymanagement.entity.Session;
 import org.example.librarymanagement.exception.exception.ExpiredJwtException;
-import org.example.librarymanagement.service.Imp.SessionServiceImpl;
+import org.example.librarymanagement.service.SessionService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 
@@ -112,14 +111,19 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public static void checkJti(String authorization, JwtService jwtService, SessionServiceImpl sessionService, ResourceBundle resourceBundle) {
+    public static void checkJti(String authorization, JwtService jwtService, SessionService sessionService, ResourceBundle resourceBundle) {
         String jwtToken = jwtService.extractJwtToken(authorization);
         String jti = jwtService.extractJti(jwtToken);
         Session session = sessionService.getSessionWithJti(jti);
 
-        if(jti.equals(session.getJti()) && session.getExpirationDate().before(new Date())){
+        if(session.getExpirationDate().before(new Date())){
             throw new ExpiredJwtException("session.jti.jti-expired",
                     resourceBundle.getString("session.jti.jti-expired"));
+        }
+
+        if (!session.isActive()){
+            throw new ExpiredJwtException("session.jti.jti-not-active",
+                    resourceBundle.getString("session.jti.jti-not-active"));
         }
     }
 }

@@ -14,14 +14,16 @@ import java.util.ResourceBundle;
 
 @AllArgsConstructor
 @Service
-public class GoogleAuthenticatorServiceImpl {
+public class GoogleAuthenticatorServiceImpl implements org.example.librarymanagement.service.GoogleAuthenticatorService {
     private final GoogleAuthenticator googleAuthenticator = new GoogleAuthenticator();
     private final ResourceBundle resourceBundle;
 
+    @Override
     public String generateSecretKey() {
         return googleAuthenticator.createCredentials().getKey();
     }
 
+    @Override
     public String generateQRCode(AppUser user) {
         GoogleAuthenticatorKey key = new GoogleAuthenticatorKey
                 .Builder(user.getSecretKey())
@@ -31,6 +33,7 @@ public class GoogleAuthenticatorServiceImpl {
         return GoogleAuthenticatorQRGenerator.getOtpAuthURL("Sparkminds", user.getEmail(), key);
     }
 
+    @Override
     public boolean validateTOTP(AppUser user, int otp) {
         if(googleAuthenticator.authorize(user.getSecretKey(), otp)){
             return true;

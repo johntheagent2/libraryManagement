@@ -1,25 +1,20 @@
 package org.example.librarymanagement.service.Imp;
 
-import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.config.security.jwtConfig.JwtService;
 import org.example.librarymanagement.dto.request.AuthenticationRequest;
 import org.example.librarymanagement.dto.response.AuthenticationResponse;
 import org.example.librarymanagement.entity.*;
-import org.example.librarymanagement.exception.exception.ExpiredJwtException;
 import org.example.librarymanagement.exception.exception.NotFoundException;
-import org.example.librarymanagement.service.AuthenticationService;
-import org.springframework.http.ResponseEntity;
+import org.example.librarymanagement.service.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.ResourceBundle;
 
 @Service
@@ -29,11 +24,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
     private final ResourceBundle resourceBundle;
     private final AuthenticationManager authenticationManager;
-    private final CustomUserDetailServiceImpl customUserDetailService;
-    private final AppUserServiceImpl appUserService;
-    private final SessionServiceImpl sessionService;
-    private final GoogleAuthenticatorServiceImpl googleAuthenticatorService;
+    private final CustomUserDetailFacade customUserDetailService;
+    private final AppUserService appUserService;
+    private final SessionService sessionService;
+    private final GoogleAuthenticatorService googleAuthenticatorService;
 
+    @Override
     public AuthenticationResponse authenticate(AuthenticationRequest authRequest) {
         CustomUserDetails account;
         String jwtToken;
@@ -68,6 +64,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
+    @Override
     public boolean checkMfaIfAppUser(String email){
         CustomUserDetails account = (CustomUserDetails) customUserDetailService.loadUserByUsername(email);
         Account currentAccount = account.getAccount();
@@ -78,6 +75,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return false;
     }
 
+    @Override
     public void resetWrongLoginCounter(String email) {
         CustomUserDetails account = (CustomUserDetails) customUserDetailService.loadUserByUsername(email);
         Account currentAccount = account.getAccount();
@@ -89,6 +87,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
+    @Override
     public void updateCountWrongLogin(String email){
         CustomUserDetails account = (CustomUserDetails) customUserDetailService.loadUserByUsername(email);
         Account currentAccount = account.getAccount();
@@ -101,6 +100,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
+    @Override
     public AuthenticationResponse refreshToken(String authorization){
         String oldJwtToken;
         String newJwtToken;

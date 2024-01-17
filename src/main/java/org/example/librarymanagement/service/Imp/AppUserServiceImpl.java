@@ -7,6 +7,7 @@ import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.example.librarymanagement.repository.AppUserRepository;
 import org.example.librarymanagement.service.AppUserService;
+import org.example.librarymanagement.service.GoogleAuthenticatorService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +16,14 @@ import java.util.ResourceBundle;
 
 @RequiredArgsConstructor
 @Service
-public class AppUserServiceImpl implements AppUserService{
+public class AppUserServiceImpl implements AppUserService {
 
     private final AppUserRepository appUserRepository;
     private final ResourceBundle resourceBundle;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final GoogleAuthenticatorServiceImpl googleAuthenticatorService;
+    private final GoogleAuthenticatorService googleAuthenticatorService;
 
+    @Override
     public void verifyUser(AppUser user){
         user.setStatus(AccountStatus.ACTIVE);
         updateUser(user);
@@ -49,6 +51,7 @@ public class AppUserServiceImpl implements AppUserService{
         return new MfaResponse(googleAuthenticatorService.generateQRCode(appUser));
     }
 
+    @Override
     public boolean isUserEnableMfa(String email){
         AppUser appUser = findByEmail(email)
                 .orElseThrow(() -> new BadRequestException("user.email.email-not-found",
@@ -65,6 +68,7 @@ public class AppUserServiceImpl implements AppUserService{
         return googleAuthenticatorService.validateTOTP(appUser, otp);
     }
 
+    @Override
     public void saveUser(AppUser appUser){
         String encodedPassword = passwordEncoder.encode(appUser.getPassword());
 

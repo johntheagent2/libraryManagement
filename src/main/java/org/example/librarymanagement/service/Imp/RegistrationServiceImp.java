@@ -2,7 +2,6 @@ package org.example.librarymanagement.service.Imp;
 
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.common.emailSender.EmailSenderService;
-import org.example.librarymanagement.config.security.jwtConfig.JwtService;
 import org.example.librarymanagement.dto.request.RegistrationRequest;
 import org.example.librarymanagement.entity.ConfirmationToken;
 import org.example.librarymanagement.entity.AppUser;
@@ -10,7 +9,6 @@ import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.enumeration.Role;
 import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.example.librarymanagement.exception.exception.NotFoundException;
-import org.example.librarymanagement.repository.AppUserRepository;
 import org.example.librarymanagement.service.AppUserService;
 import org.example.librarymanagement.service.ConfirmationTokenService;
 import org.example.librarymanagement.service.RegistrationService;
@@ -22,7 +20,7 @@ import java.util.ResourceBundle;
 
 @Service
 @AllArgsConstructor
-public class RegistrationServiceImp implements RegistrationService {
+public class RegistrationServiceImp implements RegistrationService{
 
     private final AppUserService appUserService;
     private final ConfirmationTokenService confirmationTokenService;
@@ -30,6 +28,7 @@ public class RegistrationServiceImp implements RegistrationService {
     private final EmailSenderService emailSenderService;
 
 
+    @Override
     @Transactional
     public void register(RegistrationRequest request){
         if(appUserService.findByEmail(request.getEmail()).isPresent()){
@@ -44,7 +43,7 @@ public class RegistrationServiceImp implements RegistrationService {
                 request.getEmail(),
                 request.getPhoneNumber(),
                 request.getPassword(),
-                Role.USER,
+                Role.ROLE_USER,
                 AccountStatus.UNVERIFIED,
                 LocalDateTime.now());
 
@@ -61,6 +60,7 @@ public class RegistrationServiceImp implements RegistrationService {
 
     }
 
+    @Override
     @Transactional
     public void confirmToken(String token){
         ConfirmationToken confirmationToken = confirmationTokenService.findConfirmationToken(token)
@@ -73,6 +73,7 @@ public class RegistrationServiceImp implements RegistrationService {
         appUserService.verifyUser(confirmationToken.getAppUser());
     }
 
+    @Override
     @Transactional
     public void confirmOtpToken(String otp){
         ConfirmationToken confirmationToken = confirmationTokenService.findConfirmationOTP(otp)
@@ -85,6 +86,7 @@ public class RegistrationServiceImp implements RegistrationService {
         appUserService.verifyUser(confirmationToken.getAppUser());
     }
 
+    @Override
     public void verifyExpiryDate(ConfirmationToken confirmationToken){
         LocalDateTime expiredDateTime = confirmationToken.getExpiresAt();
 
@@ -99,6 +101,7 @@ public class RegistrationServiceImp implements RegistrationService {
         }
     }
 
+    @Override
     public void resendToken(String email) {
         ConfirmationToken confirmationToken = confirmationTokenService.findConfirmationTokenByEmail(email)
                 .orElseThrow(() -> new NotFoundException("confirmation-token.link.link-not-found",
