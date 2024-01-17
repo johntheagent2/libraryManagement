@@ -1,22 +1,25 @@
 package org.example.librarymanagement.service.Imp;
 
+import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.config.security.jwtConfig.JwtService;
 import org.example.librarymanagement.dto.request.AuthenticationRequest;
 import org.example.librarymanagement.dto.response.AuthenticationResponse;
-import org.example.librarymanagement.entity.Account;
-import org.example.librarymanagement.entity.Admin;
-import org.example.librarymanagement.entity.AppUser;
-import org.example.librarymanagement.entity.CustomUserDetails;
+import org.example.librarymanagement.entity.*;
+import org.example.librarymanagement.exception.exception.ExpiredJwtException;
 import org.example.librarymanagement.exception.exception.NotFoundException;
 import org.example.librarymanagement.service.AuthenticationService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.ResourceBundle;
 
 @Service
@@ -28,8 +31,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailServiceImpl customUserDetailService;
     private final AppUserServiceImpl appUserService;
-    private final AdminServiceImpl adminService;
     private final SessionServiceImpl sessionService;
+    private final GoogleAuthenticatorServiceImpl googleAuthenticatorService;
 
     public AuthenticationResponse authenticate(AuthenticationRequest authRequest) {
         CustomUserDetails account;
@@ -43,6 +46,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     authRequest.getPassword()));
 
             account = (CustomUserDetails) customUserDetailService.loadUserByUsername(authRequest.getEmail());
+
+            if(checkMfaIfAppUser(authRequest.getEmail())){
+                googleAuthenticatorService.validateTOTP((AppUser) account.getAccount(), authRequest.getOtp());
+            }
 
             jti = jwtService.generateJti();
             jwtToken = jwtService.generateToken(account, jti);
@@ -59,6 +66,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .jwtToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    public boolean checkMfaIfAppUser(String email){
+        CustomUserDetails account = (CustomUserDetails) customUserDetailService.loadUserByUsername(email);
+        Account currentAccount = account.getAccount();
+
+        if (currentAccount instanceof AppUser) {
+            return appUserService.isUserEnableMfa(email);
+        }
+        return false;
     }
 
     public void resetWrongLoginCounter(String email) {
@@ -83,4 +100,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 //            TODO: add update admin instead of using saveAdmin()
         }
     }
+
+    public AuthenticationResponse refreshToken(String authorization){
+        String oldJwtToken;
+        String newJwtToken;
+        String newRefreshToken;
+        UserDetails userDetails;
+
+        userDetails = getUserDetails();
+        oldJwtToken = jwtService.extractJwtToken(authorization);
+        newJwtToken = jwtService.generateToken(userDetails, jwtService.extractJti(oldJwtToken));
+        newRefreshToken = jwtService.generateRefreshToken(userDetails,
+                jwtService.extractJti(oldJwtToken),
+                jwtService.extractIssueAt(oldJwtToken),
+                jwtService.extractExpiration(oldJwtToken));
+
+
+        JwtService.checkJti(authorization, jwtService, sessionService, resourceBundle);
+        jwtService.extractAllClaim(oldJwtToken);
+
+        return new AuthenticationResponse(newJwtToken, newRefreshToken);
+    }
+
+    private UserDetails getUserDetails(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (UserDetails) authentication.getPrincipal();
+    }
+
+
 }

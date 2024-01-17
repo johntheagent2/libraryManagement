@@ -6,10 +6,7 @@ import org.example.librarymanagement.dto.response.AuthenticationResponse;
 import org.example.librarymanagement.service.Imp.AuthenticationServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("${default-mapping}/auth")
@@ -19,9 +16,16 @@ public class AuthenticationController {
     private final AuthenticationServiceImpl authenticationService;
 
     @PostMapping
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authRequest){
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authRequest) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(authenticationService.authenticate(authRequest));
+    }
+
+    @GetMapping("/refresh-token")
+    public ResponseEntity<AuthenticationResponse> refreshToken(@RequestHeader String Authorization){
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(authenticationService.refreshToken(Authorization));
     }
 }

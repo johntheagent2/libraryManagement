@@ -23,6 +23,11 @@ public class AppUser extends Account {
     @Column(name = "address", nullable = false, length = 50)
     private String address;
 
+    @Column(name = "mfa", nullable = false)
+    private Boolean mfa = false;
+
+    @Column(name = "secret_key")
+    private String secretKey;
 
     public AppUser(String firstName, String lastName, String address, String email, String phoneNumber, String password, Role role, AccountStatus status, LocalDateTime creationDate) {
         super(email, phoneNumber, password, role, status, creationDate);

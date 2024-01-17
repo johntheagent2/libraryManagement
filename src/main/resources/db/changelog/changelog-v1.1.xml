@@ -38,6 +38,12 @@
             <column name="enabled" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
+            <column name="mfa" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="secret_key" type="VARCHAR(50)">
+                <constraints nullable="true"/>
+            </column>
             <column name="status" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>

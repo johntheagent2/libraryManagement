@@ -88,4 +88,12 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(apiExceptionResponse);
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {ExpiredJwtException.class})
+    public ResponseEntity<ApiExceptionResponse> handleExpiredJwtException(ExpiredJwtException exception) {
+        ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse(exception.getMessage(), exception.getErrorCode());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(apiExceptionResponse);
+    }
 }

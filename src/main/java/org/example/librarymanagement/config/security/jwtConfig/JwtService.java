@@ -5,6 +5,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.example.librarymanagement.entity.Session;
+import org.example.librarymanagement.exception.exception.ExpiredJwtException;
+import org.example.librarymanagement.service.Imp.SessionServiceImpl;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +20,12 @@ import java.util.function.Function;
 public class JwtService {
 
     private final String SECRET_KEY = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
-    private final int ACCESS_TOKEN_EXPIRATION_TIME = 1000 * 60 * 5; // Access token expires in 5 minutes
+    private final int ACCESS_TOKEN_EXPIRATION_TIME = 1000 * 60 * 20; // Access token expires in 5 minutes
     private final int REFRESH_TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 7; // Refresh token expires in 7 days
+
+    public String extractJwtToken(String authHeader){
+        return authHeader.substring(7);
+    }
 
     public String extractEmail(String token){
         return extractClaim(token, Claims::getSubject);
@@ -33,7 +40,7 @@ public class JwtService {
         return claimResolver.apply(claims);
     }
 
-    private Claims extractAllClaim(String token){
+    public Claims extractAllClaim(String token){
         return Jwts.parserBuilder()
                 .setSigningKey(getSigninKey())
                 .build()
@@ -47,6 +54,21 @@ public class JwtService {
 
     public String generateRefreshToken(UserDetails userDetails, String jti){
         return generateToken(new HashMap<>(), userDetails, jti, REFRESH_TOKEN_EXPIRATION_TIME);
+    }
+
+    public String generateRefreshToken(UserDetails userDetails, String jti, Date issuedTime, Date expirationTime){
+        return generateToken(new HashMap<>(), userDetails, jti, issuedTime, expirationTime);
+    }
+
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, String jti, Date issuedTime, Date expirationTime){
+        return Jwts.builder()
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
+                .setId(jti)
+                .setIssuedAt(issuedTime)
+                .setExpiration(expirationTime)
+                .signWith(getSigninKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, String jti, long expirationTime){
@@ -88,5 +110,16 @@ public class JwtService {
     private Key getSigninKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public static void checkJti(String authorization, JwtService jwtService, SessionServiceImpl sessionService, ResourceBundle resourceBundle) {
+        String jwtToken = jwtService.extractJwtToken(authorization);
+        String jti = jwtService.extractJti(jwtToken);
+        Session session = sessionService.getSessionWithJti(jti);
+
+        if(jti.equals(session.getJti()) && session.getExpirationDate().before(new Date())){
+            throw new ExpiredJwtException("session.jti.jti-expired",
+                    resourceBundle.getString("session.jti.jti-expired"));
+        }
     }
 }

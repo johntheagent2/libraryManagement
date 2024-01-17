@@ -47,10 +47,10 @@ public class Account{
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
 
-    @Column(name = "enabled")
+    @Column(name = "enabled", nullable = false)
     private Boolean enabled = true;
 
-    @Column(name = "count_wrong_login")
+    @Column(name = "count_wrong_login", nullable = false)
     private int countWrongLogin = 0;
 
     public Account(String email, String phoneNumber, String password, Role role, AccountStatus status, LocalDateTime creationDate) {
