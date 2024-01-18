@@ -49,7 +49,7 @@ public class AppUserServiceImpl implements AppUserService {
             updateUser(appUser);
         }else{
             throw new BadCredentialException("user.password.existed",
-                    resourceBundle.getString("user.password.existedt"));
+                    resourceBundle.getString("user.password.existed"));
         }
     }
 
