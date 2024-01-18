@@ -5,6 +5,7 @@ import org.example.librarymanagement.config.security.jwtConfig.JwtService;
 import org.example.librarymanagement.dto.request.AuthenticationRequest;
 import org.example.librarymanagement.dto.response.AuthenticationResponse;
 import org.example.librarymanagement.entity.*;
+import org.example.librarymanagement.exception.exception.BadCredentialException;
 import org.example.librarymanagement.exception.exception.NotFoundException;
 import org.example.librarymanagement.service.*;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -53,7 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             sessionService.saveSession(refreshToken);
         }catch (BadCredentialsException e){
             updateCountWrongLogin(authRequest.getEmail());
-            throw new NotFoundException("user.account.password-incorrect",
+            throw new BadCredentialException("user.account.password-incorrect",
                     resourceBundle.getString("user.account.password-incorrect"));
         }
 

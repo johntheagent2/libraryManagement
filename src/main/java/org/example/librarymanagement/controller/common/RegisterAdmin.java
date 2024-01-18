@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("${default-mapping}/admin-registration")
+@RequestMapping("${common-mapping}/admin-registration")
 @RequiredArgsConstructor
 public class RegisterAdmin {
 

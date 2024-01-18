@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("${default-mapping}/logout")
+@RequestMapping("${common-mapping}/logout")
 public class LogoutController {
     private final SessionService sessionService;
 

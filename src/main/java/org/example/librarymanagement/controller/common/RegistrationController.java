@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("${default-mapping}/registration")
+@RequestMapping("${common-mapping}/registration")
 @RequiredArgsConstructor
 public class RegistrationController {
 
