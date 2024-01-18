@@ -20,9 +20,6 @@
             <column name="password" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="creation_date" type="TIMESTAMP">
-                <constraints nullable="false"/>
-            </column>
             <column name="first_name" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
@@ -50,6 +47,12 @@
             <column name="count_wrong_login" type="SMALLINT">
                 <constraints nullable="false"/>
             </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
         </createTable>
     </changeSet>
 
@@ -68,11 +71,14 @@
             <column name="password" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="creation_date" type="TIMESTAMP">
-                <constraints nullable="false"/>
-            </column>
             <column name="role" type="VARCHAR(255)">
                 <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
             </column>
         </createTable>
     </changeSet>
@@ -89,13 +95,15 @@
             <column name="otp" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="local_date_time" type="TIMESTAMP">
+            <column name="created_date" type="TIMESTAMP">
                 <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
             </column>
             <column name="expires_at" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="confirmed_at" type="TIMESTAMP"/>
             <column name="app_user_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
@@ -111,14 +119,17 @@
             <column name="jti" type="VARCHAR(255)">
                 <constraints unique="true" nullable="false"/>
             </column>
-            <column name="creation_date" type="TIMESTAMP">
+            <column name="is_active" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
             <column name="expiration_date" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="is_active" type="BOOLEAN">
-                <constraints nullable="false"/>
+            <column name="last_modified_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
             </column>
         </createTable>
     </changeSet>

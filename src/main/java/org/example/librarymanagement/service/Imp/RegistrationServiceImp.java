@@ -44,8 +44,7 @@ public class RegistrationServiceImp implements RegistrationService{
                 request.getPhoneNumber(),
                 request.getPassword(),
                 Role.ROLE_USER,
-                AccountStatus.UNVERIFIED,
-                LocalDateTime.now());
+                AccountStatus.UNVERIFIED);
 
         appUserService.saveUser(appUser);
 
@@ -89,11 +88,6 @@ public class RegistrationServiceImp implements RegistrationService{
     @Override
     public void verifyExpiryDate(ConfirmationToken confirmationToken){
         LocalDateTime expiredDateTime = confirmationToken.getExpiresAt();
-
-        if(confirmationToken.getConfirmedAt() != null) {
-            throw new BadRequestException("confirmation-token.link.link-already-confirmed",
-                    resourceBundle.getString("confirmation-token.link.link-already-confirmed"));
-        }
 
         if (expiredDateTime.isBefore(LocalDateTime.now())) {
             throw new BadRequestException("confirmation-token.link.link-expired",

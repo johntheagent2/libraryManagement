@@ -30,7 +30,7 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
         LocalDateTime createdDateTime = LocalDateTime.now();
         LocalDateTime expiresDateTime = createdDateTime.plusMinutes(15);
 
-        return new ConfirmationToken(linkToken, otpToken, createdDateTime, expiresDateTime, appUser);
+        return new ConfirmationToken(linkToken, otpToken, expiresDateTime, appUser);
     }
 
     @Override

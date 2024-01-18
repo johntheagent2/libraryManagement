@@ -5,9 +5,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.AllArgsConstructor;
 import org.example.librarymanagement.entity.Session;
 import org.example.librarymanagement.exception.exception.ExpiredJwtException;
 import org.example.librarymanagement.service.SessionService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +20,14 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private final String SECRET_KEY = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
-    private final int ACCESS_TOKEN_EXPIRATION_TIME = 1000 * 60 * 20; // Access token expires in 5 minutes
-    private final int REFRESH_TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 7; // Refresh token expires in 7 days
+    @Value("${secret-key}")
+    private String SECRET_KEY;
+
+    @Value("#{1000 * 60 * 20}")
+    private int ACCESS_TOKEN_EXPIRATION_TIME; // Access token expires in 5 minutes
+
+    @Value("#{1000 * 60 * 60 * 24 * 7}")
+    private int REFRESH_TOKEN_EXPIRATION_TIME; // Refresh token expires in 7 days
 
     public String extractJwtToken(String authHeader){
         return authHeader.substring(7);

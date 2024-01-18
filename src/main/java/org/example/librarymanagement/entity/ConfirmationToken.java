@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
 
 import java.time.LocalDateTime;
 
@@ -11,7 +12,8 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
-public class ConfirmationToken {
+@EntityListeners(AuditingEntityListenerImpl.class)
+public class ConfirmationToken extends AuditableEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "token_seq")
@@ -26,12 +28,7 @@ public class ConfirmationToken {
     private String otp;
 
     @Column(nullable = false)
-    private LocalDateTime localDateTime;
-
-    @Column(nullable = false)
     private LocalDateTime expiresAt;
-
-    private LocalDateTime confirmedAt;
 
     @ManyToOne
     @JoinColumn(
@@ -40,10 +37,9 @@ public class ConfirmationToken {
     )
     private AppUser appUser;
 
-    public ConfirmationToken(String token, String otp, LocalDateTime localDateTime, LocalDateTime expiresAt, AppUser appUser) {
+    public ConfirmationToken(String token, String otp, LocalDateTime expiresAt, AppUser appUser) {
         this.token = token;
         this.otp = otp;
-        this.localDateTime = localDateTime;
         this.expiresAt = expiresAt;
         this.appUser = appUser;
     }

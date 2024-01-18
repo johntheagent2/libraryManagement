@@ -29,8 +29,8 @@ public class AppUser extends Account {
     @Column(name = "secret_key")
     private String secretKey;
 
-    public AppUser(String firstName, String lastName, String address, String email, String phoneNumber, String password, Role role, AccountStatus status, LocalDateTime creationDate) {
-        super(email, phoneNumber, password, role, status, creationDate);
+    public AppUser(String firstName, String lastName, String address, String email, String phoneNumber, String password, Role role, AccountStatus status) {
+        super(email, phoneNumber, password, role, status);
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;

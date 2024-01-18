@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Table(name = "app_admin")
 public class Admin extends Account {
 
-    public Admin(String email, String phoneNumber, String password, Role role, AccountStatus status, LocalDateTime creationDate){
-        super(email, phoneNumber, password, role, status, creationDate);
+    public Admin(String email, String phoneNumber, String password, Role role, AccountStatus status){
+        super(email, phoneNumber, password, role, status);
     }
 }

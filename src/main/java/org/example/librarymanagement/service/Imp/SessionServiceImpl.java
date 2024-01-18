@@ -26,9 +26,13 @@ public class SessionServiceImpl implements SessionService {
     public void saveSession(String token){
         sessionRepository.save(new Session(
                 jwtService.extractJti(token),
-                jwtService.extractIssueAt(token),
                 jwtService.extractExpiration(token)
         ));
+    }
+
+    @Override
+    public void updateSession(Session session) {
+        sessionRepository.save(session);
     }
 
     @Override
@@ -48,7 +52,10 @@ public class SessionServiceImpl implements SessionService {
     public void deactivateSession() {
         String jwtBearer = getCurrentSessionJWT();
         String jwt = jwtService.extractJwtToken(jwtBearer);
-        sessionRepository.deactivateSession(jwtService.extractJti(jwt));
+        Session session = getSessionWithJti(jwtService.extractJti(jwt));
+
+        session.setActive(false);
+        updateSession(session);
     }
 
 }

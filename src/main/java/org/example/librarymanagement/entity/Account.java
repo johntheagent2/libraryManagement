@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
 import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.enumeration.Role;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,7 +21,8 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 @MappedSuperclass
-public class Account{
+@EntityListeners(AuditingEntityListenerImpl.class)
+public class Account extends AuditableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_generator")
     @SequenceGenerator(name = "account_generator", sequenceName = "account_generator", allocationSize = 1)
@@ -40,9 +42,6 @@ public class Account{
     @Column(name = "role", nullable = false)
     private Role role;
 
-    @Column(name = "creation_date")
-    private LocalDateTime creationDate;
-
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
@@ -53,10 +52,9 @@ public class Account{
     @Column(name = "count_wrong_login", nullable = false)
     private int countWrongLogin = 0;
 
-    public Account(String email, String phoneNumber, String password, Role role, AccountStatus status, LocalDateTime creationDate) {
+    public Account(String email, String phoneNumber, String password, Role role, AccountStatus status) {
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.creationDate = creationDate;
         this.role = role;
         this.status = status;
         this.password = password;

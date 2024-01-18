@@ -31,8 +31,7 @@ public class RegisterAdmin {
                         request.getPhoneNumber(),
                         request.getPassword(),
                         Role.ROLE_ADMIN,
-                        AccountStatus.ACTIVE,
-                        LocalDateTime.now()
+                        AccountStatus.ACTIVE
                 )));
     }
 }
