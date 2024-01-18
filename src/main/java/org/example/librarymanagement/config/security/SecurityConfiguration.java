@@ -2,7 +2,6 @@ package org.example.librarymanagement.config.security;
 
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.config.security.jwtConfig.JwtAuthenticationFilter;
-import org.example.librarymanagement.enumeration.Role;
 import org.example.librarymanagement.service.CustomUserDetailFacade;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

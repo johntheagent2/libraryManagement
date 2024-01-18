@@ -1,9 +1,25 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package org.example.librarymanagement.entity;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.SequenceGenerator;
+import java.util.Collection;
+import java.util.List;
+
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
 import org.example.librarymanagement.enumeration.AccountStatus;
@@ -12,16 +28,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-
 @Getter
 @Setter
 @Inheritance(strategy = InheritanceType.JOINED)
-@NoArgsConstructor
 @MappedSuperclass
-@EntityListeners(AuditingEntityListenerImpl.class)
+@EntityListeners({AuditingEntityListenerImpl.class})
 public class Account extends AuditableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_generator")
@@ -65,14 +76,49 @@ public class Account extends AuditableEntity{
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority(this.role.name()));
     }
 
     public boolean isEnabled() {
-        return enabled;
+        return this.enabled;
     }
 
     public void wrongLoginCount(){
-        countWrongLogin++;
+        ++this.countWrongLogin;
+    }
+
+    public void setAppUserID(final Long appUserID) {
+        this.appUserID = appUserID;
+    }
+
+    public void setEmail(final String email) {
+        this.email = email;
+    }
+
+    public void setPhoneNumber(final String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setPassword(final String password) {
+        this.password = password;
+    }
+
+    public void setRole(final Role role) {
+        this.role = role;
+    }
+
+    public void setStatus(final AccountStatus status) {
+        this.status = status;
+    }
+
+    public void setEnabled(final Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setCountWrongLogin(final int countWrongLogin) {
+        this.countWrongLogin = countWrongLogin;
+    }
+
+    public Account() {
     }
 }

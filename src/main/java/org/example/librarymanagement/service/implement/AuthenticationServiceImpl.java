@@ -1,4 +1,4 @@
-package org.example.librarymanagement.service.Imp;
+package org.example.librarymanagement.service.implement;
 
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.config.security.jwtConfig.JwtService;

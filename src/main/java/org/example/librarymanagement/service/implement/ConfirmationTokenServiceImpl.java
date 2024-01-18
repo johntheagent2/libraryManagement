@@ -1,6 +1,7 @@
-package org.example.librarymanagement.service.Imp;
+package org.example.librarymanagement.service.implement;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.example.librarymanagement.entity.AppUser;
 import org.example.librarymanagement.entity.ConfirmationToken;
 import org.example.librarymanagement.repository.ConfirmationTokenRepository;
@@ -13,10 +14,12 @@ import java.util.Random;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
 
     private final ConfirmationTokenRepository confirmationTokenRepository;
+    private final Random random = new Random();
+
 
     @Override
     public void saveConfirmationToken(ConfirmationToken token){
@@ -78,7 +81,6 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
     private String creatOTP(){
         int otpLength = 6;
 
-        Random random = new Random();
         StringBuilder otp = new StringBuilder(otpLength);
 
         for (int i = 0; i < otpLength; i++) {

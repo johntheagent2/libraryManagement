@@ -1,4 +1,4 @@
-package org.example.librarymanagement.service.Imp;
+package org.example.librarymanagement.service.implement;
 
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.entity.Account;
@@ -10,7 +10,6 @@ import org.example.librarymanagement.service.AdminService;
 import org.example.librarymanagement.service.AppUserService;
 import org.example.librarymanagement.service.CustomUserDetailFacade;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 

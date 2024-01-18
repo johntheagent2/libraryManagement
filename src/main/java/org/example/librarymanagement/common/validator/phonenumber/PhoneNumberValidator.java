@@ -1,4 +1,4 @@
-package org.example.librarymanagement.common.validator.phoneNumber;
+package org.example.librarymanagement.common.validator.phonenumber;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;

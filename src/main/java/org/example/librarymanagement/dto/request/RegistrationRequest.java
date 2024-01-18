@@ -2,7 +2,7 @@ package org.example.librarymanagement.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.example.librarymanagement.common.validator.phoneNumber.ValidPhoneNumber;
+import org.example.librarymanagement.common.validator.phonenumber.ValidPhoneNumber;
 import org.hibernate.validator.constraints.Length;
 
 @Data

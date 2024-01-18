@@ -1,10 +1,9 @@
-package org.example.librarymanagement.service.Imp;
+package org.example.librarymanagement.service.implement;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.config.security.jwtConfig.JwtService;
 import org.example.librarymanagement.entity.Session;
-import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.example.librarymanagement.exception.exception.NotFoundException;
 import org.example.librarymanagement.repository.SessionRepository;
 import org.example.librarymanagement.service.SessionService;

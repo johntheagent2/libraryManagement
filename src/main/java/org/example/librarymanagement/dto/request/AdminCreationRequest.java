@@ -1,12 +1,11 @@
 package org.example.librarymanagement.dto.request;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
-import org.example.librarymanagement.common.validator.phoneNumber.ValidPhoneNumber;
+import org.example.librarymanagement.common.validator.phonenumber.ValidPhoneNumber;
 import org.hibernate.validator.constraints.Length;
 
 @Data

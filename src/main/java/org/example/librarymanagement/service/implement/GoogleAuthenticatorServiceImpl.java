@@ -1,15 +1,13 @@
-package org.example.librarymanagement.service.Imp;
+package org.example.librarymanagement.service.implement;
 
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.entity.AppUser;
-import org.example.librarymanagement.exception.exception.BadCredentialException;
 import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.ResourceBundle;
 
 @AllArgsConstructor

@@ -1,7 +1,7 @@
-package org.example.librarymanagement.service.Imp;
+package org.example.librarymanagement.service.implement;
 
 import lombok.AllArgsConstructor;
-import org.example.librarymanagement.common.emailSender.EmailSenderService;
+import org.example.librarymanagement.common.email.EmailSenderService;
 import org.example.librarymanagement.dto.request.RegistrationRequest;
 import org.example.librarymanagement.entity.ConfirmationToken;
 import org.example.librarymanagement.entity.AppUser;

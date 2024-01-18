@@ -16,7 +16,6 @@ public class AuditingEntityListenerImpl extends AuditingEntityListener {
             auditableEntity.setLastModifiedDate(LocalDateTime.now());
         }
     }
-
     @PreUpdate
     public void preUpdate(Object target) {
         if (target instanceof AuditableEntity auditableEntity) {

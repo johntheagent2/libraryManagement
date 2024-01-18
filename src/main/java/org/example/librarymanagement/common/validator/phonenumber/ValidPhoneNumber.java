@@ -1,4 +1,4 @@
-package org.example.librarymanagement.common.validator.phoneNumber;
+package org.example.librarymanagement.common.validator.phonenumber;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

@@ -12,9 +12,7 @@ import java.util.Collection;
 @Data
 public class CustomUserDetails implements UserDetails {
 
-    Account account;
-
-
+    private Account account;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,4 +1,4 @@
-package org.example.librarymanagement.service.Imp;
+package org.example.librarymanagement.service.implement;
 
 import lombok.RequiredArgsConstructor;
 import org.example.librarymanagement.dto.response.MfaResponse;
