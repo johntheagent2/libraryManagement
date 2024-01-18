@@ -28,8 +28,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@Getter
 @Setter
+@Getter
 @Inheritance(strategy = InheritanceType.JOINED)
 @MappedSuperclass
 @EntityListeners({AuditingEntityListenerImpl.class})
@@ -85,38 +85,6 @@ public class Account extends AuditableEntity{
 
     public void wrongLoginCount(){
         ++this.countWrongLogin;
-    }
-
-    public void setAppUserID(final Long appUserID) {
-        this.appUserID = appUserID;
-    }
-
-    public void setEmail(final String email) {
-        this.email = email;
-    }
-
-    public void setPhoneNumber(final String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public void setPassword(final String password) {
-        this.password = password;
-    }
-
-    public void setRole(final Role role) {
-        this.role = role;
-    }
-
-    public void setStatus(final AccountStatus status) {
-        this.status = status;
-    }
-
-    public void setEnabled(final Boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public void setCountWrongLogin(final int countWrongLogin) {
-        this.countWrongLogin = countWrongLogin;
     }
 
     public Account() {
