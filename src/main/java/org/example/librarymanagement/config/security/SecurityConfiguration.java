@@ -35,7 +35,7 @@ public class SecurityConfiguration{
                 .csrf(AbstractHttpConfigurer::disable)
                 .authenticationProvider(daoAuthenticationProvider())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/registration/**", "/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/registration/**", "/api/v1/auth/**", "/api/v1/admin-registration/**").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/user/**").hasRole("USER")
                         .anyRequest().authenticated())

@@ -1,9 +1,12 @@
 package org.example.librarymanagement.service.Imp;
 
 import lombok.AllArgsConstructor;
+import org.example.librarymanagement.config.security.PasswordEncoder;
 import org.example.librarymanagement.entity.Admin;
+import org.example.librarymanagement.entity.AppUser;
 import org.example.librarymanagement.repository.AdminRepository;
 import org.example.librarymanagement.service.AdminService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -12,10 +15,19 @@ import java.util.Optional;
 @AllArgsConstructor
 public class AdminServiceImpl implements AdminService{
     private AdminRepository adminRepository;
+    private BCryptPasswordEncoder passwordEncoder;
 
 
     @Override
-    public void saveAdmin(Admin admin) {
+    public Admin saveAdmin(Admin admin) {
+        String encodedPassword = passwordEncoder.encode(admin.getPassword());
+        admin.setPassword(encodedPassword);
+        adminRepository.save(admin);
+        return admin;
+    }
+
+    @Override
+    public void updateUser(Admin admin) {
         adminRepository.save(admin);
     }
 
