@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @RestController
 @RequestMapping("${common-mapping}/reset-password")
-public class ResetPasswordController {
+public class CommonUserInfoChangeController {
 
     private final AppUserService appUserService;
 
@@ -22,6 +22,12 @@ public class ResetPasswordController {
         appUserService.requestResetPassword(request);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .build();
+    }
+
+    @PutMapping("/confirm")
+    public ResponseEntity<Void> confirmToken(@RequestParam("token") String token){
+        appUserService.changeEmail(token);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @DeleteMapping("/confirm-token")

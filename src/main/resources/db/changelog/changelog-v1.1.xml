@@ -159,6 +159,66 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="create_change_mail_table" author="your_name">
+        <createTable tableName="change_email">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="token" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="new_email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="app_user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expiration_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_sms_otp_table" author="your_name">
+        <createTable tableName="sms_otp">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="otp" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="new_phone_number" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expiration_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add_foreign_key_to_change_email" author="your_name">
+        <addForeignKeyConstraint
+                baseTableName="change_email"
+                baseColumnNames="app_user_id"
+                constraintName="fk_change_email_app_user"
+                referencedTableName="app_user"
+                referencedColumnNames="id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"/>
+    </changeSet>
+
     <changeSet id="add_foreign_key_to_reset_password" author="your_name">
         <addForeignKeyConstraint
                 baseTableName="reset_password"

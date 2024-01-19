@@ -36,7 +36,10 @@ public class EmailSenderService{
     private String confirmationTemplate;
 
     @Value("${mail-subject-confirmation}")
-    private String mailSubject;
+    private String confirmMailSubject;
+
+    @Value("${mail-subject-reset-password}")
+    private String resetPasswordSubject;
 
     public void sendConfirmationMail(String token, String otp, String toEmail){
         // Set up FreeMarker configuration
@@ -53,7 +56,7 @@ public class EmailSenderService{
 
             helper.setFrom(sender);
             helper.setTo(toEmail);
-            helper.setSubject(mailSubject);
+            helper.setSubject(confirmMailSubject);
 
             model.put("link", tokenLink);
             model.put("otp", otp);
@@ -74,6 +77,43 @@ public class EmailSenderService{
                     resourceBundle.getString("jarkarta.mail.exception"));
         }
 
+        // Send email
+        mailSender.send(message);
+    }
+
+    public void sendResetPassword(String token, String toEmail){
+        String tokenLink = verifyTokenLink + token;
+        Map<String, Object> model = new HashMap<>();
+        String emailBody;
+        Template freemarkerTemplate;
+
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper;
+        try {
+            helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom(sender);
+            helper.setTo(toEmail);
+            helper.setSubject(resetPasswordSubject);
+
+            model.put("link", tokenLink);
+
+            // Process the FreeMarker template
+            freemarkerTemplate = freemarkerConfig.getTemplate(confirmationTemplate);
+            emailBody = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, model);
+            helper.setText(emailBody, true);
+
+        } catch (IOException e) {
+            throw new org.example.librarymanagement.exception.exception.IOException("util.io.exception",
+                    resourceBundle.getString("util.io.exception"));
+        }catch (TemplateException e){
+            throw new org.example.librarymanagement.exception.exception.TemplateException("freemarker.template.exception",
+                    resourceBundle.getString("freemarker.template.exception"));
+        }catch (MessagingException e){
+            throw new MessageException("jarkarta.mail.exception",
+                    resourceBundle.getString("jarkarta.mail.exception"));
+        }
 
         // Send email
         mailSender.send(message);

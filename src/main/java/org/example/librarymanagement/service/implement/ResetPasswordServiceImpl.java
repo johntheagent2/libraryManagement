@@ -1,6 +1,7 @@
 package org.example.librarymanagement.service.implement;
 
 import lombok.AllArgsConstructor;
+import org.example.librarymanagement.common.email.EmailSenderService;
 import org.example.librarymanagement.dto.request.ResetPasswordRequest;
 import org.example.librarymanagement.entity.AppUser;
 import org.example.librarymanagement.entity.ResetPasswordSession;
@@ -22,23 +23,26 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
     private final ResetPasswordRepository passwordRepository;
     private final ResourceBundle resourceBundle;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final EmailSenderService emailSenderService;
 
 
     @Override
     public void requestChangePassword(AppUser appUser, ResetPasswordRequest request){
         checkIfEmailRequestBefore(request.getEmail());
-        savePasswordSession(appUser, request);
-
+        String token = savePasswordSession(appUser, request);
+//        emailSenderService.sendResetPassword(token, request.getEmail());
     }
 
     @Override
-    public void savePasswordSession(AppUser appUser, ResetPasswordRequest request){
+    public String savePasswordSession(AppUser appUser, ResetPasswordRequest request){
+        String token = UUID.randomUUID().toString();
         passwordRepository.save(new ResetPasswordSession(
-                UUID.randomUUID().toString(),
+                token,
                 passwordEncoder.encode(request.getPassword()),
                 LocalDateTime.now().plusMinutes(5),
                 appUser
         ));
+        return token;
     }
 
     @Override

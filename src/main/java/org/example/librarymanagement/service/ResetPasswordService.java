@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ResetPasswordService {
     void requestChangePassword(AppUser appUser, ResetPasswordRequest request);
 
-    void savePasswordSession(AppUser appUser, ResetPasswordRequest request);
+    String savePasswordSession(AppUser appUser, ResetPasswordRequest request);
 
     @Transactional
     AppUser confirmToken(String token);
