@@ -2,7 +2,7 @@ package org.example.librarymanagement.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.example.librarymanagement.common.validator.phonenumber.ValidPhoneNumber;
+import org.example.librarymanagement.common.validator.phonenumber.ValidatePhoneNumber;
 import org.hibernate.validator.constraints.Length;
 
 @Data
@@ -25,7 +25,7 @@ public class RegistrationRequest {
     @Email(message = "Invalid email address")
     private String email;
 
-    @ValidPhoneNumber
+    @ValidatePhoneNumber
     private String phoneNumber;
 
     @Length(min = 8, max = 16, message = "Password should be from 8 to 16 characters")

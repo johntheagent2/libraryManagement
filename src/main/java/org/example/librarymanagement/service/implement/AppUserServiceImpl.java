@@ -1,6 +1,7 @@
 package org.example.librarymanagement.service.implement;
 
 import lombok.RequiredArgsConstructor;
+import org.example.librarymanagement.dto.request.ChangePasswordRequest;
 import org.example.librarymanagement.dto.request.ResetPasswordRequest;
 import org.example.librarymanagement.dto.response.MfaResponse;
 import org.example.librarymanagement.entity.AppUser;
@@ -10,6 +11,7 @@ import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.example.librarymanagement.repository.AppUserRepository;
 import org.example.librarymanagement.service.AppUserService;
 import org.example.librarymanagement.service.GoogleAuthenticatorService;
+import org.example.librarymanagement.service.ResetPasswordService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ public class AppUserServiceImpl implements AppUserService {
     private final ResourceBundle resourceBundle;
     private final BCryptPasswordEncoder passwordEncoder;
     private final GoogleAuthenticatorService googleAuthenticatorService;
+    private final ResetPasswordService resetPasswordService;
 
     @Override
     public void verifyUser(AppUser user){
@@ -42,15 +45,27 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public void resetPassword(ResetPasswordRequest request) {
-        if(!checkMatchingPassword(request)){
-            AppUser appUser = getAppUser(request.getEmail());
-            appUser.setPassword(passwordEncoder.encode(request.getPassword()));
-            updateUser(appUser);
+    public void requestResetPassword(ResetPasswordRequest request) {
+        AppUser appUser = getAppUser(request.getEmail());
+        if(!checkMatchingPassword(request, appUser.getPassword())){
+            resetPasswordService.requestChangePassword(appUser, request);
         }else{
             throw new BadCredentialException("user.password.existed",
                     resourceBundle.getString("user.password.existed"));
         }
+    }
+
+    @Override
+    public void resetPassword(String token) {
+        AppUser appUser = resetPasswordService.confirmToken(token);
+        updateUser(appUser);
+    }
+
+    @Override
+    public void changePassword(String email, ChangePasswordRequest request) {
+        AppUser appUser = getAppUser(email);
+        appUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        updateUser(appUser);
     }
 
     @Override
@@ -76,12 +91,12 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public boolean checkMatchingPassword(ResetPasswordRequest request) {
-        AppUser appUser = getAppUser(request.getEmail());
-        return passwordEncoder.matches(request.getPassword(), appUser.getPassword());
+    public boolean checkMatchingPassword(ResetPasswordRequest request, String oldPassword) {
+        return passwordEncoder.matches(request.getPassword(), oldPassword);
     }
 
-    private AppUser getAppUser(String email){
+    @Override
+    public AppUser getAppUser(String email){
         return findByEmail(email)
                 .orElseThrow(() -> new BadRequestException("user.email.email-not-found",
                         resourceBundle.getString("user.email.email-not-found")));

@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
-import org.example.librarymanagement.common.validator.phonenumber.ValidPhoneNumber;
+import org.example.librarymanagement.common.validator.phonenumber.ValidatePhoneNumber;
 import org.hibernate.validator.constraints.Length;
 
 @Data
@@ -15,7 +15,7 @@ public class AdminCreationRequest {
     @Email(message = "Invalid email address")
     private String email;
 
-    @ValidPhoneNumber
+    @ValidatePhoneNumber
     private String phoneNumber;
 
     @Length(min = 8, max = 16, message = "Password should be from 8 to 16 characters")

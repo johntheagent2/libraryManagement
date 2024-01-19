@@ -12,7 +12,7 @@ import java.util.ResourceBundle;
 
 @Validated
 @AllArgsConstructor
-public class PhoneNumberValidator implements ConstraintValidator<ValidPhoneNumber, String> {
+public class PhoneNumberValidator implements ConstraintValidator<ValidatePhoneNumber, String> {
 
     private final ResourceBundle lang;
 

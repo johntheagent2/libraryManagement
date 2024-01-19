@@ -1,8 +1,10 @@
 package org.example.librarymanagement.service;
 
+import org.example.librarymanagement.dto.request.ChangePasswordRequest;
 import org.example.librarymanagement.dto.request.ResetPasswordRequest;
 import org.example.librarymanagement.dto.response.MfaResponse;
 import org.example.librarymanagement.entity.AppUser;
+import org.example.librarymanagement.exception.exception.BadRequestException;
 
 import java.util.Optional;
 
@@ -11,9 +13,15 @@ public interface AppUserService {
 
     Optional<AppUser> findByEmail(String email);
 
+    AppUser getAppUser(String email);
+
     void resetWrongLoginCounter(String email);
 
-    void resetPassword(ResetPasswordRequest request);
+    void requestResetPassword(ResetPasswordRequest request);
+
+    void resetPassword(String token);
+
+    void changePassword(String email, ChangePasswordRequest request);
 
     MfaResponse enableUserMfa(String email);
 
@@ -21,7 +29,7 @@ public interface AppUserService {
 
     boolean validateMfaOtp(String email, int otp);
 
-    boolean checkMatchingPassword(ResetPasswordRequest request);
+    boolean checkMatchingPassword(ResetPasswordRequest request, String oldPassword);
 
     void saveUser(AppUser appUser);
 
