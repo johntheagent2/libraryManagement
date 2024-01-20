@@ -6,6 +6,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.librarymanagement.entity.base.Account;
 import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.enumeration.Role;
 

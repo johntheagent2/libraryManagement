@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
+import org.example.librarymanagement.entity.base.ChangeResetSession;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "reset_password")
-public class ResetPasswordSession extends ChangeResetSession{
+public class ResetPasswordSession extends ChangeResetSession {
 
     @Column(name = "new_password", nullable = false)
     private String newPassword;

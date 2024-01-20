@@ -1,21 +1,21 @@
-package org.example.librarymanagement.entity;
+package org.example.librarymanagement.entity.base;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
+import org.example.librarymanagement.entity.AppUser;
+import org.example.librarymanagement.entity.base.AuditableEntity;
 
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Inheritance(strategy = InheritanceType.JOINED)
 @MappedSuperclass
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChangeResetSession extends AuditableEntity{
+public class ChangeResetSession extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "reset_pass_seq")

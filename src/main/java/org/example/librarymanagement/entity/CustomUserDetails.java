@@ -2,6 +2,7 @@ package org.example.librarymanagement.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.example.librarymanagement.entity.base.Account;
 import org.example.librarymanagement.enumeration.AccountStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

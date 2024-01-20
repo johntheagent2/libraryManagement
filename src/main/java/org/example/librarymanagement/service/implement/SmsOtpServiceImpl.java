@@ -1,9 +1,10 @@
 package org.example.librarymanagement.service.implement;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.common.sms.SmsSenderService;
 import org.example.librarymanagement.entity.SmsOtp;
-import org.example.librarymanagement.exception.exception.BadRequestException;
+import org.example.librarymanagement.exception.exception.BadCredentialException;
 import org.example.librarymanagement.repository.SmsOtpRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,56 +16,68 @@ import java.util.ResourceBundle;
 @Service
 public class SmsOtpServiceImpl {
 
-    private final SmsOtpRepository otpRepository;
-    private final SmsSenderService smsSenderService;
+    private final SmsOtpRepository smsOtpRepository;
     private final ResourceBundle resourceBundle;
-
-    public void saveOtp(String oldPhoneNumber, String newPhoneNumber){
-        String otp = generateOtp();
-        otpRepository.save(new SmsOtp(otp, oldPhoneNumber, newPhoneNumber, LocalDateTime.now().plusSeconds(30)));
-//        sendSMS(newPhoneNumber, otp);
+    private final SmsSenderService smsSenderService;
+    public void deleteDuplicatePhoneNumberRequest(String phoneNumber) {
+        checkDuplicate(phoneNumber);
     }
 
-    public SmsOtp checkOtp(String otp){
-        SmsOtp smsOtp = otpRepository.findByOtp(otp).orElseThrow(() -> new BadRequestException(
-                resourceBundle.getString("confirmation-token.otp.otp-not-found"),
-            "confirmation-token.otp.otp-not-found"
-        ));
+    @Transactional
+    public void saveOtp(String currentPhoneNumber, String newPhoneNumber) {
+        String otp = OtpGenerator();
+        SmsOtp smsOtp = new SmsOtp(
+                otp,
+                currentPhoneNumber,
+                newPhoneNumber,
+                LocalDateTime.now().plusSeconds(40));
 
-        checkExpiration(smsOtp);
-        otpRepository.deleteById(smsOtp.getId());
+//        smsSenderService.sendSms(smsOtp.getNewPhoneNumber(), otp);
+        smsOtpRepository.save(smsOtp);
+    }
+
+    public void checkDuplicate(String phoneNumber){
+       smsOtpRepository.findByCurrentPhoneNumber(phoneNumber)
+               .ifPresent(smsOtp -> smsOtpRepository.deleteById(smsOtp.getId()));
+    }
+
+    public SmsOtp checkOtp(String otp) {
+        SmsOtp smsOtp = checkIfExist(otp);
+        checkExpiration(smsOtp.getExpirationDate());
 
         return smsOtp;
     }
 
-    public void deleteDuplicatePhoneNumberRequest(String phoneNumber){
-        otpRepository.findByCurrentPhoneNumber(phoneNumber)
-                .ifPresent(smsOtp -> otpRepository.deleteById(smsOtp.getId()));
-    }
-
-    public void checkExpiration(SmsOtp smsOtp){
-        if(smsOtp.getExpirationDate().isBefore(LocalDateTime.now())){
-            throw new BadRequestException(
+    public void checkExpiration(LocalDateTime expirationDate){
+        if(expirationDate.isBefore(LocalDateTime.now())){
+            throw new BadCredentialException(
                     resourceBundle.getString("confirmation-token.otp.otp-expired"),
-                    "confirmation-token.otp.otp-expired");
+                    "confirmation-token.otp.otp-expired"
+            );
         }
     }
 
-    public void sendSMS(String newPhoneNumber, String otp){
-        smsSenderService.sendSms(newPhoneNumber, otp);
+    public SmsOtp checkIfExist(String otp){
+        return smsOtpRepository.findByOtp(otp)
+                .orElseThrow(() -> new BadCredentialException(
+                        resourceBundle.getString("confirmation-token.otp.otp-not-found"),
+                        "confirmation-token.otp.otp-not-found"));
     }
 
-    public String generateOtp(){
+    private String OtpGenerator(){
         int otpLength = 6;
-        StringBuilder otpBuilder = new StringBuilder();
+        String allowedChars = "0123456789";
+
+        StringBuilder otp = new StringBuilder(otpLength);
 
         Random random = new Random();
 
         for (int i = 0; i < otpLength; i++) {
-            int digit = random.nextInt(10);
-            otpBuilder.append(digit);
+            int index = random.nextInt(allowedChars.length());
+            char randomChar = allowedChars.charAt(index);
+            otp.append(randomChar);
         }
 
-        return otpBuilder.toString();
+        return otp.toString();
     }
 }

@@ -2,7 +2,7 @@ package org.example.librarymanagement.config.audit;
 
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import org.example.librarymanagement.entity.AuditableEntity;
+import org.example.librarymanagement.entity.base.AuditableEntity;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;

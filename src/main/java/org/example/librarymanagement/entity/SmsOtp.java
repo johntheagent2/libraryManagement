@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
+import org.example.librarymanagement.entity.base.AuditableEntity;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Table(name = "sms_otp")
 @EntityListeners({AuditingEntityListenerImpl.class})
-public class SmsOtp extends AuditableEntity{
+public class SmsOtp extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sms_otp_generator")

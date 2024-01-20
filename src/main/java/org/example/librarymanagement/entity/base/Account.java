@@ -3,7 +3,7 @@
 // (powered by FernFlower decompiler)
 //
 
-package org.example.librarymanagement.entity;
+package org.example.librarymanagement.entity.base;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -22,6 +22,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
+import org.example.librarymanagement.entity.CustomUserDetails;
 import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.enumeration.Role;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,7 +34,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Inheritance(strategy = InheritanceType.JOINED)
 @MappedSuperclass
 @EntityListeners({AuditingEntityListenerImpl.class})
-public class Account extends AuditableEntity{
+public class Account extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_generator")
     @SequenceGenerator(name = "account_generator", sequenceName = "account_generator", allocationSize = 1)

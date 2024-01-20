@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ChangeEmailRequest {
 
     @Email
-    private final String email;
+    private String email;
 }

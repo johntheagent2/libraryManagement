@@ -1,11 +1,12 @@
 package org.example.librarymanagement.service.implement;
 
 import lombok.RequiredArgsConstructor;
-import org.example.librarymanagement.common.sms.SmsSenderService;
-import org.example.librarymanagement.dto.request.*;
+import org.example.librarymanagement.dto.request.ChangePasswordRequest;
+import org.example.librarymanagement.dto.request.ChangePhoneNumberRequest;
+import org.example.librarymanagement.dto.request.OtpVerificationRequest;
+import org.example.librarymanagement.dto.request.ResetPasswordRequest;
 import org.example.librarymanagement.dto.response.MfaResponse;
 import org.example.librarymanagement.entity.AppUser;
-import org.example.librarymanagement.entity.ChangeEmailSession;
 import org.example.librarymanagement.entity.SmsOtp;
 import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.exception.exception.BadCredentialException;
@@ -31,7 +32,7 @@ public class AppUserServiceImpl implements AppUserService {
     private final GoogleAuthenticatorService googleAuthenticatorService;
     private final ResetPasswordService resetPasswordService;
     private final SmsOtpServiceImpl smsOtpService;
-    private final ChangeEmailServiceImpl changeEmailService;
+//    private final ChangeEmailServiceImpl changeEmailService;
 
     @Override
     public void verifyUser(AppUser user){
@@ -123,8 +124,9 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public void requestChangePhoneNumber(String email, ChangePhoneNumberRequest request) {
         AppUser appUser = getAppUser(email);
+        String currentPhoneNumber = appUser.getPhoneNumber();
 
-        if(appUser.getPhoneNumber().equals(request.getPhoneNumber())){
+        if(currentPhoneNumber.equals(request.getPhoneNumber())){
             throw new BadRequestException(resourceBundle.getString("user.phone.phone-duplicate"),
                     "user.phone.phone-duplicate");
         }
@@ -144,32 +146,32 @@ public class AppUserServiceImpl implements AppUserService {
         updateUser(appUser);
     }
 
-    @Override
-    public void requestChangeEmail(String email, ChangeEmailRequest request) {
-        AppUser appUser;
-        if(email.equals(request.getEmail())){
-            throw new BadRequestException(resourceBundle.getString("user.email.email-duplicate"),
-                    "user.email.email-duplicate");
-        }
-
-        if(findByEmail(request.getEmail()).isPresent()){
-            throw new BadRequestException("user.email.email-existed",
-                    resourceBundle.getString("user.email.email-existed"));
-        }
-
-        appUser = getAppUser(email);
-        changeEmailService.deleteDuplicateEmailRequest(email);
-        changeEmailService.saveMailSession(request.getEmail(), appUser);
-
-    }
-
-    @Override
-    public void changeEmail(String token) {
-        AppUser appUser;
-        ChangeEmailSession changeEmailSession = changeEmailService.checkToken(token);
-
-        appUser = changeEmailSession.getAppUser();
-        appUser.setEmail(changeEmailSession.getNewEmail());
-        updateUser(appUser);
-    }
+//    @Override
+//    public void requestChangeEmail(String email, ChangeEmailRequest request) {
+//        AppUser appUser;
+//        if(email.equals(request.getEmail())){
+//            throw new BadRequestException(resourceBundle.getString("user.email.email-duplicate"),
+//                    "user.email.email-duplicate");
+//        }
+//
+//        if(findByEmail(request.getEmail()).isPresent()){
+//            throw new BadRequestException("user.email.email-existed",
+//                    resourceBundle.getString("user.email.email-existed"));
+//        }
+//
+//        appUser = getAppUser(email);
+//        changeEmailService.deleteDuplicateEmailRequest(email);
+//        changeEmailService.saveMailSession(request.getEmail(), appUser);
+//
+//    }
+//
+//    @Override
+//    public void changeEmail(String token) {
+//        AppUser appUser;
+//        ChangeEmailSession changeEmailSession = changeEmailService.checkToken(token);
+//
+//        appUser = changeEmailSession.getAppUser();
+//        appUser.setEmail(changeEmailSession.getNewEmail());
+//        updateUser(appUser);
+//    }
 }

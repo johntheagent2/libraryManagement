@@ -1,7 +1,7 @@
 package org.example.librarymanagement.service.implement;
 
 import lombok.AllArgsConstructor;
-import org.example.librarymanagement.entity.Account;
+import org.example.librarymanagement.entity.base.Account;
 import org.example.librarymanagement.entity.CustomUserDetails;
 import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.exception.exception.NotFoundException;

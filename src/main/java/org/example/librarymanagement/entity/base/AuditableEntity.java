@@ -1,4 +1,4 @@
-package org.example.librarymanagement.entity;
+package org.example.librarymanagement.entity.base;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
