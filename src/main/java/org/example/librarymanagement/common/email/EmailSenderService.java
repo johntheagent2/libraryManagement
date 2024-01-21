@@ -81,7 +81,7 @@ public class EmailSenderService{
         mailSender.send(message);
     }
 
-    public void sendResetPassword(String token, String toEmail){
+    public void sendChangeRequest(String token, String toEmail){
         String tokenLink = verifyTokenLink + token;
         Map<String, Object> model = new HashMap<>();
         String emailBody;

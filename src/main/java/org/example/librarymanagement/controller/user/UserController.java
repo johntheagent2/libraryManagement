@@ -45,11 +45,19 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .build();
     }
-//
-//    @PostMapping("/{email}/change-email")
-//    public ResponseEntity<Void> requestChangeMail(@PathVariable String email, @Valid @RequestBody ChangeEmailRequest request){
-//        userService.requestChangeEmail(email, request);
-//        return ResponseEntity.status(HttpStatus.ACCEPTED)
-//                .build();
-//    }
+
+    @PostMapping("/{email}/change-mail")
+    public ResponseEntity<Void> requestChangeMail(@PathVariable String email, @Valid @RequestBody ChangeEmailRequest request){
+        userService.requestChangeEmail(email, request);
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .build();
+    }
+
+    @PostMapping("/{email}/change-mail/confirm")
+    public ResponseEntity<Void> requestChangeMail(@PathVariable String email, @RequestParam String token){
+        System.out.println("Here");
+        userService.changeEmail(token);
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .build();
+    }
 }

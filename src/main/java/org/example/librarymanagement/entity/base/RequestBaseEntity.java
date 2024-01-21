@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
 import org.example.librarymanagement.entity.AppUser;
-import org.example.librarymanagement.entity.base.AuditableEntity;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChangeResetSession extends AuditableEntity {
+@EntityListeners({AuditingEntityListenerImpl.class})
+public class RequestBaseEntity extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "reset_pass_seq")
@@ -29,11 +30,11 @@ public class ChangeResetSession extends AuditableEntity {
     @Column(name = "expiration_date")
     private LocalDateTime expirationDate;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "app_user_id", referencedColumnName = "id")
     private AppUser appUser;
 
-    public ChangeResetSession(String token, LocalDateTime expirationDate, AppUser appUser) {
+    public RequestBaseEntity(String token, LocalDateTime expirationDate, AppUser appUser) {
         this.token = token;
         this.expirationDate = expirationDate;
         this.appUser = appUser;

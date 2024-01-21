@@ -185,15 +185,21 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="create_sms_otp_table" author="your_name">
-        <createTable tableName="sms_otp">
+    <changeSet id="create_change_phone_number_table" author="your_name">
+        <createTable tableName="change_phone_number">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="otp" type="VARCHAR(255)">
+            <column name="token" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="current_phone_number" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="new_phone_number" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="app_user_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column name="created_date" type="TIMESTAMP">
@@ -213,6 +219,17 @@
                 baseTableName="change_email"
                 baseColumnNames="app_user_id"
                 constraintName="fk_change_email_app_user"
+                referencedTableName="app_user"
+                referencedColumnNames="id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="add_foreign_key_to_change_phone_number" author="your_name">
+        <addForeignKeyConstraint
+                baseTableName="change_phone_number"
+                baseColumnNames="app_user_id"
+                constraintName="fk_change_phone_number_app_user"
                 referencedTableName="app_user"
                 referencedColumnNames="id"
                 onDelete="CASCADE"

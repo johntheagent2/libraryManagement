@@ -38,7 +38,7 @@ public interface AppUserService {
 
     void changePhoneNumber(String email, OtpVerificationRequest request);
 
-//    void requestChangeEmail(String email, ChangeEmailRequest request);
-//
-//    void changeEmail(String token);
+    void requestChangeEmail(String email, ChangeEmailRequest request);
+
+    void changeEmail(String token);
 }

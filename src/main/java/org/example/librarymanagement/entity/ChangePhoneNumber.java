@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
 import org.example.librarymanagement.entity.base.AuditableEntity;
+import org.example.librarymanagement.entity.base.RequestBaseEntity;
 
 import java.time.LocalDateTime;
 
@@ -13,9 +14,9 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = "sms_otp")
-@EntityListeners({AuditingEntityListenerImpl.class})
-public class SmsOtp extends AuditableEntity {
+@Table(name = "change_phone_number")
+//@EntityListeners({AuditingEntityListenerImpl.class})
+public class ChangePhoneNumber extends RequestBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sms_otp_generator")
@@ -23,21 +24,15 @@ public class SmsOtp extends AuditableEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "otp")
-    private String otp;
-
     @Column(name = "current_phone_number")
     private String currentPhoneNumber;
 
     @Column(name = "new_phone_number")
     private String newPhoneNumber;
 
-    private LocalDateTime expirationDate;
-
-    public SmsOtp(String otp, String currentPhoneNumber, String newPhoneNumber, LocalDateTime expirationDate) {
-        this.otp = otp;
+    public ChangePhoneNumber(String otp, String currentPhoneNumber, String newPhoneNumber, LocalDateTime expirationDate, AppUser appUser) {
+        super(otp, expirationDate, appUser);
         this.currentPhoneNumber = currentPhoneNumber;
         this.newPhoneNumber = newPhoneNumber;
-        this.expirationDate = expirationDate;
     }
 }

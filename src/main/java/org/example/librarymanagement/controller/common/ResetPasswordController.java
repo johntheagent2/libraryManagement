@@ -17,7 +17,7 @@ public class ResetPasswordController {
     private final AppUserService appUserService;
 
     @PutMapping
-    public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request){
+    public ResponseEntity<Void> requestResetPassword(@Valid @RequestBody ResetPasswordRequest request){
         appUserService.requestResetPassword(request);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .build();

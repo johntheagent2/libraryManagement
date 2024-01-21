@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.example.librarymanagement.entity.base.ChangeResetSession;
+import org.example.librarymanagement.entity.base.RequestBaseEntity;
 
 import java.time.LocalDateTime;
 
@@ -15,12 +15,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "reset_password")
-public class ResetPasswordSession extends ChangeResetSession {
+public class ResetPasswordRequest extends RequestBaseEntity {
 
     @Column(name = "new_password", nullable = false)
     private String newPassword;
 
-    public ResetPasswordSession(String token, String newPassword, LocalDateTime expirationDate, AppUser appUser) {
+    public ResetPasswordRequest(String token, String newPassword, LocalDateTime expirationDate, AppUser appUser) {
         super(token, expirationDate, appUser);
         this.newPassword = newPassword;
     }

@@ -2,10 +2,9 @@ package org.example.librarymanagement.service.implement;
 
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.common.email.EmailSenderService;
-import org.example.librarymanagement.dto.request.ResetPasswordRequest;
 import org.example.librarymanagement.entity.AppUser;
 //import org.example.librarymanagement.entity.ResetPasswordSession;
-import org.example.librarymanagement.entity.ResetPasswordSession;
+import org.example.librarymanagement.entity.ResetPasswordRequest;
 import org.example.librarymanagement.exception.exception.NotFoundException;
 import org.example.librarymanagement.repository.ResetPasswordRepository;
 import org.example.librarymanagement.service.ResetPasswordService;
@@ -28,16 +27,16 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
 
 
     @Override
-    public void requestChangePassword(AppUser appUser, ResetPasswordRequest request){
+    public void requestChangePassword(AppUser appUser, org.example.librarymanagement.dto.request.ResetPasswordRequest request){
         checkIfEmailRequestBefore(request.getEmail());
         String token = savePasswordSession(appUser, request);
-//        emailSenderService.sendResetPassword(token, request.getEmail());
+//        emailSenderService.sendChangeRequest(token, request.getEmail());
     }
 
     @Override
-    public String savePasswordSession(AppUser appUser, ResetPasswordRequest request){
+    public String savePasswordSession(AppUser appUser, org.example.librarymanagement.dto.request.ResetPasswordRequest request){
         String token = UUID.randomUUID().toString();
-        passwordRepository.save(new ResetPasswordSession(
+        passwordRepository.save(new ResetPasswordRequest(
                 token,
                 passwordEncoder.encode(request.getPassword()),
                 LocalDateTime.now().plusMinutes(5),
@@ -49,20 +48,20 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
     @Override
     @Transactional
     public AppUser confirmToken(String token){
-        ResetPasswordSession resetPasswordSession = getResetPasswordSessionOptional(token);
+        ResetPasswordRequest resetPasswordRequest = getResetPasswordSessionOptional(token);
         AppUser appUser;
 
-        verifyExpiryDate(resetPasswordSession);
-        appUser = resetPasswordSession.getAppUser();
-        appUser.setPassword(resetPasswordSession.getNewPassword());
-        deletePasswordSession(resetPasswordSession.getId());
+        verifyExpiryDate(resetPasswordRequest);
+        appUser = resetPasswordRequest.getAppUser();
+        appUser.setPassword(resetPasswordRequest.getNewPassword());
+        deletePasswordSession(resetPasswordRequest.getId());
         return appUser;
     }
 
     @Override
-    public void verifyExpiryDate(ResetPasswordSession resetPasswordSession){
-        if(resetPasswordSession.getExpirationDate().isBefore(LocalDateTime.now())){
-            deletePasswordSession(resetPasswordSession.getId());
+    public void verifyExpiryDate(ResetPasswordRequest resetPasswordRequest){
+        if(resetPasswordRequest.getExpirationDate().isBefore(LocalDateTime.now())){
+            deletePasswordSession(resetPasswordRequest.getId());
             throw new NotFoundException("confirmation-token.link.link-expired",
                     resourceBundle.getString("confirmation-token.link.link-expired"));
         }
@@ -80,7 +79,7 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
     }
 
     @Override
-    public ResetPasswordSession getResetPasswordSessionOptional(String token){
+    public ResetPasswordRequest getResetPasswordSessionOptional(String token){
         return passwordRepository.findResetPasswordSessionByToken(token)
                 .orElseThrow(() -> new NotFoundException("confirmation-token.link.link-not-found",
                         resourceBundle.getString("confirmation-token.link.link-not-found")));

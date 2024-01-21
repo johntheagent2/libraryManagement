@@ -3,9 +3,11 @@ package org.example.librarymanagement.service.implement;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.common.sms.SmsSenderService;
-import org.example.librarymanagement.entity.SmsOtp;
+import org.example.librarymanagement.entity.AppUser;
+import org.example.librarymanagement.entity.ChangePhoneNumber;
 import org.example.librarymanagement.exception.exception.BadCredentialException;
-import org.example.librarymanagement.repository.SmsOtpRepository;
+import org.example.librarymanagement.repository.ChangePhoneNumberRepository;
+import org.example.librarymanagement.service.ChangePhoneNumberService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,40 +16,47 @@ import java.util.ResourceBundle;
 
 @AllArgsConstructor
 @Service
-public class SmsOtpServiceImpl {
+public class ChangePhoneNumberServiceImpl implements ChangePhoneNumberService {
 
-    private final SmsOtpRepository smsOtpRepository;
+    private final ChangePhoneNumberRepository changePhoneNumberRepository;
     private final ResourceBundle resourceBundle;
     private final SmsSenderService smsSenderService;
+    @Override
     public void deleteDuplicatePhoneNumberRequest(String phoneNumber) {
         checkDuplicate(phoneNumber);
     }
 
+    @Override
     @Transactional
-    public void saveOtp(String currentPhoneNumber, String newPhoneNumber) {
+    public void saveOtp(String newPhoneNumber, AppUser appUser) {
         String otp = OtpGenerator();
-        SmsOtp smsOtp = new SmsOtp(
+        String currentPhoneNumber = appUser.getPhoneNumber();
+        ChangePhoneNumber smsOtp = new ChangePhoneNumber(
                 otp,
                 currentPhoneNumber,
                 newPhoneNumber,
-                LocalDateTime.now().plusSeconds(40));
+                LocalDateTime.now().plusSeconds(40),
+                appUser);
 
 //        smsSenderService.sendSms(smsOtp.getNewPhoneNumber(), otp);
-        smsOtpRepository.save(smsOtp);
+        changePhoneNumberRepository.save(smsOtp);
     }
 
+    @Override
     public void checkDuplicate(String phoneNumber){
-       smsOtpRepository.findByCurrentPhoneNumber(phoneNumber)
-               .ifPresent(smsOtp -> smsOtpRepository.deleteById(smsOtp.getId()));
+        changePhoneNumberRepository.findByCurrentPhoneNumber(phoneNumber)
+               .ifPresent(smsOtp -> changePhoneNumberRepository.deleteById(smsOtp.getId()));
     }
 
-    public SmsOtp checkOtp(String otp) {
-        SmsOtp smsOtp = checkIfExist(otp);
+    @Override
+    public ChangePhoneNumber checkOtp(String otp) {
+        ChangePhoneNumber smsOtp = checkIfExist(otp);
         checkExpiration(smsOtp.getExpirationDate());
 
         return smsOtp;
     }
 
+    @Override
     public void checkExpiration(LocalDateTime expirationDate){
         if(expirationDate.isBefore(LocalDateTime.now())){
             throw new BadCredentialException(
@@ -57,8 +66,9 @@ public class SmsOtpServiceImpl {
         }
     }
 
-    public SmsOtp checkIfExist(String otp){
-        return smsOtpRepository.findByOtp(otp)
+    @Override
+    public ChangePhoneNumber checkIfExist(String otp){
+        return changePhoneNumberRepository.findByToken(otp)
                 .orElseThrow(() -> new BadCredentialException(
                         resourceBundle.getString("confirmation-token.otp.otp-not-found"),
                         "confirmation-token.otp.otp-not-found"));

@@ -103,22 +103,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public AuthenticationResponse refreshToken(String authorization){
-        String oldJwtToken;
-        String newJwtToken;
+        String oldRefreshToken;
         String newRefreshToken;
+        String newJwtToken;
         UserDetails userDetails;
 
         userDetails = getUserDetails();
-        oldJwtToken = jwtService.extractJwtToken(authorization);
-        newJwtToken = jwtService.generateToken(userDetails, jwtService.extractJti(oldJwtToken));
+        oldRefreshToken = jwtService.extractJwtToken(authorization);
+        newJwtToken = jwtService.generateToken(userDetails, jwtService.extractJti(oldRefreshToken));
         newRefreshToken = jwtService.generateRefreshToken(userDetails,
-                jwtService.extractJti(oldJwtToken),
-                jwtService.extractIssueAt(oldJwtToken),
-                jwtService.extractExpiration(oldJwtToken));
+                jwtService.extractJti(oldRefreshToken),
+                jwtService.extractIssueAt(oldRefreshToken),
+                jwtService.extractExpiration(oldRefreshToken));
 
 
-        JwtService.checkJti(authorization, jwtService, sessionService, resourceBundle);
-        jwtService.extractAllClaim(oldJwtToken);
+        JwtService.validateRefreshToken(authorization, jwtService, sessionService, resourceBundle);
 
         return new AuthenticationResponse(newJwtToken, newRefreshToken);
     }
