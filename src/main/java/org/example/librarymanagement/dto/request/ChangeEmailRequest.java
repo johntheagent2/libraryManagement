@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChangeEmailRequest {
 
-    @Email
+    @Email(message = "Invalid email")
     private String email;
 }

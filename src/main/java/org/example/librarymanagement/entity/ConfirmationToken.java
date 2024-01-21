@@ -22,13 +22,13 @@ public class ConfirmationToken extends AuditableEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "token", nullable = false)
     private String token;
 
-    @Column(nullable = false)
+    @Column(name = "otp", nullable = false)
     private String otp;
 
-    @Column(nullable = false)
+    @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -24,10 +24,10 @@ public class ChangePhoneNumber extends RequestBaseEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "current_phone_number")
+    @Column(name = "current_phone_number", nullable = false)
     private String currentPhoneNumber;
 
-    @Column(name = "new_phone_number")
+    @Column(name = "new_phone_number", nullable = false)
     private String newPhoneNumber;
 
     public ChangePhoneNumber(String otp, String currentPhoneNumber, String newPhoneNumber, LocalDateTime expirationDate, AppUser appUser) {
