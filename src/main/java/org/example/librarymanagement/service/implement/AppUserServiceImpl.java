@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.librarymanagement.dto.request.*;
 import org.example.librarymanagement.dto.response.MfaResponse;
 import org.example.librarymanagement.entity.AppUser;
-import org.example.librarymanagement.entity.ChangePhoneNumber;
+import org.example.librarymanagement.entity.ChangePhoneNumberRequest;
 import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.exception.exception.BadCredentialException;
 import org.example.librarymanagement.exception.exception.BadRequestException;
@@ -117,7 +117,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public void requestChangePhoneNumber(String email, ChangePhoneNumberRequest request) {
+    public void requestChangePhoneNumber(String email, org.example.librarymanagement.dto.request.ChangePhoneNumberRequest request) {
         AppUser appUser = getAppUser(email);
         String currentPhoneNumber = appUser.getPhoneNumber();
 
@@ -133,7 +133,7 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public void changePhoneNumber(String email, OtpVerificationRequest request) {
         AppUser appUser;
-        ChangePhoneNumber smsOtp = changePhoneNumberService.checkOtp(request.getOtp());
+        ChangePhoneNumberRequest smsOtp = changePhoneNumberService.checkOtp(request.getOtp());
 
         appUser = getAppUser(email);
         appUser.setPhoneNumber(smsOtp.getNewPhoneNumber());

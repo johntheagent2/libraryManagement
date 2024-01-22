@@ -1,13 +1,13 @@
 package org.example.librarymanagement.repository;
 
-import org.example.librarymanagement.entity.ChangePhoneNumber;
+import org.example.librarymanagement.entity.ChangePhoneNumberRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface ChangePhoneNumberRepository extends JpaRepository<ChangePhoneNumber, Long> {
+public interface ChangePhoneNumberRepository extends JpaRepository<ChangePhoneNumberRequest, Long> {
 
-    Optional<ChangePhoneNumber> findByToken(String otp);
+    Optional<ChangePhoneNumberRequest> findByToken(String otp);
 
-    Optional<ChangePhoneNumber> findByCurrentPhoneNumber(String phoneNumber);
+    Optional<ChangePhoneNumberRequest> findByCurrentPhoneNumber(String phoneNumber);
 }

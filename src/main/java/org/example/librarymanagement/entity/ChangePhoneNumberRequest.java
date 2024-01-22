@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
-import org.example.librarymanagement.entity.base.AuditableEntity;
 import org.example.librarymanagement.entity.base.RequestBaseEntity;
 
 import java.time.LocalDateTime;
@@ -15,8 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @Table(name = "change_phone_number")
-//@EntityListeners({AuditingEntityListenerImpl.class})
-public class ChangePhoneNumber extends RequestBaseEntity {
+public class ChangePhoneNumberRequest extends RequestBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sms_otp_generator")
@@ -30,7 +27,7 @@ public class ChangePhoneNumber extends RequestBaseEntity {
     @Column(name = "new_phone_number", nullable = false)
     private String newPhoneNumber;
 
-    public ChangePhoneNumber(String otp, String currentPhoneNumber, String newPhoneNumber, LocalDateTime expirationDate, AppUser appUser) {
+    public ChangePhoneNumberRequest(String otp, String currentPhoneNumber, String newPhoneNumber, LocalDateTime expirationDate, AppUser appUser) {
         super(otp, expirationDate, appUser);
         this.currentPhoneNumber = currentPhoneNumber;
         this.newPhoneNumber = newPhoneNumber;

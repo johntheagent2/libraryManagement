@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.common.sms.SmsSenderService;
 import org.example.librarymanagement.entity.AppUser;
-import org.example.librarymanagement.entity.ChangePhoneNumber;
+import org.example.librarymanagement.entity.ChangePhoneNumberRequest;
 import org.example.librarymanagement.exception.exception.BadCredentialException;
 import org.example.librarymanagement.repository.ChangePhoneNumberRepository;
 import org.example.librarymanagement.service.ChangePhoneNumberService;
@@ -31,7 +31,7 @@ public class ChangePhoneNumberServiceImpl implements ChangePhoneNumberService {
     public void saveOtp(String newPhoneNumber, AppUser appUser) {
         String otp = OtpGenerator();
         String currentPhoneNumber = appUser.getPhoneNumber();
-        ChangePhoneNumber smsOtp = new ChangePhoneNumber(
+        ChangePhoneNumberRequest smsOtp = new ChangePhoneNumberRequest(
                 otp,
                 currentPhoneNumber,
                 newPhoneNumber,
@@ -49,8 +49,8 @@ public class ChangePhoneNumberServiceImpl implements ChangePhoneNumberService {
     }
 
     @Override
-    public ChangePhoneNumber checkOtp(String otp) {
-        ChangePhoneNumber smsOtp = checkIfExist(otp);
+    public ChangePhoneNumberRequest checkOtp(String otp) {
+        ChangePhoneNumberRequest smsOtp = checkIfExist(otp);
         checkExpiration(smsOtp.getExpirationDate());
 
         return smsOtp;
@@ -67,7 +67,7 @@ public class ChangePhoneNumberServiceImpl implements ChangePhoneNumberService {
     }
 
     @Override
-    public ChangePhoneNumber checkIfExist(String otp){
+    public ChangePhoneNumberRequest checkIfExist(String otp){
         return changePhoneNumberRepository.findByToken(otp)
                 .orElseThrow(() -> new BadCredentialException(
                         resourceBundle.getString("confirmation-token.otp.otp-not-found"),

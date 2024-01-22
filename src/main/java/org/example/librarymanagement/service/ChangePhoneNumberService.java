@@ -2,7 +2,7 @@ package org.example.librarymanagement.service;
 
 import jakarta.transaction.Transactional;
 import org.example.librarymanagement.entity.AppUser;
-import org.example.librarymanagement.entity.ChangePhoneNumber;
+import org.example.librarymanagement.entity.ChangePhoneNumberRequest;
 
 import java.time.LocalDateTime;
 
@@ -14,9 +14,9 @@ public interface ChangePhoneNumberService {
 
     void checkDuplicate(String phoneNumber);
 
-    ChangePhoneNumber checkOtp(String otp);
+    ChangePhoneNumberRequest checkOtp(String otp);
 
     void checkExpiration(LocalDateTime expirationDate);
 
-    ChangePhoneNumber checkIfExist(String otp);
+    ChangePhoneNumberRequest checkIfExist(String otp);
 }
