@@ -133,19 +133,20 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="create_reset_password_table" author="your_name">
-        <createTable tableName="reset_password">
+
+    <changeSet id="createTokenOTPTable" author="your_author_name">
+        <createTable tableName="otp_token">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="token" type="VARCHAR(255)">
-                <constraints nullable="false"/>
+            <column name="otp_token" type="VARCHAR(255)">
+                <constraints nullable="true"/>
             </column>
-            <column name="new_password" type="VARCHAR(255)">
-                <constraints nullable="false"/>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="true"/>
             </column>
-            <column name="app_user_id" type="BIGINT">
-                <constraints nullable="false"/>
+            <column name="request" type="VARCHAR(255)">
+                <constraints nullable="true"/>
             </column>
             <column name="created_date" type="TIMESTAMP">
                 <constraints nullable="false"/>
@@ -156,95 +157,20 @@
             <column name="last_modified_date" type="TIMESTAMP">
                 <constraints nullable="true"/>
             </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="create_change_mail_table" author="your_name">
-        <createTable tableName="change_email">
-            <column name="id" type="BIGINT">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="token" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="new_email" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
             <column name="app_user_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_date" type="TIMESTAMP">
-                <constraints nullable="false"/>
-            </column>
-            <column name="expiration_date" type="TIMESTAMP">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_modified_date" type="TIMESTAMP">
                 <constraints nullable="true"/>
             </column>
         </createTable>
     </changeSet>
 
-    <changeSet id="create_change_phone_number_table" author="your_name">
-        <createTable tableName="change_phone_number">
-            <column name="id" type="BIGINT">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="token" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="current_phone_number" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="new_phone_number" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="app_user_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_date" type="TIMESTAMP">
-                <constraints nullable="false"/>
-            </column>
-            <column name="expiration_date" type="TIMESTAMP">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_modified_date" type="TIMESTAMP">
-                <constraints nullable="true"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="add_foreign_key_to_change_email" author="your_name">
-        <addForeignKeyConstraint
-                baseTableName="change_email"
-                baseColumnNames="app_user_id"
-                constraintName="fk_change_email_app_user"
-                referencedTableName="app_user"
-                referencedColumnNames="id"
-                onDelete="CASCADE"
-                onUpdate="CASCADE"/>
-    </changeSet>
-
-    <changeSet id="add_foreign_key_to_change_phone_number" author="your_name">
-        <addForeignKeyConstraint
-                baseTableName="change_phone_number"
-                baseColumnNames="app_user_id"
-                constraintName="fk_change_phone_number_app_user"
-                referencedTableName="app_user"
-                referencedColumnNames="id"
-                onDelete="CASCADE"
-                onUpdate="CASCADE"/>
-    </changeSet>
-
-    <changeSet id="add_foreign_key_to_reset_password" author="your_name">
-        <addForeignKeyConstraint
-                baseTableName="reset_password"
-                baseColumnNames="app_user_id"
-                constraintName="fk_reset_password_app_user"
-                referencedTableName="app_user"
-                referencedColumnNames="id"
-                onDelete="CASCADE"
-                onUpdate="CASCADE"/>
+    <changeSet author="JohnCao" id="add_foreign_key_to_token_otp">
+        <addForeignKeyConstraint baseColumnNames="app_user_id"
+                                 baseTableName="otp_token"
+                                 constraintName="fk_app_user_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="app_user"
+                                 onUpdate="NO ACTION"
+                                 onDelete="CASCADE"/>
     </changeSet>
 
     <changeSet author="JohnCao" id="add-foreign-key-to-confirmation-token">

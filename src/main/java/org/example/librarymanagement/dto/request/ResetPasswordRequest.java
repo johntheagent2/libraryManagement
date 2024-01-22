@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import org.example.librarymanagement.enumeration.ChangeType;
 import org.hibernate.validator.constraints.Length;
 
 @Data
