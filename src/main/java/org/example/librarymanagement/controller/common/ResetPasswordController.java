@@ -7,6 +7,7 @@ import org.example.librarymanagement.dto.request.ResetPasswordRequest;
 import org.example.librarymanagement.service.AppUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
@@ -16,14 +17,14 @@ public class ResetPasswordController {
 
     private final AppUserService appUserService;
 
-    @PutMapping
+    @PostMapping
     public ResponseEntity<Void> requestResetPassword(@Valid @RequestBody ResetPasswordRequest request){
         appUserService.requestResetPassword(request);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .build();
     }
 
-    @DeleteMapping("/confirm-token")
+    @PostMapping("/confirm-token")
     public ResponseEntity<Void> confirmResetPassword(@RequestParam String token, @RequestParam String email){
         appUserService.resetPassword(token, email);
         return ResponseEntity.status(HttpStatus.ACCEPTED)

@@ -1,8 +1,17 @@
 package org.example.librarymanagement.service.implement;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.StringPath;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.example.librarymanagement.dto.request.*;
 import org.example.librarymanagement.dto.response.MfaResponse;
+import org.example.librarymanagement.dto.response.UserResponse;
 import org.example.librarymanagement.entity.AppUser;
 import org.example.librarymanagement.entity.TokenOTP;
 import org.example.librarymanagement.enumeration.AccountStatus;
@@ -11,6 +20,7 @@ import org.example.librarymanagement.exception.exception.BadCredentialException;
 import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.example.librarymanagement.repository.AppUserRepository;
 import org.example.librarymanagement.service.*;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +28,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -33,6 +45,7 @@ public class AppUserServiceImpl implements AppUserService {
     private final ChangeType resetPassword = ChangeType.RESET_PASSWORD;
     private final ChangeType changeEmail = ChangeType.CHANGE_EMAIL;
     private final ChangeType changePhoneNumber = ChangeType.CHANGE_PHONE_NUMBER;
+    private final EntityManager entityManager;
 
     @Override
     public void verifyUser(AppUser user){
@@ -85,8 +98,8 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public MfaResponse enableUserMfa(String email) {
-        AppUser appUser = getAppUser(email);
+    public MfaResponse enableUserMfa() {
+        AppUser appUser = getAppUser(getCurrentLogin().getUsername());
 
         appUser.setMfa(true);
         appUser.setSecretKey(googleAuthenticatorService.generateSecretKey());
@@ -117,6 +130,26 @@ public class AppUserServiceImpl implements AppUserService {
                 .orElseThrow(() -> new BadRequestException("user.email.email-not-found",
                         resourceBundle.getString("user.email.email-not-found")));
     }
+
+    @Override
+    public List<UserResponse> getAllUsers() {
+        return appUserRepository.findAll()
+                .stream()
+                .map((appUser -> UserResponse.builder()
+                        .firstName(appUser.getFirstName())
+                        .lastName(appUser.getLastName())
+                        .address(appUser.getAddress())
+                        .email(appUser.getEmail())
+                        .phoneNumber(appUser.getPhoneNumber())
+                        .address(appUser.getAddress())
+                        .build()))
+                .toList();
+    }
+
+    @Override
+    public List<UserResponse> getUsersWithCriteria(UserCriteriaRequest criteriaRequest) {
+    }
+
 
     @Override
     public void saveUser(AppUser appUser){

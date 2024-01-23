@@ -34,7 +34,12 @@ public class SecurityConfiguration{
                 .csrf(AbstractHttpConfigurer::disable)
                 .authenticationProvider(daoAuthenticationProvider())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/common/**").permitAll()
+                        .requestMatchers(
+                                "/api/v1/common/**",
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/user/**").hasRole("USER")
                         .anyRequest().authenticated())

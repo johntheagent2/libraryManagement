@@ -21,7 +21,8 @@ public class JtiCheckAspect {
     private final SessionService sessionService;
     private final ResourceBundle resourceBundle;
 
-    @Before("execution(* org.example.librarymanagement.controller.user..*(..))")
+    @Before("execution(* org.example.librarymanagement.controller.user..*(..)) " +
+            "|| execution(* org.example.librarymanagement.controller.admin..*(..))")
     public void checkIfJtiIsValid(){
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String jwtTokenBearer = request.getHeader("Authorization");
