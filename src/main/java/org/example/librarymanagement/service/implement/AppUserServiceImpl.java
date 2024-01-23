@@ -4,12 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.example.librarymanagement.dto.request.*;
 import org.example.librarymanagement.dto.response.MfaResponse;
 import org.example.librarymanagement.entity.AppUser;
-import org.example.librarymanagement.entity.ChangePhoneNumberRequest;
+import org.example.librarymanagement.entity.TokenOTP;
 import org.example.librarymanagement.enumeration.AccountStatus;
+import org.example.librarymanagement.enumeration.ChangeType;
 import org.example.librarymanagement.exception.exception.BadCredentialException;
 import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.example.librarymanagement.repository.AppUserRepository;
 import org.example.librarymanagement.service.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +29,10 @@ public class AppUserServiceImpl implements AppUserService {
     private final ResourceBundle resourceBundle;
     private final BCryptPasswordEncoder passwordEncoder;
     private final GoogleAuthenticatorService googleAuthenticatorService;
-    private final ResetPasswordService resetPasswordService;
-    private final ChangePhoneNumberService changePhoneNumberService;
-    private final ChangeEmailService changeEmailService;
+    private final TokenOtpService tokenOtpService;
+    private final ChangeType resetPassword = ChangeType.RESET_PASSWORD;
+    private final ChangeType changeEmail = ChangeType.CHANGE_EMAIL;
+    private final ChangeType changePhoneNumber = ChangeType.CHANGE_PHONE_NUMBER;
 
     @Override
     public void verifyUser(AppUser user){
@@ -46,24 +51,34 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
+    @Transactional
     public void requestResetPassword(ResetPasswordRequest request) {
         AppUser appUser = getAppUser(request.getEmail());
         if(!checkMatchingPassword(request, appUser.getPassword())){
-            resetPasswordService.requestChangePassword(appUser, request);
+            tokenOtpService.deleteDuplicateRequest(resetPassword, request.getPassword());
+            tokenOtpService.saveOtp(request.getPassword(), appUser, resetPassword);
         }else{
             throw new BadCredentialException("user.password.existed",
                     resourceBundle.getString("user.password.existed"));
         }
     }
 
+    @Transactional
     @Override
-    public void resetPassword(String token) {
-        AppUser appUser = resetPasswordService.confirmToken(token);
+    public void resetPassword(String token, String email) {
+        AppUser appUser;
+        TokenOTP tokenOTP = tokenOtpService.checkOtp(token, resetPassword, email);
+
+        appUser = tokenOTP.getAppUser();
+        appUser.setPassword(passwordEncoder.encode(tokenOTP.getRequest()));
+
         updateUser(appUser);
+        tokenOtpService.deleteById(tokenOTP.getId());
     }
 
     @Override
-    public void changePassword(String email, ChangePasswordRequest request) {
+    public void changePassword(ChangePasswordRequest request) {
+        String email = getCurrentLogin().getUsername();
         AppUser appUser = getAppUser(email);
         appUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
         updateUser(appUser);
@@ -116,8 +131,10 @@ public class AppUserServiceImpl implements AppUserService {
         appUserRepository.save(appUser);
     }
 
+    @Transactional
     @Override
-    public void requestChangePhoneNumber(String email, org.example.librarymanagement.dto.request.ChangePhoneNumberRequest request) {
+    public void requestChangePhoneNumber(ChangePhoneNumberRequest request) {
+        String email = getCurrentLogin().getUsername();
         AppUser appUser = getAppUser(email);
         String currentPhoneNumber = appUser.getPhoneNumber();
 
@@ -125,24 +142,28 @@ public class AppUserServiceImpl implements AppUserService {
             throw new BadRequestException(resourceBundle.getString("user.phone.phone-duplicate"),
                     "user.phone.phone-duplicate");
         }
-        changePhoneNumberService.deleteDuplicatePhoneNumberRequest(appUser.getPhoneNumber());
-        changePhoneNumberService.saveOtp(request.getPhoneNumber(), appUser);
+        tokenOtpService.deleteDuplicateRequest(changePhoneNumber, request.getPhoneNumber());
+        tokenOtpService.saveOtp(request.getPhoneNumber(), appUser, changePhoneNumber);
     }
 
     @Transactional
     @Override
-    public void changePhoneNumber(String email, OtpVerificationRequest request) {
+    public void changePhoneNumber(OtpVerificationRequest request) {
+        String email = getCurrentLogin().getUsername();
         AppUser appUser;
-        ChangePhoneNumberRequest smsOtp = changePhoneNumberService.checkOtp(request.getOtp());
+        TokenOTP tokenOTP = tokenOtpService.checkOtp(request.getOtp(), changePhoneNumber, email);
 
-        appUser = getAppUser(email);
-        appUser.setPhoneNumber(smsOtp.getNewPhoneNumber());
+        appUser = tokenOTP.getAppUser();
+        appUser.setPhoneNumber(tokenOTP.getRequest());
 
         updateUser(appUser);
+        tokenOtpService.deleteById(tokenOTP.getId());
     }
 
+    @Transactional
     @Override
-    public void requestChangeEmail(String email, ChangeEmailRequest request) {
+    public void requestChangeEmail(ChangeEmailRequest request) {
+        String email = getCurrentLogin().getUsername();
         AppUser appUser;
         if(email.equals(request.getEmail())){
             throw new BadRequestException(resourceBundle.getString("user.email.email-duplicate"),
@@ -155,19 +176,32 @@ public class AppUserServiceImpl implements AppUserService {
         }
 
         appUser = getAppUser(email);
-        System.out.println(appUser.getEmail());
-        changeEmailService.deleteDuplicateEmailRequest(email);
-        changeEmailService.saveMailSession(request.getEmail(), appUser);
+        tokenOtpService.deleteDuplicateRequest(changeEmail, request.getEmail());
+        tokenOtpService.saveOtp(request.getEmail(), appUser, changeEmail);
 
     }
 
+    @Transactional
     @Override
     public void changeEmail(String token) {
+        String email = getCurrentLogin().getUsername();
         AppUser appUser;
-        org.example.librarymanagement.entity.ChangeEmailRequest changeEmailSession = changeEmailService.checkToken(token);
+        TokenOTP tokenOTP = tokenOtpService.checkOtp(token, changeEmail, email);
 
-        appUser = changeEmailSession.getAppUser();
-        appUser.setEmail(changeEmailSession.getNewEmail());
+        appUser = tokenOTP.getAppUser();
+        appUser.setEmail(tokenOTP.getOtpToken());
         updateUser(appUser);
+        tokenOtpService.deleteById(tokenOTP.getId());
+    }
+
+    @Override
+    public UserDetails getCurrentLogin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            return (UserDetails) authentication.getPrincipal();
+        } else {
+            throw new BadRequestException(resourceBundle.getString("security.core.userdetails"), "security.core.userdetails");
+        }
     }
 }

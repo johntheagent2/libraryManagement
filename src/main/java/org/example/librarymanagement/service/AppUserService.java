@@ -4,6 +4,7 @@ import org.example.librarymanagement.dto.request.*;
 import org.example.librarymanagement.dto.response.MfaResponse;
 import org.example.librarymanagement.entity.AppUser;
 import org.example.librarymanagement.exception.exception.BadRequestException;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
 
@@ -18,9 +19,9 @@ public interface AppUserService {
 
     void requestResetPassword(ResetPasswordRequest request);
 
-    void resetPassword(String token);
+    void resetPassword(String token, String email);
 
-    void changePassword(String email, ChangePasswordRequest request);
+    void changePassword(ChangePasswordRequest request);
 
     MfaResponse enableUserMfa(String email);
 
@@ -34,11 +35,13 @@ public interface AppUserService {
 
     void updateUser(AppUser appUser);
 
-    void requestChangePhoneNumber(String email, ChangePhoneNumberRequest request);
+    void requestChangePhoneNumber(ChangePhoneNumberRequest request);
 
-    void changePhoneNumber(String email, OtpVerificationRequest request);
+    void changePhoneNumber(OtpVerificationRequest request);
 
-    void requestChangeEmail(String email, ChangeEmailRequest request);
+    void requestChangeEmail(ChangeEmailRequest request);
 
     void changeEmail(String token);
+
+    UserDetails getCurrentLogin();
 }

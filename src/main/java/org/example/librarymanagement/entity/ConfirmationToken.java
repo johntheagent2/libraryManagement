@@ -17,8 +17,8 @@ import java.time.LocalDateTime;
 public class ConfirmationToken extends AuditableEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "token_seq")
-    @SequenceGenerator(name = "token_seq", sequenceName = "token_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "confirmation_token_seq")
+    @SequenceGenerator(name = "confirmation_token_seq", sequenceName = "confirmation_token_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

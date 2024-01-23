@@ -27,35 +27,34 @@ public class UserController {
 
     @PutMapping("/{email}/change-password")
     public ResponseEntity<Void> changePassword(@PathVariable String email, @Valid @RequestBody ChangePasswordRequest request){
-        userService.changePassword(email, request);
+        userService.changePassword(request);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .build();
     }
 
     @PostMapping("/{email}/change-phone")
     public ResponseEntity<Void> requestChangePhoneNumber(@PathVariable String email, @Valid @RequestBody ChangePhoneNumberRequest request){
-        userService.requestChangePhoneNumber(email, request);
+        userService.requestChangePhoneNumber(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
     }
 
     @PutMapping("/{email}/change-phone/confirm")
     public ResponseEntity<Void> confirmOTPChangePhoneNumber(@PathVariable String email, @Valid @RequestBody OtpVerificationRequest request){
-        userService.changePhoneNumber(email, request);
+        userService.changePhoneNumber(request);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .build();
     }
 
     @PostMapping("/{email}/change-mail")
     public ResponseEntity<Void> requestChangeMail(@PathVariable String email, @Valid @RequestBody ChangeEmailRequest request){
-        userService.requestChangeEmail(email, request);
+        userService.requestChangeEmail(request);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .build();
     }
 
     @PostMapping("/{email}/change-mail/confirm")
-    public ResponseEntity<Void> requestChangeMail(@PathVariable String email, @RequestParam String token){
-        System.out.println("Here");
+    public ResponseEntity<Void> changeMail(@PathVariable String email, @RequestParam String token){
         userService.changeEmail(token);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .build();
