@@ -12,5 +12,5 @@ public interface TokenOtpRepository extends JpaRepository<TokenOTP, Long> {
 
     Optional<TokenOTP> findByTypeAndRequest(ChangeType type, String request);
 
-    Optional<TokenOTP> findByOtpTokenAndType(String otp, ChangeType type);
+    Optional<TokenOTP> findByOtpTokenAndTypeAndAppUser_Email(String otp, ChangeType type, String email);
 }

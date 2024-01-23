@@ -1,5 +1,6 @@
 package org.example.librarymanagement.common.aspect;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
@@ -10,16 +11,15 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
+@Log4j2
 public class Log4jAspect {
-
-    private static final Logger logger = LogManager.getLogger("controller");
 
     @Before("execution(* org.example.librarymanagement.controller..*(..))")
     public void logBeforeControllerMethod(JoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().getName();
         String className = joinPoint.getTarget().getClass().getSimpleName();
 
-        logger.info("Entering {}.{}", className, methodName);
+        log.info("Entering {}.{}", className, methodName);
     }
 
     @AfterReturning(pointcut = "execution(* org.example.librarymanagement.controller..*(..))", returning = "result")
@@ -27,6 +27,6 @@ public class Log4jAspect {
         String methodName = joinPoint.getSignature().getName();
         String className = joinPoint.getTarget().getClass().getSimpleName();
 
-        logger.info("Exiting {}.{}. Returned: {}", className, methodName, result);
+        log.info("Exiting {}.{}. Returned: {}", className, methodName, result);
     }
 }

@@ -11,6 +11,9 @@ import org.example.librarymanagement.exception.exception.BadCredentialException;
 import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.example.librarymanagement.repository.AppUserRepository;
 import org.example.librarymanagement.service.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,18 +65,20 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Transactional
     @Override
-    public void resetPassword(String token) {
+    public void resetPassword(String token, String email) {
         AppUser appUser;
-        TokenOTP tokenOTP = tokenOtpService.checkOtp(token, resetPassword);
+        TokenOTP tokenOTP = tokenOtpService.checkOtp(token, resetPassword, email);
 
         appUser = tokenOTP.getAppUser();
         appUser.setPassword(passwordEncoder.encode(tokenOTP.getRequest()));
 
         updateUser(appUser);
+        tokenOtpService.deleteById(tokenOTP.getId());
     }
 
     @Override
-    public void changePassword(String email, ChangePasswordRequest request) {
+    public void changePassword(ChangePasswordRequest request) {
+        String email = getCurrentLogin().getUsername();
         AppUser appUser = getAppUser(email);
         appUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
         updateUser(appUser);
@@ -128,7 +133,8 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Transactional
     @Override
-    public void requestChangePhoneNumber(String email, ChangePhoneNumberRequest request) {
+    public void requestChangePhoneNumber(ChangePhoneNumberRequest request) {
+        String email = getCurrentLogin().getUsername();
         AppUser appUser = getAppUser(email);
         String currentPhoneNumber = appUser.getPhoneNumber();
 
@@ -142,19 +148,22 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Transactional
     @Override
-    public void changePhoneNumber(String email, OtpVerificationRequest request) {
+    public void changePhoneNumber(OtpVerificationRequest request) {
+        String email = getCurrentLogin().getUsername();
         AppUser appUser;
-        TokenOTP tokenOTP = tokenOtpService.checkOtp(request.getOtp(), changePhoneNumber);
+        TokenOTP tokenOTP = tokenOtpService.checkOtp(request.getOtp(), changePhoneNumber, email);
 
         appUser = tokenOTP.getAppUser();
         appUser.setPhoneNumber(tokenOTP.getRequest());
 
         updateUser(appUser);
+        tokenOtpService.deleteById(tokenOTP.getId());
     }
 
     @Transactional
     @Override
-    public void requestChangeEmail(String email, ChangeEmailRequest request) {
+    public void requestChangeEmail(ChangeEmailRequest request) {
+        String email = getCurrentLogin().getUsername();
         AppUser appUser;
         if(email.equals(request.getEmail())){
             throw new BadRequestException(resourceBundle.getString("user.email.email-duplicate"),
@@ -175,11 +184,24 @@ public class AppUserServiceImpl implements AppUserService {
     @Transactional
     @Override
     public void changeEmail(String token) {
+        String email = getCurrentLogin().getUsername();
         AppUser appUser;
-        TokenOTP tokenOTP = tokenOtpService.checkOtp(token, changeEmail);
+        TokenOTP tokenOTP = tokenOtpService.checkOtp(token, changeEmail, email);
 
         appUser = tokenOTP.getAppUser();
         appUser.setEmail(tokenOTP.getOtpToken());
         updateUser(appUser);
+        tokenOtpService.deleteById(tokenOTP.getId());
+    }
+
+    @Override
+    public UserDetails getCurrentLogin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            return (UserDetails) authentication.getPrincipal();
+        } else {
+            throw new BadRequestException(resourceBundle.getString("security.core.userdetails"), "security.core.userdetails");
+        }
     }
 }

@@ -24,8 +24,8 @@ public class ResetPasswordController {
     }
 
     @DeleteMapping("/confirm-token")
-    public ResponseEntity<Void> confirmResetPassword(@RequestParam String token){
-        appUserService.resetPassword(token);
+    public ResponseEntity<Void> confirmResetPassword(@RequestParam String token, @RequestParam String email){
+        appUserService.resetPassword(token, email);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .build();
     }

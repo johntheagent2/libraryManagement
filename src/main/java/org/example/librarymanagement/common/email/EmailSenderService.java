@@ -118,4 +118,42 @@ public class EmailSenderService{
         // Send email
         mailSender.send(message);
     }
+
+    public void sendResetRequest(String token, String toEmail){
+        String tokenLink = verifyTokenLink + token + "&mail=" + toEmail;
+        Map<String, Object> model = new HashMap<>();
+        String emailBody;
+        Template freemarkerTemplate;
+
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper;
+        try {
+            helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom(sender);
+            helper.setTo(toEmail);
+            helper.setSubject(resetPasswordSubject);
+
+            model.put("link", tokenLink);
+
+            // Process the FreeMarker template
+            freemarkerTemplate = freemarkerConfig.getTemplate(confirmationTemplate);
+            emailBody = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, model);
+            helper.setText(emailBody, true);
+
+        } catch (IOException e) {
+            throw new org.example.librarymanagement.exception.exception.IOException("util.io.exception",
+                    resourceBundle.getString("util.io.exception"));
+        }catch (TemplateException e){
+            throw new org.example.librarymanagement.exception.exception.TemplateException("freemarker.template.exception",
+                    resourceBundle.getString("freemarker.template.exception"));
+        }catch (MessagingException e){
+            throw new MessageException("jarkarta.mail.exception",
+                    resourceBundle.getString("jarkarta.mail.exception"));
+        }
+
+        // Send email
+        mailSender.send(message);
+    }
 }

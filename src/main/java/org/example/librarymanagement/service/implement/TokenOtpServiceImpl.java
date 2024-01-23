@@ -32,7 +32,7 @@ public class TokenOtpServiceImpl implements TokenOtpService {
                 .ifPresent((tokenOTP -> {
                     tokenOTP.getAppUser().removeTokenOTP(tokenOTP);
                     delete(tokenOTP.getId());
-                }));  
+                }));
     }
 
     public void delete(Long id){
@@ -42,12 +42,19 @@ public class TokenOtpServiceImpl implements TokenOtpService {
     @Override
     public void saveOtp(String request, AppUser appUser, ChangeType type) {
         String tokenOtp = generateBasedOnType(type);
+        LocalDateTime expirationDate = LocalDateTime.now();
+
+        if(type.equals(ChangeType.CHANGE_PHONE_NUMBER)){
+            expirationDate = expirationDate.plusSeconds(40);
+        }else{
+            expirationDate = expirationDate.plusMinutes(20);
+        }
 
         TokenOTP smsOtp = new TokenOTP(
                 tokenOtp,
                 request,
                 type,
-                LocalDateTime.now().plusSeconds(40),
+                expirationDate,
                 appUser);
 
 //        sendTokenOTP(tokenOtp, request, type);
@@ -55,8 +62,8 @@ public class TokenOtpServiceImpl implements TokenOtpService {
     }
 
     @Override
-    public TokenOTP checkOtp(String tokenOtp, ChangeType type) {
-        TokenOTP smsOtp = checkIfExist(tokenOtp, type);
+    public TokenOTP checkOtp(String tokenOtp, ChangeType type, String email) {
+        TokenOTP smsOtp = checkIfExist(tokenOtp, type, email);
         checkExpiration(smsOtp.getExpirationDate());
 
         return smsOtp;
@@ -73,11 +80,16 @@ public class TokenOtpServiceImpl implements TokenOtpService {
     }
 
     @Override
-    public TokenOTP checkIfExist(String tokenOtp, ChangeType type) {
-        return tokenOtpRepository.findByOtpTokenAndType(tokenOtp, type)
+    public TokenOTP checkIfExist(String tokenOtp, ChangeType type, String email) {
+        return tokenOtpRepository.findByOtpTokenAndTypeAndAppUser_Email(tokenOtp, type, email)
                 .orElseThrow(() -> new BadCredentialException(
                         resourceBundle.getString("confirmation-token.otp.otp-not-found"),
                         "confirmation-token.otp.otp-not-found"));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        tokenOtpRepository.deleteById(id);
     }
 
     private String tokenGenerator(){
@@ -110,9 +122,12 @@ public class TokenOtpServiceImpl implements TokenOtpService {
     }
 
     private void sendTokenOTP(String tokenOtp, String request, ChangeType type) {
-        if(type.equals(ChangeType.CHANGE_EMAIL) || type.equals(ChangeType.RESET_PASSWORD)){
+        if(type.equals(ChangeType.CHANGE_EMAIL)){
             emailSenderService.sendChangeRequest(tokenOtp, request);
-        }else {
+        }else if(type.equals(ChangeType.RESET_PASSWORD)){
+            emailSenderService.sendResetRequest(tokenOtp, request);
+        }
+        else {
             smsSenderService.sendSms(request, tokenOtp);
         }
     }

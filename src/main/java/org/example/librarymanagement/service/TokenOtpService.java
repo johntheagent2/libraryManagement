@@ -13,9 +13,11 @@ public interface TokenOtpService {
     @Transactional
     void saveOtp(String request, AppUser appUser, ChangeType type);
 
-    TokenOTP checkOtp(String tokenOtp, ChangeType type);
+    TokenOTP checkOtp(String tokenOtp, ChangeType type, String email);
 
     void checkExpiration(LocalDateTime expirationDate);
 
-    TokenOTP checkIfExist(String tokenOtp, ChangeType type);
+    TokenOTP checkIfExist(String tokenOtp, ChangeType type, String email);
+
+    void deleteById(Long id);
 }
