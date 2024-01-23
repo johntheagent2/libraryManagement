@@ -189,7 +189,7 @@ public class AppUserServiceImpl implements AppUserService {
         TokenOTP tokenOTP = tokenOtpService.checkOtp(token, changeEmail, email);
 
         appUser = tokenOTP.getAppUser();
-        appUser.setEmail(tokenOTP.getOtpToken());
+        appUser.setEmail(tokenOTP.getRequest());
         updateUser(appUser);
         tokenOtpService.deleteById(tokenOTP.getId());
     }
