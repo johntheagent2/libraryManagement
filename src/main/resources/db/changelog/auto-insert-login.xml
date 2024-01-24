@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="createAdminUser" author="your_name">
+        <insert tableName="app_admin">
+            <column name="id" valueNumeric="1"/>
+            <column name="email" value="admin@gmail.com"/>
+            <column name="phone_number" value="0707854816"/>
+            <column name="password" value="$2a$10$ANpuTpBDDJIIRL.OcqFA9eX2BVOzIJVRbIBaouidGAwtAzR2Vqe.K"/> <!-- You should use an encrypted password -->
+            <column name="role" value="ROLE_ADMIN"/>
+            <column name="created_date" valueDate="2024-01-23T00:00:00"/>
+            <!-- You can set last_modified_date to null or a specific value based on your requirements -->
+            <column name="count_wrong_login" valueNumeric="0" />
+            <column name="enabled" valueBoolean="true" />
+            <column name="status" value="ACTIVE" />
+        </insert>
+    </changeSet>
+</databaseChangeLog>

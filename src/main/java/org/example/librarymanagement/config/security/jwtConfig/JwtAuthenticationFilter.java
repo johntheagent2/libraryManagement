@@ -10,9 +10,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.example.librarymanagement.entity.CustomUserDetails;
 import org.example.librarymanagement.exception.ErrorAPIResponse;
 import org.example.librarymanagement.exception.dto.ApiExceptionResponse;
 import org.example.librarymanagement.exception.exception.ExpiredJwtException;
+import org.example.librarymanagement.service.implement.CustomUserDetailServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,15 +32,16 @@ import java.time.Instant;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private JwtService jwtService;
-    private UserDetailsService userDetailsService;
+    private CustomUserDetailServiceImpl customUserDetailService;
+    private ObjectMapper objectMapper;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,@NonNull FilterChain filterChain) throws ServletException, IOException {
-            final String authHeader = request.getHeader("Authorization");
-            final String jwtToken;
-            final String email;
+    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+        final String authHeader = request.getHeader("Authorization");
+        final String jwtToken;
+        final String email;
 
-        try{
+        try {
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 filterChain.doFilter(request, response);
                 return;
@@ -48,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             email = jwtService.extractEmail(jwtToken);
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
+                UserDetails userDetails = customUserDetailService.loadUserByUsername(email);
 
                 if (jwtService.isTokenValid(jwtToken, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

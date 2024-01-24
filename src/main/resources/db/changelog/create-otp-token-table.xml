@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet id="createTokenOTPTable" author="your_author_name">
+        <createTable tableName="otp_token">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="otp_token" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="request" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expiration_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+            <column name="app_user_id" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="JohnCao" id="add_foreign_key_to_token_otp">
+        <addForeignKeyConstraint baseColumnNames="app_user_id"
+                                 baseTableName="otp_token"
+                                 constraintName="fk_otp_token_account_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="app_user"
+                                 onUpdate="NO ACTION"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+</databaseChangeLog>

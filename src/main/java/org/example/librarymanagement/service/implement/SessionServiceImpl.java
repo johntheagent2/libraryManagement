@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.config.security.jwtConfig.JwtService;
 import org.example.librarymanagement.entity.Session;
+import org.example.librarymanagement.entity.base.Account;
 import org.example.librarymanagement.exception.exception.NotFoundException;
 import org.example.librarymanagement.repository.SessionRepository;
 import org.example.librarymanagement.service.SessionService;
@@ -22,10 +23,11 @@ public class SessionServiceImpl implements SessionService {
     private final ResourceBundle resourceBundle;
 
     @Override
-    public void saveSession(String token){
+    public void saveSession(String token, Account account){
         sessionRepository.save(new Session(
                 jwtService.extractJti(token),
-                jwtService.extractExpiration(token)
+                jwtService.extractExpiration(token),
+                account
         ));
     }
 

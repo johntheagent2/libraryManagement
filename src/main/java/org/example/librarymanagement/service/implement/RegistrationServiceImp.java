@@ -29,7 +29,6 @@ public class RegistrationServiceImp implements RegistrationService{
 
 
     @Override
-    @Transactional
     public void register(RegistrationRequest request){
         if(appUserService.findByEmail(request.getEmail()).isPresent()){
             throw new BadRequestException("user.email.email-existed",

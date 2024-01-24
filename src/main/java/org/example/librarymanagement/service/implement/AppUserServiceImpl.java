@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.awt.print.Pageable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -42,6 +43,7 @@ public class AppUserServiceImpl implements AppUserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final GoogleAuthenticatorService googleAuthenticatorService;
     private final TokenOtpService tokenOtpService;
+    private final SessionService sessionService;
     private final ChangeType resetPassword = ChangeType.RESET_PASSWORD;
     private final ChangeType changeEmail = ChangeType.CHANGE_EMAIL;
     private final ChangeType changePhoneNumber = ChangeType.CHANGE_PHONE_NUMBER;
@@ -148,6 +150,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public List<UserResponse> getUsersWithCriteria(UserCriteriaRequest criteriaRequest) {
+        return new ArrayList<>();
     }
 
 
@@ -224,6 +227,7 @@ public class AppUserServiceImpl implements AppUserService {
         appUser = tokenOTP.getAppUser();
         appUser.setEmail(tokenOTP.getRequest());
         updateUser(appUser);
+        sessionService.deactivateSession();
         tokenOtpService.deleteById(tokenOTP.getId());
     }
 
