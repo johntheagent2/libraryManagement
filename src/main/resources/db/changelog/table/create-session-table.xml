@@ -4,19 +4,17 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
 
-    <changeSet id="createTokenOTPTable" author="your_author_name">
-        <createTable tableName="otp_token">
+    <!--Create table session-->
+    <changeSet id="create-session-table" author="your_name">
+        <createTable tableName="session">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="otp_token" type="VARCHAR(255)">
-                <constraints nullable="true"/>
+            <column name="jti" type="VARCHAR(255)">
+                <constraints unique="true" nullable="false"/>
             </column>
-            <column name="type" type="VARCHAR(255)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="request" type="VARCHAR(255)">
-                <constraints nullable="true"/>
+            <column name="is_active" type="BOOLEAN">
+                <constraints nullable="false"/>
             </column>
             <column name="created_date" type="TIMESTAMP">
                 <constraints nullable="false"/>
@@ -27,18 +25,18 @@
             <column name="last_modified_date" type="TIMESTAMP">
                 <constraints nullable="true"/>
             </column>
-            <column name="app_user_id" type="BIGINT">
+            <column name="account_id" type="BIGINT">
                 <constraints nullable="true"/>
             </column>
         </createTable>
     </changeSet>
 
-    <changeSet author="JohnCao" id="add_foreign_key_to_token_otp">
-        <addForeignKeyConstraint baseColumnNames="app_user_id"
-                                 baseTableName="otp_token"
-                                 constraintName="fk_otp_token_account_id"
+    <changeSet author="JohnCao" id="add_foreign_key_to_session">
+        <addForeignKeyConstraint baseColumnNames="account_id"
+                                 baseTableName="session"
+                                 constraintName="fk_session_account_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="app_user"
+                                 referencedTableName="account"
                                  onUpdate="NO ACTION"
                                  onDelete="CASCADE"/>
     </changeSet>

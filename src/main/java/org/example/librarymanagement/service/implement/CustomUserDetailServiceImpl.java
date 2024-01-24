@@ -50,14 +50,26 @@ public class CustomUserDetailServiceImpl implements CustomUserDetailFacade {
     private void validateUserDetails(CustomUserDetails userDetails) {
         Account account = userDetails.getAccount();
 
-        if (userDetails.isEnabled() && account.getStatus().equals(AccountStatus.ACTIVE)) {
+        if (account.getStatus().equals(AccountStatus.ACTIVE)) {
             if (userDetails.getAccount().getCountWrongLogin() >= 3) {
                 throw new UnauthorizedException("user.account.login-exceeded",
                         resourceBundle.getString("user.account.login-exceeded"));
             }
-        } else {
+        }
+
+        if(account.getStatus().equals(AccountStatus.UNVERIFIED)) {
             throw new NotFoundException("user.account.account-not-enabled",
                     resourceBundle.getString("user.account.account-not-enabled"));
+        }
+
+        if (account.getStatus().equals(AccountStatus.BLOCKED)) {
+            throw new NotFoundException("user.account.account-blocked",
+                    resourceBundle.getString("user.account.account-blocked"));
+        }
+
+        if (!userDetails.isEnabled()) {
+            throw new NotFoundException("user.account.account-deleted",
+                    resourceBundle.getString("user.account.account-deleted"));
         }
     }
 }

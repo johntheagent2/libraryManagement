@@ -1,7 +1,5 @@
 package org.example.librarymanagement.service.implement;
 
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.dsl.StringPath;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -16,6 +14,7 @@ import org.example.librarymanagement.entity.AppUser;
 import org.example.librarymanagement.entity.TokenOTP;
 import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.enumeration.ChangeType;
+import org.example.librarymanagement.enumeration.Role;
 import org.example.librarymanagement.exception.exception.BadCredentialException;
 import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.example.librarymanagement.repository.AppUserRepository;
@@ -56,8 +55,35 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
+    public void createUser(AdminCreateUserRequest request) {
+        AppUser appUser = AppUser.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .address(request.getAddress())
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .phoneNumber(request.getPhoneNumber())
+                .role(Role.ROLE_USER)
+                .mfa(false)
+                .status(request.getStatus())
+                .enabled(request.getEnabled())
+                .build();
+        saveUser(appUser);
+    }
+
+    @Override
     public Optional<AppUser> findByEmail(String email) {
         return appUserRepository.findAppUserByEmail(email);
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        AppUser appUser = appUserRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("user.account.id-not-found",
+                        resourceBundle.getString("user.account.id-not-found")));
+
+        appUser.setEnabled(false);
+        updateUser(appUser);
     }
 
     @Override

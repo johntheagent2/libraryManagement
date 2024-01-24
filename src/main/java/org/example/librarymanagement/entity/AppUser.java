@@ -9,6 +9,8 @@ import org.example.librarymanagement.entity.base.Account;
 import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.enumeration.Role;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +20,7 @@ import java.util.List;
 @Setter
 @SuperBuilder
 @Table(name = "app_user")
-public class AppUser extends Account {
+public class AppUser extends Account{
 
     @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;

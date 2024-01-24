@@ -4,18 +4,19 @@ import org.example.librarymanagement.dto.request.*;
 import org.example.librarymanagement.dto.response.MfaResponse;
 import org.example.librarymanagement.dto.response.UserResponse;
 import org.example.librarymanagement.entity.AppUser;
-import org.example.librarymanagement.exception.exception.BadRequestException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
 public interface AppUserService {
     void verifyUser(AppUser user);
 
+    void createUser(AdminCreateUserRequest request);
+
     Optional<AppUser> findByEmail(String email);
+
+    void deleteUser(Long id);
 
     AppUser getAppUser(String email);
 
