@@ -9,5 +9,5 @@
     <include file="db/changelog/table/create-confirmation-token-table.xml"/>
     <include file="db/changelog/table/create-session-table.xml"/>
     <include file="db/changelog/table/create-otp-token-table.xml"/>
-    <include file="db/changelog/insert-admin.xml"/>
+<!--    <include file="db/changelog/insert-admin.xml"/>-->
 </databaseChangeLog>

@@ -17,6 +17,7 @@ import org.example.librarymanagement.enumeration.ChangeType;
 import org.example.librarymanagement.enumeration.Role;
 import org.example.librarymanagement.exception.exception.BadCredentialException;
 import org.example.librarymanagement.exception.exception.BadRequestException;
+import org.example.librarymanagement.exception.exception.NotFoundException;
 import org.example.librarymanagement.repository.AppUserRepository;
 import org.example.librarymanagement.service.*;
 import org.springframework.data.domain.Page;
@@ -46,7 +47,39 @@ public class AppUserServiceImpl implements AppUserService {
     private final ChangeType resetPassword = ChangeType.RESET_PASSWORD;
     private final ChangeType changeEmail = ChangeType.CHANGE_EMAIL;
     private final ChangeType changePhoneNumber = ChangeType.CHANGE_PHONE_NUMBER;
-    private final EntityManager entityManager;
+
+    @Override
+    public void editUser(EditUserInfoRequest request, Long id) {
+        AppUser appUser;
+
+        if(findByEmail(request.getEmail()).isPresent()){
+            throw new BadRequestException("user.email.email-existed",
+                    resourceBundle.getString("user.email.email-existed"));
+        }
+
+        appUser = getById(id);
+        appUser = updateUserInfo(request, appUser);
+        updateUser(appUser);
+    }
+
+    private AppUser updateUserInfo(EditUserInfoRequest request, AppUser appUser){
+        appUser.setFirstName(request.getFirstName());
+        appUser.setLastName(request.getLastName());
+        appUser.setAddress(request.getAddress());
+        appUser.setEmail(request.getEmail());
+        appUser.setPhoneNumber(request.getPhoneNumber());
+        appUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        appUser.setStatus(Enum.valueOf(AccountStatus.class, request.getStatus()));
+        appUser.setCountWrongLogin(request.getCountWrongLogin());
+
+        return appUser;
+    }
+
+    public AppUser getById(Long id){
+        return appUserRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("user.account.id-not-found",
+                        resourceBundle.getString("user.account.id-not-found")));
+    }
 
     @Override
     public void verifyUser(AppUser user){
@@ -79,7 +112,7 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public void deleteUser(Long id) {
         AppUser appUser = appUserRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("user.account.id-not-found",
+                .orElseThrow(() -> new NotFoundException("user.account.id-not-found",
                         resourceBundle.getString("user.account.id-not-found")));
 
         appUser.setEnabled(false);

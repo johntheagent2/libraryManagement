@@ -3,6 +3,7 @@ package org.example.librarymanagement.controller.admin;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.dto.request.AdminCreateUserRequest;
+import org.example.librarymanagement.dto.request.EditUserInfoRequest;
 import org.example.librarymanagement.dto.request.UserCriteriaRequest;
 import org.example.librarymanagement.dto.response.UserResponse;
 import org.example.librarymanagement.entity.AppUser;
@@ -49,5 +50,12 @@ public class ManageUserController {
         appUserService.deleteUser(id);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .build();
+    }
+
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<EditUserInfoRequest> editUser(@PathVariable Long id, @Valid @RequestBody EditUserInfoRequest request){
+        appUserService.editUser(request, id);
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body(request);
     }
 }
