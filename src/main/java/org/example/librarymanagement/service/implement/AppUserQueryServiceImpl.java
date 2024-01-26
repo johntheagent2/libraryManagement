@@ -1,6 +1,5 @@
 package org.example.librarymanagement.service.implement;
 
-import jakarta.persistence.criteria.JoinType;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.dto.response.UserResponse;
 import org.example.librarymanagement.entity.AppUser;
@@ -16,11 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import tech.jhipster.service.QueryService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
-public class UserQueryServiceImpl extends QueryService<AppUser> {
+public class AppUserQueryServiceImpl extends QueryService<AppUser> {
 
     private final AppUserRepository appUserRepository;
 

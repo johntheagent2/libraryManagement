@@ -69,7 +69,7 @@ public class AppUserServiceImpl implements AppUserService {
         appUser.setEmail(request.getEmail());
         appUser.setPhoneNumber(request.getPhoneNumber());
         appUser.setPassword(passwordEncoder.encode(request.getPassword()));
-        appUser.setStatus(Enum.valueOf(AccountStatus.class, request.getStatus()));
+        appUser.setStatus(request.getStatus());
         appUser.setCountWrongLogin(request.getCountWrongLogin());
 
         return appUser;
@@ -99,7 +99,7 @@ public class AppUserServiceImpl implements AppUserService {
                 .role(Role.ROLE_USER)
                 .mfa(false)
                 .status(request.getStatus())
-                .enabled(request.getEnabled())
+                .enabled(request.getStatus().equals(AccountStatus.ACTIVE))
                 .build();
         saveUser(appUser);
     }
@@ -156,16 +156,23 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser appUser = getAppUser(email);
         appUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
         updateUser(appUser);
+        sessionService.deactivateSession();
     }
 
     @Override
     public MfaResponse enableUserMfa() {
-        AppUser appUser = getAppUser(getCurrentLogin().getUsername());
+        String email = getCurrentLogin().getUsername();
+        String secretKey = googleAuthenticatorService.generateSecretKey();
+        return new MfaResponse(secretKey, googleAuthenticatorService.generateQRCode(email, secretKey));
+    }
 
+    @Override
+    public void confirmMFA(String secretKey, String otp) {
+        AppUser appUser = getAppUser(getCurrentLogin().getUsername());
+        googleAuthenticatorService.validateSecretKey(secretKey, Integer.parseInt(otp));
         appUser.setMfa(true);
-        appUser.setSecretKey(googleAuthenticatorService.generateSecretKey());
+        appUser.setSecretKey(secretKey);
         updateUser(appUser);
-        return new MfaResponse(googleAuthenticatorService.generateQRCode(appUser));
     }
 
     @Override

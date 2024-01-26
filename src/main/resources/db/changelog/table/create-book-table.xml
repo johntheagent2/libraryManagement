@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Create Book table -->
+    <changeSet id="createBookTable" author="your_author">
+        <createTable tableName="book">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="picture" type="bytea">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="quantity" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="genre_id" type="BIGINT"/>
+            <column name="author_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="JohnCao" id="add_genre_to_book">
+        <addForeignKeyConstraint baseColumnNames="genre_id"
+                                 baseTableName="book"
+                                 constraintName="fk_genre_id_book"
+                                 referencedColumnNames="id"
+                                 referencedTableName="genre"/>
+    </changeSet>
+
+    <changeSet id="add_author_to_book" author="">
+        <addForeignKeyConstraint baseColumnNames="author_id"
+                                 baseTableName="book"
+                                 constraintName="fk_author_id_book"
+                                 referencedColumnNames="id"
+                                 referencedTableName="author"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 @Aspect
@@ -26,6 +28,7 @@ public class JtiCheckAspect {
     public void checkIfJtiIsValid(){
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String jwtTokenBearer = request.getHeader("Authorization");
+
         JwtService.checkJti(jwtTokenBearer, jwtService, sessionService, resourceBundle);
     }
 }

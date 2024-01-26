@@ -25,8 +25,6 @@ public interface AppUserService {
 
     List<UserResponse> getAllUsers();
 
-    List<UserResponse> getUsersWithCriteria(UserCriteriaRequest criteriaRequest);
-
     void resetWrongLoginCounter(String email);
 
     void requestResetPassword(ResetPasswordRequest request);
@@ -36,6 +34,8 @@ public interface AppUserService {
     void changePassword(ChangePasswordRequest request);
 
     MfaResponse enableUserMfa();
+
+    void confirmMFA(String secretKey, String otp);
 
     boolean isUserEnableMfa(String email);
 

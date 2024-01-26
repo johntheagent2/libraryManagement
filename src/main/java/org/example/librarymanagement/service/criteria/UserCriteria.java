@@ -1,9 +1,6 @@
 package org.example.librarymanagement.service.criteria;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import tech.jhipster.service.Criteria;
 import tech.jhipster.service.filter.LongFilter;
 import tech.jhipster.service.filter.StringFilter;
@@ -12,14 +9,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserCriteria implements Serializable, Criteria {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+@Data
+public class UserCriteria implements Criteria {
 
     private LongFilter id;
 

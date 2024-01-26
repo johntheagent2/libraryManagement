@@ -22,13 +22,24 @@ public class GoogleAuthenticatorServiceImpl implements org.example.librarymanage
     }
 
     @Override
-    public String generateQRCode(AppUser user) {
+    public String generateQRCode(String email, String secretKey) {
         GoogleAuthenticatorKey key = new GoogleAuthenticatorKey
-                .Builder(user.getSecretKey())
+                .Builder(secretKey)
                 .setVerificationCode(0)
                 .build();
 
-        return GoogleAuthenticatorQRGenerator.getOtpAuthURL("Sparkminds", user.getEmail(), key);
+        return GoogleAuthenticatorQRGenerator.getOtpAuthURL("Sparkminds", email, key);
+    }
+
+    @Override
+    public boolean validateSecretKey(String secretKey, int otp) {
+        if(googleAuthenticator.authorize(secretKey, otp)){
+            return true;
+        }else {
+            throw new BadRequestException("google-authentication-secret-key-invalid",
+                    resourceBundle.getString("google-authentication-secret-key-invalid"));
+        }
+
     }
 
     @Override

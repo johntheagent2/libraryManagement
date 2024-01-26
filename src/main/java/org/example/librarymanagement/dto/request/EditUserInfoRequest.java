@@ -4,10 +4,9 @@ import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
 import org.example.librarymanagement.common.validator.phonenumber.ValidatePhoneNumber;
-import org.example.librarymanagement.common.validator.status.ValidateAccountStatus;
+import org.example.librarymanagement.common.validator.status.ValidateEnumValue;
 import org.example.librarymanagement.enumeration.AccountStatus;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.beans.factory.annotation.Value;
 
 @Data
 @Builder
@@ -35,8 +34,8 @@ public class EditUserInfoRequest {
             message = "At least one uppercase letter, one lowercase letter, one number and one special character")
     private String password;
 
-    @ValidateAccountStatus(message = "Invalid status")
-    private String status;
+    @ValidateEnumValue(enumClass = AccountStatus.class, message = "Wrong status type")
+    private AccountStatus status;
 
     @Max(value = 3, message = "Should not be greater than 3")
     @Min(value = 0, message = "Smallest value allowed is 0")

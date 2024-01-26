@@ -40,7 +40,4 @@ public class AdminCreateUserRequest {
 
     @NotNull(message = "Status should not be empty!")
     private AccountStatus status;
-
-    @NotNull(message = "Set enable for account!")
-    private Boolean enabled;
 }

@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 @Service
@@ -33,18 +34,15 @@ public class CustomUserDetailServiceImpl implements CustomUserDetailFacade {
     }
 
     private CustomUserDetails findUserDetailsByEmail(String email) {
-        AppUser appUser = appUserService.findByEmail(email).orElse(null);
-        if (appUser != null) {
-            return new CustomUserDetails(appUser);
-        }
-
-        Admin admin = adminService.findByEmail(email).orElse(null);
-        if (admin != null) {
-            return new CustomUserDetails(admin);
-        }
-
-        throw new NotFoundException("user.email.email-not-found",
-                resourceBundle.getString("user.email.email-not-found"));
+        return appUserService.findByEmail(email)
+                .map(CustomUserDetails::new)
+                .orElseGet(() -> adminService.findByEmail(email)
+                        .map(CustomUserDetails::new)
+                        .orElseThrow(() -> new NotFoundException(
+                                "user.email.email-not-found",
+                                resourceBundle.getString("user.email.email-not-found")
+                        ))
+                );
     }
 
     private void validateUserDetails(CustomUserDetails userDetails) {
