@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
 import org.example.librarymanagement.common.validator.phonenumber.ValidatePhoneNumber;
-import org.example.librarymanagement.common.validator.status.ValidateEnumValue;
+import org.example.librarymanagement.common.validator.enumeration.ValidateEnumValue;
 import org.example.librarymanagement.enumeration.AccountStatus;
 import org.hibernate.validator.constraints.Length;
 

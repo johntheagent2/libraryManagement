@@ -57,7 +57,7 @@ public class TokenOtpServiceImpl implements TokenOtpService {
                 expirationDate,
                 appUser);
 
-//        sendTokenOTP(tokenOtp, request, type);
+        sendTokenOTP(tokenOtp, request, type);
         tokenOtpRepository.save(smsOtp);
     }
 

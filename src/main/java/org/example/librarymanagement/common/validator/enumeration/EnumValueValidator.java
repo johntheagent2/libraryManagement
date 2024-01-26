@@ -1,4 +1,4 @@
-package org.example.librarymanagement.common.validator.status;
+package org.example.librarymanagement.common.validator.enumeration;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

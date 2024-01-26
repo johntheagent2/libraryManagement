@@ -18,8 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Tag(name = "Admin User Management", description = "Admin User Management APIs")
 @RequestMapping("${admin-mapping}/users")
 @RestController

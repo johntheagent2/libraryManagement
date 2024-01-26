@@ -215,12 +215,6 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public List<UserResponse> getUsersWithCriteria(UserCriteriaRequest criteriaRequest) {
-        return new ArrayList<>();
-    }
-
-
-    @Override
     public void saveUser(AppUser appUser){
         String encodedPassword = passwordEncoder.encode(appUser.getPassword());
 
