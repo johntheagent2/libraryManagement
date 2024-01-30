@@ -27,6 +27,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailFacade customUserDetailService;
     private final AppUserService appUserService;
+    private final AccountService accountService;
     private final SessionService sessionService;
     private final GoogleAuthenticatorService googleAuthenticatorService;
 
@@ -82,7 +83,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Account currentAccount = account.getAccount();
 
         if (currentAccount instanceof AppUser) {
-            appUserService.resetWrongLoginCounter(email);
+            accountService.resetWrongLoginCounter(email);
         } else if (currentAccount instanceof Admin) {
 //            TODO: add update admin instead of using saveAdmin()
         }

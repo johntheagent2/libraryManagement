@@ -5,12 +5,12 @@ import lombok.*;
 import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
 import org.example.librarymanagement.entity.base.AuditableEntity;
 
-@EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @EntityListeners(AuditingEntityListenerImpl.class)
 @Table(name = "book")
 public class Book extends AuditableEntity {
@@ -21,9 +21,8 @@ public class Book extends AuditableEntity {
     @Column(name = "id")
     private Long id;
 
-    @Lob
-    @Column(name = "picture", columnDefinition = "bytea")
-    private byte[] picture;
+    @Column(name = "picture", nullable = false)
+    private String picture;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -33,6 +32,9 @@ public class Book extends AuditableEntity {
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
+
+    @Column(name = "removed", nullable = false)
+    private Boolean removed;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "genre_id")

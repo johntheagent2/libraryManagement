@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.dto.request.ResetPasswordRequest;
+import org.example.librarymanagement.service.AccountService;
 import org.example.librarymanagement.service.AppUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class ResetPasswordController {
 
     private final AppUserService appUserService;
+    private final AccountService accountService;
 
     @Operation(summary = "Request Reset Password",
             description = "Request to reset user password",
@@ -42,7 +44,7 @@ public class ResetPasswordController {
             @Parameter(description = "User Email",
                     in = ParameterIn.QUERY, required = true, example = "user@example.com")
             @RequestParam String email) {
-        appUserService.resetPassword(token, email);
+        accountService.resetPassword(token, email);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .build();
     }
