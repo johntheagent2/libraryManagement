@@ -5,24 +5,19 @@
 
 package org.example.librarymanagement.entity.base;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
 import org.example.librarymanagement.entity.CustomUserDetails;
+import org.example.librarymanagement.entity.Session;
+import org.example.librarymanagement.entity.TokenOTP;
 import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.enumeration.Role;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,14 +27,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Setter
 @Getter
 @Inheritance(strategy = InheritanceType.JOINED)
-@MappedSuperclass
-@EntityListeners({AuditingEntityListenerImpl.class})
-public class Account extends AuditableEntity {
+@SuperBuilder
+@Entity
+@Table(name = "account")
+public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_generator")
     @SequenceGenerator(name = "account_generator", sequenceName = "account_generator", allocationSize = 1)
     @Column(name = "id")
-    private Long appUserID;
+    private Long id;
 
     @Column(name = "email", unique = true, nullable = false)
     private String email;
@@ -63,6 +59,9 @@ public class Account extends AuditableEntity {
 
     @Column(name = "count_wrong_login", nullable = false)
     private int countWrongLogin = 0;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Session> sessionList = new ArrayList<>();
 
     public Account(String email, String phoneNumber, String password, Role role, AccountStatus status) {
         this.email = email;

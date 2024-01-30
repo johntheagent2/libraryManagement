@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.librarymanagement.entity.Session;
 import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.example.librarymanagement.exception.exception.ExpiredJwtException;
+import org.example.librarymanagement.exception.exception.UnauthorizedException;
 import org.example.librarymanagement.service.SessionService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -129,6 +130,16 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    public static void isTokenRefreshToken(String refreshToken, JwtService jwtService, Session session, ResourceBundle resourceBundle){
+        Date expiresDate = jwtService.extractExpiration(refreshToken);
+        boolean isJWT = (session.getExpirationDate().getTime() - expiresDate.getTime()) > 0;
+        if(!isJWT){
+            throw new BadRequestException("session.jti.jti-not-valid",
+                    resourceBundle.getString("session.jti.jti-not-valid"));
+        }
+    }
+
+
     public static void validateRefreshToken(String authorization, JwtService jwtService, SessionService sessionService, ResourceBundle resourceBundle){
         String refreshToken = jwtService.extractJwtToken(authorization);
         String jti = jwtService.extractJti(refreshToken);
@@ -150,14 +161,16 @@ public class JwtService {
         String jti = jwtService.extractJti(refreshToken);
         Session session = sessionService.getSessionWithJti(jti);
 
+        isTokenRefreshToken(refreshToken, jwtService, session, resourceBundle);
+
         if(session.getExpirationDate().before(new Date())){
             sessionService.deactivateSession();
-            throw new ExpiredJwtException("session.jti.jti-expired",
+            throw new UnauthorizedException("session.jti.jti-expired",
                     resourceBundle.getString("session.jti.jti-expired"));
         }
 
         if (!session.isActive()){
-            throw new ExpiredJwtException("session.jti.jti-not-active",
+            throw new UnauthorizedException("session.jti.jti-not-active",
                     resourceBundle.getString("session.jti.jti-not-active"));
         }
     }

@@ -38,7 +38,7 @@ public class TokenOTP extends AuditableEntity {
     @Column(name = "expiration_date", nullable = false)
     public LocalDateTime expirationDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "app_user_id")
     private AppUser appUser;
 

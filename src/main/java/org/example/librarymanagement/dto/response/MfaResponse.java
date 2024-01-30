@@ -6,5 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class MfaResponse {
+    private final String secretCode;
     private final String qr;
 }

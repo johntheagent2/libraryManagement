@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- Insert Admin into Account Table -->
+    <changeSet id="insertAdminIntoAccountTable" author="your-name">
+        <insert tableName="account">
+            <column name="id" valueNumeric="1"/>
+            <column name="email" value="admin@example.com"/>
+            <column name="phone_number" value="1234567890"/>
+            <column name="password" value="$2a$10$nHn2sEVeBBCdB6pCsuL6aul9uWcfhTf6O/bqFwDYY9FsvPJRxH.Z2"/>
+            <column name="role" value="ROLE_ADMIN"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="enabled" valueBoolean="true"/>
+            <column name="count_wrong_login" valueNumeric="0"/>
+        </insert>
+    </changeSet>
+
+    <!-- Insert Admin into AppAdmin Table -->
+    <changeSet id="insertAdminIntoAppAdminTable" author="your-name">
+        <insert tableName="app_admin">
+            <column name="id" valueNumeric="1"/>
+            <column name="full_name" value="Admin User"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

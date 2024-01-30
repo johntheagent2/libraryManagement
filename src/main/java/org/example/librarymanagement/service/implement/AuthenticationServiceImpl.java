@@ -51,7 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             jti = jwtService.generateJti();
             jwtToken = jwtService.generateToken(account, jti);
             refreshToken = jwtService.generateRefreshToken(account, jti);
-            sessionService.saveSession(refreshToken);
+            sessionService.saveSession(refreshToken, account.getAccount());
         }catch (BadCredentialsException e){
             updateCountWrongLogin(authRequest.getEmail());
             throw new BadCredentialException("user.account.password-incorrect",

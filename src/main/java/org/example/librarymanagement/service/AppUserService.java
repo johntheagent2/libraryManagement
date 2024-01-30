@@ -2,18 +2,28 @@ package org.example.librarymanagement.service;
 
 import org.example.librarymanagement.dto.request.*;
 import org.example.librarymanagement.dto.response.MfaResponse;
+import org.example.librarymanagement.dto.response.UserResponse;
 import org.example.librarymanagement.entity.AppUser;
-import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AppUserService {
+
+    void editUser(EditUserInfoRequest request, Long id);
+
     void verifyUser(AppUser user);
+
+    void createUser(AdminCreateUserRequest request);
 
     Optional<AppUser> findByEmail(String email);
 
+    void deleteUser(Long id);
+
     AppUser getAppUser(String email);
+
+    List<UserResponse> getAllUsers();
 
     void resetWrongLoginCounter(String email);
 
@@ -23,7 +33,9 @@ public interface AppUserService {
 
     void changePassword(ChangePasswordRequest request);
 
-    MfaResponse enableUserMfa(String email);
+    MfaResponse enableUserMfa();
+
+    void confirmMFA(String secretKey, String otp);
 
     boolean isUserEnableMfa(String email);
 

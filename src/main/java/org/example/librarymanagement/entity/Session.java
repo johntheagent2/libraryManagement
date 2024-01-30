@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
+import org.example.librarymanagement.entity.base.Account;
 import org.example.librarymanagement.entity.base.AuditableEntity;
 
 import java.util.Date;
@@ -34,8 +35,13 @@ public class Session extends AuditableEntity {
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 
-    public Session(String jti, Date expirationDate) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
+
+    public Session(String jti, Date expirationDate, Account account) {
         this.jti = jti;
         this.expirationDate = expirationDate;
+        this.account = account;
     }
 }

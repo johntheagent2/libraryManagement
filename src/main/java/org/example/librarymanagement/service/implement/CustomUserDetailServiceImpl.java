@@ -1,6 +1,8 @@
 package org.example.librarymanagement.service.implement;
 
 import lombok.AllArgsConstructor;
+import org.example.librarymanagement.entity.Admin;
+import org.example.librarymanagement.entity.AppUser;
 import org.example.librarymanagement.entity.base.Account;
 import org.example.librarymanagement.entity.CustomUserDetails;
 import org.example.librarymanagement.enumeration.AccountStatus;
@@ -13,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 @Service
@@ -25,27 +28,46 @@ public class CustomUserDetailServiceImpl implements CustomUserDetailFacade {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        CustomUserDetails userDetails = findUserDetailsByEmail(email);
+        validateUserDetails(userDetails);
+        return userDetails;
+    }
 
-        CustomUserDetails userDetails = adminService.findByEmail(email)
+    private CustomUserDetails findUserDetailsByEmail(String email) {
+        return appUserService.findByEmail(email)
                 .map(CustomUserDetails::new)
-                .orElseGet(() -> appUserService.findByEmail(email)
+                .orElseGet(() -> adminService.findByEmail(email)
                         .map(CustomUserDetails::new)
-                        .orElseThrow(() -> new NotFoundException("user.email.email-not-found",
-                                resourceBundle.getString("user.email.email-not-found"))));
+                        .orElseThrow(() -> new NotFoundException(
+                                "user.email.email-not-found",
+                                resourceBundle.getString("user.email.email-not-found")
+                        ))
+                );
+    }
 
+    private void validateUserDetails(CustomUserDetails userDetails) {
         Account account = userDetails.getAccount();
 
-        if(userDetails.isEnabled() && account.getStatus().equals(AccountStatus.ACTIVE)){
-            if(userDetails.getAccount().getCountWrongLogin() < 3){
-                return userDetails;
-            }else {
+        if (account.getStatus().equals(AccountStatus.ACTIVE)) {
+            if (userDetails.getAccount().getCountWrongLogin() >= 3) {
                 throw new UnauthorizedException("user.account.login-exceeded",
                         resourceBundle.getString("user.account.login-exceeded"));
             }
-        }else{
+        }
+
+        if(account.getStatus().equals(AccountStatus.UNVERIFIED)) {
             throw new NotFoundException("user.account.account-not-enabled",
                     resourceBundle.getString("user.account.account-not-enabled"));
         }
-        
+
+        if (account.getStatus().equals(AccountStatus.BLOCKED)) {
+            throw new NotFoundException("user.account.account-blocked",
+                    resourceBundle.getString("user.account.account-blocked"));
+        }
+
+        if (!userDetails.isEnabled()) {
+            throw new NotFoundException("user.account.account-deleted",
+                    resourceBundle.getString("user.account.account-deleted"));
+        }
     }
 }

@@ -18,11 +18,6 @@ public class PhoneNumberValidator implements ConstraintValidator<ValidatePhoneNu
 
     @Override
     public boolean isValid(String phoneNumber, ConstraintValidatorContext context) {
-        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
-            // Null or empty phone numbers are considered valid for demonstration purposes
-            return true;
-        }
-
         try {
             PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
             Phonenumber.PhoneNumber parsedNumber = phoneNumberUtil.parse(phoneNumber, lang.getString("phone.phone-validation-region"));
