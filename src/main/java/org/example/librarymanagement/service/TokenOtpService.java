@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 public interface TokenOtpService {
     void deleteDuplicateRequest(ChangeType type, String email);
 
-    @Transactional
     void saveOtp(String request, AppUser appUser, ChangeType type);
 
     TokenOTP checkOtp(String tokenOtp, ChangeType type, String email);

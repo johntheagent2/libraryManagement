@@ -21,6 +21,11 @@ public class UserController {
     private final AppUserService userService;
     private final AccountService accountService;
 
+    @GetMapping
+    public ResponseEntity<Void> test() {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
     @Operation(summary = "Enable MFA",
             description = "Send QR code and secret key back to user",
             tags = { "Mfa", "get" })

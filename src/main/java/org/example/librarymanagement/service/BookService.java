@@ -9,16 +9,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface BookService {
-    @Transactional(readOnly = true)
     List<BookResponse> getAllBooks();
 
-    @Transactional
     void addBook(BookCreateRequest request);
 
-    @Transactional
     void addListOfBooks(MultipartFile file);
 
-    @Transactional
     void editBook(Long id, BookCreateRequest request);
 
     Book findById(Long id);

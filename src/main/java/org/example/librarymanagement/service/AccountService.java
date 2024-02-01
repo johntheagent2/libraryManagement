@@ -22,6 +22,4 @@ public interface AccountService {
     void changePhoneNumber(OtpVerificationRequest request);
 
     void changeEmail(String token);
-
-    UserDetails getCurrentLogin();
 }

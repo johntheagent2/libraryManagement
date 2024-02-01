@@ -1,6 +1,7 @@
 package org.example.librarymanagement.service.implement;
 
 import lombok.AllArgsConstructor;
+import org.example.librarymanagement.common.Global;
 import org.example.librarymanagement.config.security.PasswordEncoder;
 import org.example.librarymanagement.dto.request.*;
 import org.example.librarymanagement.dto.response.MfaResponse;
@@ -63,7 +64,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public void changePassword(ChangePasswordRequest request) {
-        String email = getCurrentLogin().getUsername();
+        String email = Global.getCurrentLogin(resourceBundle).getUsername();
         Account account = getAccount(email);
         account.setPassword(passwordEncoder.encode(request.getNewPassword()));
         updateAccount(account);
@@ -78,7 +79,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public void changePhoneNumber(OtpVerificationRequest request) {
-        String email = getCurrentLogin().getUsername();
+        String email = Global.getCurrentLogin(resourceBundle).getUsername();
         Account account;
         TokenOTP tokenOTP = tokenOtpService.checkOtp(request.getOtp(), changePhoneNumber, email);
 
@@ -92,7 +93,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public void changeEmail(String token) {
-        String email = getCurrentLogin().getUsername();
+        String email = Global.getCurrentLogin(resourceBundle).getUsername();
         Account account;
         TokenOTP tokenOTP = tokenOtpService.checkOtp(token, changeEmail, email);
 
@@ -101,17 +102,6 @@ public class AccountServiceImpl implements AccountService {
         updateAccount(account);
         sessionService.deactivateSession();
         tokenOtpService.deleteById(tokenOTP.getId());
-    }
-
-    @Override
-    public UserDetails getCurrentLogin() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication != null && authentication.isAuthenticated()) {
-            return (UserDetails) authentication.getPrincipal();
-        } else {
-            throw new BadRequestException(resourceBundle.getString("security.core.userdetails"), "security.core.userdetails");
-        }
     }
 
     public void updateAccount(Account account){

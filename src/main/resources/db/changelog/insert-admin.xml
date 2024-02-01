@@ -7,7 +7,6 @@
     <!-- Insert Admin into Account Table -->
     <changeSet id="insertAdminIntoAccountTable" author="your-name">
         <insert tableName="account">
-            <column name="id" valueNumeric="1"/>
             <column name="email" value="admin@example.com"/>
             <column name="phone_number" value="1234567890"/>
             <column name="password" value="$2a$10$nHn2sEVeBBCdB6pCsuL6aul9uWcfhTf6O/bqFwDYY9FsvPJRxH.Z2"/>
