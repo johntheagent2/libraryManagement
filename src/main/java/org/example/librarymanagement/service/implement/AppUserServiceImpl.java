@@ -44,6 +44,8 @@ public class AppUserServiceImpl implements AppUserService {
     private final GoogleAuthenticatorService googleAuthenticatorService;
     private final TokenOtpService tokenOtpService;
     private final SessionService sessionService;
+    private final AccountService accountService;
+
     private final ChangeType resetPassword = ChangeType.RESET_PASSWORD;
     private final ChangeType changeEmail = ChangeType.CHANGE_EMAIL;
     private final ChangeType changePhoneNumber = ChangeType.CHANGE_PHONE_NUMBER;
@@ -120,43 +122,16 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public void resetWrongLoginCounter(String email) {
-        appUserRepository.resetWrongLoginCounter(email);
-    }
-
-    @Override
     @Transactional
     public void requestResetPassword(ResetPasswordRequest request) {
         AppUser appUser = getAppUser(request.getEmail());
-        if(!checkMatchingPassword(request, appUser.getPassword())){
+        if(!accountService.checkMatchingPassword(request, appUser.getPassword())){
             tokenOtpService.deleteDuplicateRequest(resetPassword, request.getPassword());
             tokenOtpService.saveOtp(request.getPassword(), appUser, resetPassword);
         }else{
             throw new BadCredentialException("user.password.existed",
                     resourceBundle.getString("user.password.existed"));
         }
-    }
-
-    @Transactional
-    @Override
-    public void resetPassword(String token, String email) {
-        AppUser appUser;
-        TokenOTP tokenOTP = tokenOtpService.checkOtp(token, resetPassword, email);
-
-        appUser = tokenOTP.getAppUser();
-        appUser.setPassword(passwordEncoder.encode(tokenOTP.getRequest()));
-
-        updateUser(appUser);
-        tokenOtpService.deleteById(tokenOTP.getId());
-    }
-
-    @Override
-    public void changePassword(ChangePasswordRequest request) {
-        String email = getCurrentLogin().getUsername();
-        AppUser appUser = getAppUser(email);
-        appUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        updateUser(appUser);
-        sessionService.deactivateSession();
     }
 
     @Override
@@ -188,11 +163,6 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public boolean checkMatchingPassword(ResetPasswordRequest request, String oldPassword) {
-        return passwordEncoder.matches(request.getPassword(), oldPassword);
-    }
-
-    @Override
     public AppUser getAppUser(String email){
         return findByEmail(email)
                 .orElseThrow(() -> new BadRequestException("user.email.email-not-found",
@@ -213,12 +183,6 @@ public class AppUserServiceImpl implements AppUserService {
                         .build()))
                 .toList();
     }
-
-    @Override
-    public List<UserResponse> getUsersWithCriteria(UserCriteriaRequest criteriaRequest) {
-        return new ArrayList<>();
-    }
-
 
     @Override
     public void saveUser(AppUser appUser){
@@ -250,20 +214,6 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Transactional
     @Override
-    public void changePhoneNumber(OtpVerificationRequest request) {
-        String email = getCurrentLogin().getUsername();
-        AppUser appUser;
-        TokenOTP tokenOTP = tokenOtpService.checkOtp(request.getOtp(), changePhoneNumber, email);
-
-        appUser = tokenOTP.getAppUser();
-        appUser.setPhoneNumber(tokenOTP.getRequest());
-
-        updateUser(appUser);
-        tokenOtpService.deleteById(tokenOTP.getId());
-    }
-
-    @Transactional
-    @Override
     public void requestChangeEmail(ChangeEmailRequest request) {
         String email = getCurrentLogin().getUsername();
         AppUser appUser;
@@ -281,20 +231,6 @@ public class AppUserServiceImpl implements AppUserService {
         tokenOtpService.deleteDuplicateRequest(changeEmail, request.getEmail());
         tokenOtpService.saveOtp(request.getEmail(), appUser, changeEmail);
 
-    }
-
-    @Transactional
-    @Override
-    public void changeEmail(String token) {
-        String email = getCurrentLogin().getUsername();
-        AppUser appUser;
-        TokenOTP tokenOTP = tokenOtpService.checkOtp(token, changeEmail, email);
-
-        appUser = tokenOTP.getAppUser();
-        appUser.setEmail(tokenOTP.getRequest());
-        updateUser(appUser);
-        sessionService.deactivateSession();
-        tokenOtpService.deleteById(tokenOTP.getId());
     }
 
     @Override

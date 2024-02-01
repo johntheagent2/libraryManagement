@@ -2,17 +2,24 @@ package org.example.librarymanagement.service.criteria;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.example.librarymanagement.entity.Author;
 import org.example.librarymanagement.entity.Genre;
 import tech.jhipster.service.Criteria;
 import tech.jhipster.service.filter.*;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-@Data
-public class BookCriteria implements Criteria {
+@Getter
+@Setter
+@NoArgsConstructor
+public class BookCriteria implements Criteria, Serializable {
 
     private LongFilter id;
 
@@ -26,9 +33,9 @@ public class BookCriteria implements Criteria {
 
     private LongFilter authorId;
 
-    private RangeFilter<LocalDateTime> createdDate;
+    private LocalDateFilter createdDate;
 
-    private RangeFilter<LocalDateTime> lastModifiedDate;
+    private LocalDateFilter lastModifiedDate;
 
     private Boolean distinct;
 
@@ -67,5 +74,10 @@ public class BookCriteria implements Criteria {
         return Objects.hash(id, title, description,
                 quantity, genreId, authorId,
                 createdDate, lastModifiedDate, distinct);
+    }
+
+    public static LocalDate parseDate(String dateString) {
+        DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        return LocalDate.parse(dateString, DATE_FORMATTER);
     }
 }

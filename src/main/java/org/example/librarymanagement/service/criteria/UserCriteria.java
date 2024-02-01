@@ -9,8 +9,11 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
-@Data
-public class UserCriteria implements Criteria {
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+public class UserCriteria implements Criteria, Serializable {
 
     private LongFilter id;
 

@@ -27,8 +27,8 @@ public class JwtService {
     @Value("${secret-key}")
     private String SECRET_KEY;
 
-    @Value("#{1000 * 60 * 20}")
-    private int ACCESS_TOKEN_EXPIRATION_TIME; // Access token expires in 5 minutes
+    @Value("#{1000 * 60 * 60 * 24}")
+    private int ACCESS_TOKEN_EXPIRATION_TIME; // Access token expires in 1 day
 
     @Value("#{1000 * 60 * 60 * 24 * 7}")
     private int REFRESH_TOKEN_EXPIRATION_TIME; // Refresh token expires in 7 days

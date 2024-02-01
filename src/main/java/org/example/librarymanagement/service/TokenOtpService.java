@@ -3,6 +3,7 @@ package org.example.librarymanagement.service;
 import jakarta.transaction.Transactional;
 import org.example.librarymanagement.entity.AppUser;
 import org.example.librarymanagement.entity.TokenOTP;
+import org.example.librarymanagement.entity.base.Account;
 import org.example.librarymanagement.enumeration.ChangeType;
 
 import java.time.LocalDateTime;

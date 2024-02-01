@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.librarymanagement.dto.request.*;
 import org.example.librarymanagement.dto.response.MfaResponse;
+import org.example.librarymanagement.service.AccountService;
 import org.example.librarymanagement.service.AppUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final AppUserService userService;
+    private final AccountService accountService;
 
     @Operation(summary = "Enable MFA",
             description = "Send QR code and secret key back to user",
@@ -43,7 +45,7 @@ public class UserController {
             tags = { "Password", "put" })
     @PutMapping("/change-password")
     public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
-        userService.changePassword(request);
+        accountService.changePassword(request);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .build();
     }
@@ -63,7 +65,7 @@ public class UserController {
             tags = { "Phone", "put" })
     @PutMapping("change-phone/confirm")
     public ResponseEntity<Void> confirmOTPChangePhoneNumber(@Valid @RequestBody OtpVerificationRequest request) {
-        userService.changePhoneNumber(request);
+        accountService.changePhoneNumber(request);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .build();
     }
@@ -83,7 +85,7 @@ public class UserController {
             tags = { "Email", "put" })
     @PutMapping("/change-mail/confirm")
     public ResponseEntity<Void> changeMail(@RequestParam String token) {
-        userService.changeEmail(token);
+        accountService.changeEmail(token);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .build();
     }

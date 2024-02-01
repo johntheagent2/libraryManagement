@@ -2,6 +2,7 @@ package org.example.librarymanagement.service.implement;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.example.librarymanagement.common.Global;
 import org.example.librarymanagement.entity.AppUser;
 import org.example.librarymanagement.entity.ConfirmationToken;
 import org.example.librarymanagement.repository.ConfirmationTokenRepository;
@@ -28,8 +29,8 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
 
     @Override
     public ConfirmationToken createToken(AppUser appUser){
-        String linkToken = createLinkToken();
-        String otpToken = creatOTP();
+        String linkToken = Global.UUIDgenrator();
+        String otpToken = Global.otpGenerator();
         LocalDateTime createdDateTime = LocalDateTime.now();
         LocalDateTime expiresDateTime = createdDateTime.plusMinutes(15);
 
@@ -41,8 +42,8 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
         LocalDateTime newExpires =  LocalDateTime.now().plusMinutes(15);
 
         token.setExpiresAt(newExpires);
-        token.setToken(createLinkToken());
-        token.setOtp(creatOTP());
+        token.setToken(Global.UUIDgenrator());
+        token.setOtp(Global.otpGenerator());
 
         saveConfirmationToken(token);
 
@@ -72,21 +73,5 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
     @Override
     public Optional<ConfirmationToken> findConfirmationTokenByEmail(String email){
         return confirmationTokenRepository.findConfirmationTokenByAppUser_Email(email);
-    }
-
-    private String createLinkToken(){
-        return UUID.randomUUID().toString();
-    }
-
-    private String creatOTP(){
-        int otpLength = 6;
-
-        StringBuilder otp = new StringBuilder(otpLength);
-
-        for (int i = 0; i < otpLength; i++) {
-            otp.append(random.nextInt(10)); // Append a random digit (0-9)
-        }
-
-        return otp.toString();
     }
 }
