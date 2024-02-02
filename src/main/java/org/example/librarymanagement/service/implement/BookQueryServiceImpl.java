@@ -1,6 +1,5 @@
 package org.example.librarymanagement.service.implement;
 
-import jakarta.persistence.criteria.JoinType;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.dto.response.BookResponse;
 import org.example.librarymanagement.entity.Author_;
@@ -11,18 +10,13 @@ import org.example.librarymanagement.exception.exception.ApiRequestException;
 import org.example.librarymanagement.repository.BookRepository;
 import org.example.librarymanagement.service.criteria.BookCriteria;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.jhipster.service.QueryService;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @AllArgsConstructor
 @Service
@@ -35,14 +29,14 @@ public class BookQueryServiceImpl extends QueryService<Book> {
         final Specification<Book> specification = createSpecification(criteria);
         Page<Book> books = bookRepository.findAll(specification, page);
         return books.map(book -> BookResponse.builder()
-                        .id(book.getId())
-                        .picture(book.getPicture())
-                        .title(book.getTitle())
-                        .description(book.getDescription())
-                        .quantity(book.getQuantity())
-                        .genre(book.getGenre().getName())
-                        .author(book.getAuthor().getName())
-                        .build());
+                .id(book.getId())
+                .picture(book.getPicture())
+                .title(book.getTitle())
+                .description(book.getDescription())
+                .quantity(book.getQuantity())
+                .genre(book.getGenre().getName())
+                .author(book.getAuthor().getName())
+                .build());
     }
 
     private Specification<Book> createSpecification(BookCriteria criteria) {
@@ -58,20 +52,20 @@ public class BookQueryServiceImpl extends QueryService<Book> {
             if (criteria.getTitle() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getTitle(), Book_.title));
             }
-            if(criteria.getDescription() != null) {
+            if (criteria.getDescription() != null) {
                 specification = specification.and(buildSpecification(criteria.getDescription(), Book_.description));
             }
-            if(criteria.getQuantity() != null) {
+            if (criteria.getQuantity() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getQuantity(), Book_.quantity));
             }
-            if(criteria.getGenreId() != null) {
+            if (criteria.getGenreId() != null) {
                 specification = specification.and(buildSpecification(criteria.getGenreId(), root -> root.join(Book_.genre).get(Genre_.id)));
             }
-            if(criteria.getAuthorId() != null) {
+            if (criteria.getAuthorId() != null) {
                 specification = specification.and(buildSpecification(criteria.getAuthorId(), root -> root.join(Book_.author).get(Author_.id)));
             }
-            if(criteria.getCreatedDate() != null) {
-                if(criteria.getCreatedDate().getGreaterThanOrEqual().isAfter(criteria.getCreatedDate().getLessThanOrEqual())) {
+            if (criteria.getCreatedDate() != null) {
+                if (criteria.getCreatedDate().getGreaterThanOrEqual().isAfter(criteria.getCreatedDate().getLessThanOrEqual())) {
                     throw new ApiRequestException("Invalid date range: greaterThanOrEqual cannot be after lessThanOrEqual");
                 }
                 specification = specification.and((root, query, builder) ->
@@ -79,11 +73,15 @@ public class BookQueryServiceImpl extends QueryService<Book> {
                                 criteria.getCreatedDate().getGreaterThanOrEqual().atStartOfDay(),
                                 criteria.getCreatedDate().getLessThanOrEqual().atTime(LocalTime.MAX)));
             }
-            if(criteria.getLastModifiedDate() != null) {
+            if (criteria.getLastModifiedDate() != null) {
                 specification = specification.and((root, query, builder) ->
                         builder.between(root.get(Book_.lastModifiedDate),
                                 criteria.getLastModifiedDate().getGreaterThanOrEqual().atStartOfDay(),
                                 criteria.getLastModifiedDate().getLessThanOrEqual().atTime(LocalTime.MAX)));
+            }
+            if (criteria.getRemoved() != null) {
+                specification = specification.and((root, query, builder) ->
+                        builder.equal(root.get(Book_.removed), criteria.getRemoved()));
             }
         }
         return specification;

@@ -1,18 +1,16 @@
 package org.example.librarymanagement.service.criteria;
 
-import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.librarymanagement.entity.Author;
-import org.example.librarymanagement.entity.Genre;
 import tech.jhipster.service.Criteria;
-import tech.jhipster.service.filter.*;
+import tech.jhipster.service.filter.IntegerFilter;
+import tech.jhipster.service.filter.LocalDateFilter;
+import tech.jhipster.service.filter.LongFilter;
+import tech.jhipster.service.filter.StringFilter;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
@@ -37,6 +35,8 @@ public class BookCriteria implements Criteria, Serializable {
 
     private LocalDateFilter lastModifiedDate;
 
+    private Boolean removed;
+
     private Boolean distinct;
 
     public BookCriteria(BookCriteria other) {
@@ -48,6 +48,7 @@ public class BookCriteria implements Criteria, Serializable {
         this.authorId = other.authorId == null ? null : other.authorId.copy();
         this.createdDate = other.createdDate == null ? null : other.createdDate.copy();
         this.lastModifiedDate = other.lastModifiedDate == null ? null : other.lastModifiedDate.copy();
+        this.removed = other.removed;
         this.distinct = other.distinct;
     }
 
@@ -66,6 +67,7 @@ public class BookCriteria implements Criteria, Serializable {
                 && Objects.equals(description, that.description) && Objects.equals(quantity, that.quantity)
                 && Objects.equals(genreId, that.genreId) && Objects.equals(authorId, that.authorId)
                 && Objects.equals(createdDate, that.createdDate) && Objects.equals(lastModifiedDate, that.lastModifiedDate)
+                && Objects.equals(removed, that.removed)
                 && Objects.equals(distinct, that.distinct);
     }
 
@@ -73,7 +75,7 @@ public class BookCriteria implements Criteria, Serializable {
     public int hashCode() {
         return Objects.hash(id, title, description,
                 quantity, genreId, authorId,
-                createdDate, lastModifiedDate, distinct);
+                createdDate, lastModifiedDate, removed, distinct);
     }
 
     public static LocalDate parseDate(String dateString) {

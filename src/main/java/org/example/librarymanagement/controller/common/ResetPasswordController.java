@@ -24,7 +24,7 @@ public class ResetPasswordController {
 
     @Operation(summary = "Request Reset Password",
             description = "Request to reset user password",
-            tags = { "Reset Password", "post" })
+            tags = {"Reset Password", "post"})
     @PostMapping
     public ResponseEntity<Void> requestResetPassword(
             @Valid @RequestBody ResetPasswordRequest request) {
@@ -35,8 +35,8 @@ public class ResetPasswordController {
 
     @Operation(summary = "Confirm Reset Password",
             description = "Confirm reset password token",
-            tags = { "Reset Password", "post" })
-    @PostMapping("/confirm-token")
+            tags = {"Reset Password", "put"})
+    @PutMapping
     public ResponseEntity<Void> confirmResetPassword(
             @Parameter(description = "Reset Password Token",
                     in = ParameterIn.QUERY, required = true, example = "token123")

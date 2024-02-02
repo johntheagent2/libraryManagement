@@ -6,10 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 @Service
 public class ExcelSqlHandler {
@@ -54,28 +51,55 @@ public class ExcelSqlHandler {
     private static PreparedStatement createPreparedStatement(Connection connection, String tableName, String[] columnNames) throws SQLException {
         StringBuilder queryBuilder = new StringBuilder("INSERT INTO ");
         queryBuilder.append(tableName).append(" (");
+
         for (String columnName : columnNames) {
             queryBuilder.append(columnName).append(", ");
         }
+
         queryBuilder.setLength(queryBuilder.length() - 2); // Remove the last comma and space
         queryBuilder.append(") VALUES (");
+
         for (int i = 0; i < columnNames.length; i++) {
             queryBuilder.append("?, ");
         }
+
         queryBuilder.setLength(queryBuilder.length() - 2); // Remove the last comma and space
         queryBuilder.append(")");
         return connection.prepareStatement(queryBuilder.toString());
     }
 
     private static void setCellValue(PreparedStatement statement, Cell cell, int columnIndex) throws SQLException {
-        if (cell.getCellType() == CellType.NUMERIC) {
-            statement.setDouble(columnIndex, cell.getNumericCellValue());
-        } else if (cell.getCellType() == CellType.STRING) {
-            statement.setString(columnIndex, cell.getStringCellValue());
-        } else if (cell.getCellType() == CellType.BOOLEAN) {
-            statement.setBoolean(columnIndex, cell.getBooleanCellValue());
-        } else {
-            statement.setString(columnIndex, null);
+        switch (cell.getCellType()) {
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    statement.setDate(columnIndex, new java.sql.Date(cell.getDateCellValue().getTime()));
+                } else {
+                    statement.setDouble(columnIndex, cell.getNumericCellValue());
+                }
+                break;
+            case STRING:
+                statement.setString(columnIndex, cell.getStringCellValue());
+                break;
+            case BOOLEAN:
+                statement.setBoolean(columnIndex, cell.getBooleanCellValue());
+                break;
+            default:
+                statement.setString(columnIndex, null);
+                break;
+        }
+    }
+
+    public static void dropTable(String tableName) {
+        // SQL statement to drop the table
+        String dropTableSQL = "DROP TABLE IF EXISTS " + tableName;
+
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+             Statement statement = connection.createStatement()) {
+
+            // Execute the drop table statement
+            statement.executeUpdate(dropTableSQL);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

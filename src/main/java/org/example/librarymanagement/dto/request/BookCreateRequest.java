@@ -2,12 +2,14 @@ package org.example.librarymanagement.dto.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import org.example.librarymanagement.entity.Author;
-import org.example.librarymanagement.entity.Genre;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class BookCreateRequest {
     private MultipartFile picture;
 

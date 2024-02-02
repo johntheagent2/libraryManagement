@@ -1,11 +1,13 @@
-package org.example.librarymanagement.controller.common;
+package org.example.librarymanagement.controller.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.librarymanagement.ExcelSqlHandler;
 import org.example.librarymanagement.config.TestConfig;
 import org.example.librarymanagement.dto.request.AuthenticationRequest;
-import org.example.librarymanagement.dto.response.AuthenticationResponse;
+import org.example.librarymanagement.dto.request.ChangeEmailRequest;
+import org.example.librarymanagement.entity.TokenOTP;
 import org.example.librarymanagement.repository.AppUserRepository;
+import org.example.librarymanagement.repository.TokenOtpRepository;
 import org.example.librarymanagement.service.AuthenticationService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,18 +21,16 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.IOException;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ContextConfiguration(classes = TestConfig.class)
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class AuthenticationControllerTest {
+public class ChangeMailControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -38,22 +38,32 @@ class AuthenticationControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    static final String testFile = "src/test/resources/test/test.xlsx";
+
     @Autowired
     private AppUserRepository appUserRepository;
 
     @Autowired
     private AuthenticationService authenticationService;
 
-    static final String testFile = "src/test/resources/test/test.xlsx";
+    @Autowired
+    private TokenOtpRepository tokenOtpRepository;
 
     String email = "caophat113@gmail.com";
 
+    String newMail = "caophat_changed@gmail.com";
+
     String password = "Ducph@t1742002";
+
+    String jwtToken;
 
     @BeforeEach
     void setUp() throws IOException {
         ExcelSqlHandler.readExcelFile(testFile, "account", 0);
         ExcelSqlHandler.readExcelFile(testFile, "app_user", 1);
+
+        AuthenticationRequest request = new AuthenticationRequest(email, password, 0);
+        jwtToken = authenticationService.authenticate(request).getJwtToken();
     }
 
     @AfterEach
@@ -62,43 +72,37 @@ class AuthenticationControllerTest {
         appUserRepository.deleteById(2L);
     }
 
-
     @Test
-    @Order(1)
-    void authenticateNoOtp() throws Exception {
-        AuthenticationRequest request = new AuthenticationRequest(email, password, 0);
+    void requestChangeMailTestSuccess() throws Exception {
+        ChangeEmailRequest request = new ChangeEmailRequest(newMail);
 
-        mockMvc.perform(post("/api/v1/common/auth")
+        mockMvc.perform(post("/api/v1/user/change-mail")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(jsonPath("$.jwtToken").isString())
-                .andExpect(jsonPath("$.refreshToken").isString())
-                .andReturn();
+                .andExpect(status().isAccepted());
     }
 
     @Test
-    @Order(2)
-    void refreshTokenWithRefreshToken() throws Exception {
-        AuthenticationRequest request = new AuthenticationRequest(email, password, 0);
-        AuthenticationResponse response = authenticationService.authenticate(request);
+    void changeMailSuccessWithToken() throws Exception {
+        TokenOTP tokenOTP;
+        String token;
+        ChangeEmailRequest request = new ChangeEmailRequest(newMail);
 
-        mockMvc.perform(get("/api/v1/common/auth/refresh-token")
+        mockMvc.perform(post("/api/v1/user/change-mail")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + response.getRefreshToken()))
-                .andExpect(jsonPath("$.jwtToken").isString())
-                .andExpect(jsonPath("$.refreshToken").isString())
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isAccepted());
+        tokenOTP = tokenOtpRepository.findByAppUser_Email(email);
+        token = tokenOTP.getOtpToken();
+
+        mockMvc.perform(put("/api/v1/user/change-mail")
+                        .param("token", token)
+                        .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().is2xxSuccessful());
-    }
 
-    @Test
-    @Order(3)
-    void refreshTokenWithJwtToken() throws Exception {
-        AuthenticationRequest request = new AuthenticationRequest(email, password, 0);
-        AuthenticationResponse response = authenticationService.authenticate(request);
-
-        mockMvc.perform(get("/api/v1/common/auth/refresh-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + response.getJwtToken()))
-                .andExpect(status().is4xxClientError());
+        Assertions.assertFalse(appUserRepository.existsAppUserByEmail(email));
+        Assertions.assertEquals(newMail, appUserRepository.findAppUserByEmail(newMail).get().getEmail());
     }
 }

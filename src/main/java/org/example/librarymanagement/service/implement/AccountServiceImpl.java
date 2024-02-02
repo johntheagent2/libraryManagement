@@ -2,23 +2,18 @@ package org.example.librarymanagement.service.implement;
 
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.common.Global;
-import org.example.librarymanagement.config.security.PasswordEncoder;
-import org.example.librarymanagement.dto.request.*;
-import org.example.librarymanagement.dto.response.MfaResponse;
-import org.example.librarymanagement.entity.AppUser;
+import org.example.librarymanagement.dto.request.ChangePasswordRequest;
+import org.example.librarymanagement.dto.request.OtpVerificationRequest;
+import org.example.librarymanagement.dto.request.ResetPasswordRequest;
 import org.example.librarymanagement.entity.TokenOTP;
 import org.example.librarymanagement.entity.base.Account;
 import org.example.librarymanagement.enumeration.ChangeType;
-import org.example.librarymanagement.exception.exception.BadCredentialException;
 import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.example.librarymanagement.repository.AccountRepository;
+import org.example.librarymanagement.repository.AppUserRepository;
 import org.example.librarymanagement.service.AccountService;
-import org.example.librarymanagement.service.GoogleAuthenticatorService;
 import org.example.librarymanagement.service.SessionService;
 import org.example.librarymanagement.service.TokenOtpService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +28,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final ResourceBundle resourceBundle;
     private final TokenOtpService tokenOtpService;
+    private final AppUserRepository appUserRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final SessionService sessionService;
     private final ChangeType resetPassword = ChangeType.RESET_PASSWORD;
@@ -54,7 +50,9 @@ public class AccountServiceImpl implements AccountService {
         Account account;
         TokenOTP tokenOTP = tokenOtpService.checkOtp(token, resetPassword, email);
 
-        account = tokenOTP.getAppUser();
+        account = appUserRepository.findById(tokenOTP.getAppUser().getId())
+                .orElseThrow(() -> new BadRequestException("user.email.email-not-found",
+                        resourceBundle.getString("user.email.email-not-found")));
         account.setPassword(passwordEncoder.encode(tokenOTP.getRequest()));
 
         updateAccount(account);
@@ -104,11 +102,11 @@ public class AccountServiceImpl implements AccountService {
         tokenOtpService.deleteById(tokenOTP.getId());
     }
 
-    public void updateAccount(Account account){
+    public void updateAccount(Account account) {
         accountRepository.save(account);
     }
 
-    public Account getAccount(String email){
+    public Account getAccount(String email) {
         return findByEmail(email)
                 .orElseThrow(() -> new BadRequestException("user.email.email-not-found",
                         resourceBundle.getString("user.email.email-not-found")));
