@@ -1,6 +1,7 @@
 package org.example.librarymanagement.service.implement;
 
 import lombok.AllArgsConstructor;
+import org.example.librarymanagement.common.Global;
 import org.example.librarymanagement.common.email.EmailSenderService;
 import org.example.librarymanagement.common.sms.SmsSenderService;
 import org.example.librarymanagement.entity.AppUser;
@@ -24,10 +25,9 @@ public class TokenOtpServiceImpl implements TokenOtpService {
     private final ResourceBundle resourceBundle;
     private final SmsSenderService smsSenderService;
     private final EmailSenderService emailSenderService;
-//    tokenOTP -> tokenOtpRepository.deleteById(tokenOTP.getId())
+
     @Override
     public void deleteDuplicateRequest(ChangeType type, String request) {
-        System.out.println("Start");
         tokenOtpRepository.findByTypeAndRequest(type, request)
                 .ifPresent((tokenOTP -> {
                     tokenOTP.getAppUser().removeTokenOTP(tokenOTP);
@@ -92,32 +92,11 @@ public class TokenOtpServiceImpl implements TokenOtpService {
         tokenOtpRepository.deleteById(id);
     }
 
-    private String tokenGenerator(){
-        return UUID.randomUUID().toString();
-    }
-
-    private String otpGenerator(){
-        int otpLength = 6;
-        String allowedChars = "0123456789";
-
-        StringBuilder otp = new StringBuilder(otpLength);
-
-        Random random = new Random();
-
-        for (int i = 0; i < otpLength; i++) {
-            int index = random.nextInt(allowedChars.length());
-            char randomChar = allowedChars.charAt(index);
-            otp.append(randomChar);
-        }
-
-        return otp.toString();
-    }
-
     public String generateBasedOnType(ChangeType type){
         if(type.equals(ChangeType.CHANGE_EMAIL) || type.equals(ChangeType.RESET_PASSWORD)){
-            return tokenGenerator();
+            return Global.UUIDgenrator();
         }else {
-            return otpGenerator();
+            return Global.otpGenerator();
         }
     }
 

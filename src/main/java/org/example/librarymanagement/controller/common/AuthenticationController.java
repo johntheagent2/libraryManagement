@@ -1,7 +1,6 @@
 package org.example.librarymanagement.controller.common;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.dto.request.AuthenticationRequest;
@@ -21,7 +20,7 @@ public class AuthenticationController {
 
     @Operation(summary = "Authenticate User",
             description = "Authenticate user and return JWT token and Refresh token",
-            tags = { "Authentication", "post" })
+            tags = {"Authentication", "post"})
     @PostMapping
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest authRequest) {
@@ -32,11 +31,9 @@ public class AuthenticationController {
 
     @Operation(summary = "Refresh Token",
             description = "Refresh JWT token using refresh token",
-            tags = { "Authentication", "get" })
+            tags = {"Authentication", "get"})
     @GetMapping("/refresh-token")
     public ResponseEntity<AuthenticationResponse> refreshToken(
-            @Parameter(description = "JWT Authorization Header",
-                    required = true, example = "Bearer {token}")
             @RequestHeader("Authorization") String authorization) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)

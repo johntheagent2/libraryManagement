@@ -26,19 +26,14 @@ public class AppUserQueryServiceImpl extends QueryService<AppUser> {
     public Page<UserResponse> findByCriteria(UserCriteria criteria, Pageable page) {
         final Specification<AppUser> specification = createSpecification(criteria);
         Page<AppUser> appUsers = appUserRepository.findAll(specification, page);
-
-        List<UserResponse> userResponses = appUsers.getContent().stream()
-                .map(appUser -> UserResponse.builder()
-                        .firstName(appUser.getFirstName())
-                        .lastName(appUser.getLastName())
-                        .address(appUser.getAddress())
-                        .email(appUser.getEmail())
-                        .phoneNumber(appUser.getPhoneNumber())
-                        .build())
-                .toList();
-
         // Map AppUser to UserResponse
-        return new PageImpl<>(userResponses, page, appUsers.getTotalElements());
+        return appUsers.map((appUser) -> UserResponse.builder()
+                .firstName(appUser.getFirstName())
+                .lastName(appUser.getLastName())
+                .address(appUser.getAddress())
+                .email(appUser.getEmail())
+                .phoneNumber(appUser.getPhoneNumber())
+                .build());
 
     }
 
