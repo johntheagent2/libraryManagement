@@ -34,10 +34,12 @@ public class BookFileProcess {
         String[] line;
         String title;
         String description;
+        String priceStr;
         String genreIdStr;
         String quantityStr;
         String authorIdStr;
         int quantity;
+        double price;
         long genreId;
         long authorId;
         List<BookCreateRequest> bookList = new ArrayList<>();
@@ -54,12 +56,14 @@ public class BookFileProcess {
 
                 title = line[0];
                 description = line[1];
-                quantityStr = line[2];
-                genreIdStr = line[3];
-                authorIdStr = line[4];
+                priceStr = line[2];
+                quantityStr = line[3];
+                genreIdStr = line[4];
+                authorIdStr = line[5];
 
                 validateAttributes(title, description, quantityStr, genreIdStr, authorIdStr, resourceBundle);
 
+                price = Double.parseDouble(priceStr);
                 quantity = Integer.parseInt(quantityStr);
                 genreId = Long.parseLong(genreIdStr);
                 authorId = Long.parseLong(authorIdStr);
@@ -68,6 +72,7 @@ public class BookFileProcess {
                 book.setTitle(title);
                 book.setDescription(description);
                 book.setQuantity(quantity);
+                book.setPrice(price);
                 book.setGenreId(genreId);
                 book.setAuthorId(authorId);
                 bookList.add(book);

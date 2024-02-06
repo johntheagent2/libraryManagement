@@ -23,6 +23,10 @@ public class BookCreateRequest {
     @NotNull(message = "Quantity should not be null")
     private int quantity;
 
+    @NotNull(message = "Price should not be null")
+    @Min(value = 0, message = "Price smallest value is 0")
+    private double price;
+
     @NotNull(message = "Genre Id should not be null")
     private Long genreId;
 
