@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.librarymanagement.dto.request.BorrowBookRequest;
+import org.example.librarymanagement.dto.request.ReturnBorrowedRequest;
 import org.example.librarymanagement.dto.response.BookResponse;
 import org.example.librarymanagement.dto.response.BorrowedBookResponse;
 import org.example.librarymanagement.service.BorrowReceiptService;
@@ -49,7 +50,17 @@ public class BorrowBookController {
             tags = { "Get Current Borrowed Books", "get" })
     @GetMapping("/current")
     public ResponseEntity<List<BorrowedBookResponse>> getCurrentBorrowedBook(){
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(borrowReceiptService.getCurrentBorrowed());
+    }
+
+    @Operation(summary = "Return Current Borrowed Books",
+            description = "Return Current Borrowed Books",
+            tags = { "Return Current Borrowed Books", "post" })
+    @PostMapping("/return")
+    public ResponseEntity<Void> returnBorrowedBook(@RequestBody List<ReturnBorrowedRequest> requestList){
+        borrowReceiptService.returnBorrowed(requestList);
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .build();
     }
 }

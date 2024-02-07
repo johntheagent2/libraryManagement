@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.librarymanagement.common.Global;
 import org.example.librarymanagement.common.email.EmailSenderService;
 import org.example.librarymanagement.dto.request.BorrowBookRequest;
+import org.example.librarymanagement.dto.request.ReturnBorrowedRequest;
 import org.example.librarymanagement.dto.response.BookResponse;
 import org.example.librarymanagement.dto.response.BorrowedBookResponse;
 import org.example.librarymanagement.entity.AppUser;
@@ -11,10 +12,12 @@ import org.example.librarymanagement.entity.Book;
 import org.example.librarymanagement.entity.BorrowReceipt;
 import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.example.librarymanagement.exception.exception.NotFoundException;
+import org.example.librarymanagement.exception.exception.OptimisticLockException;
 import org.example.librarymanagement.repository.BorrowReceiptRepository;
 import org.example.librarymanagement.service.AppUserService;
 import org.example.librarymanagement.service.BookService;
 import org.example.librarymanagement.service.BorrowReceiptService;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -48,24 +51,81 @@ public class BorrowReceiptServiceImpl implements BorrowReceiptService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+    @Transactional
     public void borrow(List<BorrowBookRequest> requestList) {
         String email = Global.getCurrentLogin(resourceBundle).getUsername();
         AppUser appUser;
         BorrowReceipt borrowReceipt;
         List<Book> allBooks;
 
+        checkRequestList(requestList);
         checkBookPerGenre(requestList);
         isBookBorrowable(requestList);
         checkForActiveBorrowSession();
 
         allBooks = toList(requestList);
 
-        appUser = appUserService.getAppUser(email);
-        borrowReceipt = new BorrowReceipt(allBooks, appUser);
-        borrowReceiptRepository.save(borrowReceipt);
+        try{
+            appUser = appUserService.getAppUser(email);
+            borrowReceipt = new BorrowReceipt(allBooks, appUser);
+            borrowReceiptRepository.save(borrowReceipt);
 //        emailSenderService.sendInvoiceEmail(email, allBooks, borrowReceipt.getTotalPrice());
+        }catch (OptimisticLockException e){
+            throw new OptimisticLockException(resourceBundle.getString("service.borrow-book.conflict"),
+                    "service.borrow-book.conflict");
+        }
 
+    }
+
+    @Transactional
+    public void returnBorrowed(List<ReturnBorrowedRequest> requestList) {
+        String email = Global.getCurrentLogin(resourceBundle).getUsername();
+        boolean isActive = true;
+        List<Book> currentBookList;
+
+        BorrowReceipt borrowReceipt = getReceiptByEmailAndActive(email, isActive)
+                .orElseThrow(() -> new NotFoundException(
+                        resourceBundle.getString("service.return-book.not-found"),
+                        "service.return-book.not-found"));
+
+        currentBookList = borrowReceipt.getBookList();
+
+        try{
+            checkList(requestList);
+            processReturnedBooks(requestList, currentBookList);
+        }catch (OptimisticLockException e){
+            throw new OptimisticLockException(resourceBundle.getString("service.return-book.conflict"),
+                    "service.return-book.conflict");
+        }
+
+        if (currentBookList.isEmpty()) {
+            borrowReceiptRepository.updateBorrowSession(borrowReceipt.getId());
+        }
+    }
+
+    private void processReturnedBooks(List<ReturnBorrowedRequest> requestList, List<Book> currentBookList) {
+        requestList.forEach(bookId -> removeAndUpdateBook(bookId.getId(), currentBookList));
+    }
+
+    private void removeAndUpdateBook(Long bookId, List<Book> currentBookList) {
+        currentBookList.removeIf(currentBook -> bookId.equals(currentBook.getId()));
+        updateBookQuantity(currentBookList);
+    }
+
+    private void updateBookQuantity(List<Book> currentBookList) {
+        currentBookList.forEach(currentBook -> {
+            int quantity = currentBook.getQuantity() + 1;
+            currentBook.setQuantity(quantity);
+            bookService.saveBook(currentBook);
+        });
+    }
+
+    private void checkList(List<ReturnBorrowedRequest> requestList){
+        if (requestList.isEmpty()){
+            throw new BadRequestException(
+                    resourceBundle.getString("service.return-book.empty-return-list"),
+                    "service.return-book.empty-return-list");
+        }
     }
 
     private List<BorrowedBookResponse> convertToBookResponse(List<Book> bookList){
@@ -94,9 +154,7 @@ public class BorrowReceiptServiceImpl implements BorrowReceiptService {
     private void checkForActiveBorrowSession(){
         String email = Global.getCurrentLogin(resourceBundle).getUsername();
         boolean isActive = true;
-        Optional<BorrowReceipt> borrowedTitles = getReceiptByEmailAndActive(email, isActive);
-
-        borrowedTitles.ifPresent((book) -> {
+        getReceiptByEmailAndActive(email, isActive).ifPresent((book) -> {
             throw new BadRequestException(
                     resourceBundle.getString("service.borrow-book.active-session"),
                     "service.borrow-book.active-session");
@@ -134,6 +192,14 @@ public class BorrowReceiptServiceImpl implements BorrowReceiptService {
             throw new BadRequestException(
                     resourceBundle.getString("service.borrow-book.not-unique-genre"),
                     "service.borrow-book.not-unique-genre");
+        }
+    }
+
+    private void checkRequestList(List<BorrowBookRequest> requestList){
+        if(requestList.isEmpty()){
+            throw new BadRequestException(
+                    resourceBundle.getString("service.borrow-book.empty-borrow-list"),
+                    "service.borrow-book.empty-borrow-list");
         }
     }
 }

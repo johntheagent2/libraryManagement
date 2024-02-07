@@ -23,6 +23,9 @@ public class Book extends AuditableEntity {
     @Column(name = "id")
     private Long id;
 
+    @Version
+    private Long version;
+
     @Column(name = "picture", nullable = false)
     private String picture;
 
