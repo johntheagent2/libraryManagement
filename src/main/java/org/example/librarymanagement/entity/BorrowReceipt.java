@@ -5,6 +5,7 @@ import lombok.*;
 import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
 import org.example.librarymanagement.entity.base.AuditableEntity;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -24,7 +25,7 @@ public class BorrowReceipt extends AuditableEntity {
     private Long id;
 
     @Column(name = "total_price", nullable = false)
-    private double totalPrice = 0;
+    private BigDecimal totalPrice = BigDecimal.valueOf(0);
 
     @Column(name = "active")
     private boolean active = true;
@@ -33,7 +34,7 @@ public class BorrowReceipt extends AuditableEntity {
     @JoinColumn(name = "app_user_id", nullable = false)
     private AppUser appUser;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "book_receipt",
             joinColumns = @JoinColumn(name = "book_id"),
@@ -43,8 +44,9 @@ public class BorrowReceipt extends AuditableEntity {
 
     public BorrowReceipt(List<Book> bookList, AppUser appUser){
         if(!bookList.isEmpty()){
-            this.totalPrice = bookList.stream()
-                    .mapToDouble(Book::getPrice).sum();
+            bookList.forEach(
+                    (book) -> this.totalPrice = this.totalPrice.add(book.getPrice())
+            );
         }
         this.appUser = appUser;
         this.bookList = bookList;

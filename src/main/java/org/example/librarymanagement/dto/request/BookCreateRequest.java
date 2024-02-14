@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,7 +27,7 @@ public class BookCreateRequest {
 
     @NotNull(message = "Price should not be null")
     @Min(value = 0, message = "Price smallest value is 0")
-    private double price;
+    private BigDecimal price;
 
     @NotNull(message = "Genre Id should not be null")
     private Long genreId;

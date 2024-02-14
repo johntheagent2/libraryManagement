@@ -12,9 +12,18 @@ public interface BorrowReceiptRepository extends JpaRepository<BorrowReceipt, Lo
 
     Optional<BorrowReceipt> getAllByAppUser_EmailAndActive(String email, boolean active);
 
+    @Query("SELECT CASE WHEN COUNT(br) > 0 THEN true ELSE false END " +
+            "FROM BorrowReceipt br " +
+            "WHERE br.appUser.email = ?1 and br.active = ?2")
+    boolean existsByEmailAndActive(String email, boolean isActive);
 
     @Transactional
     @Modifying
-    @Query("UPDATE BorrowReceipt br SET br.active = false WHERE br.id = ?1")
-    void updateBorrowSession(Long id);
+    @Query("UPDATE BorrowReceipt br " +
+            "SET br.active = false " +
+            "WHERE EXISTS (SELECT 1 FROM AppUser au " +
+            "              WHERE au.id = br.appUser.id " +
+            "                AND au.email = ?1 " +
+            "                AND br.active = ?2)")
+    void updateBorrowSession(String email, boolean isActive);
 }

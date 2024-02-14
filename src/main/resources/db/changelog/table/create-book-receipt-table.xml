@@ -11,10 +11,10 @@
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="total_price" type="double">
+            <column name="total_price" type="decimal(19, 2)">
                 <constraints nullable="false"/>
             </column>
-            <column name="active" type="boolean"> <!-- Corrected data type to boolean -->
+            <column name="active" type="boolean">
                 <constraints nullable="false"/>
             </column>
             <column name="app_user_id" type="bigint">
@@ -23,7 +23,7 @@
         </createTable>
     </changeSet>
 
-    <!-- Changeset for the BorrowReceipt entity -->
+    <!-- Changeset for the BookReceipt entity -->
     <changeSet id="createBookReceiptTable" author="yourName">
         <createTable tableName="book_receipt">
             <column name="book_id" type="bigint">
@@ -33,17 +33,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
         </createTable>
-    </changeSet>
 
-    <!-- Change set for adding foreign key constraint to borrow_receipt table -->
-    <changeSet id="add-fk-to-borrow-receipt" author="yourName">
-        <addForeignKeyConstraint constraintName="fk_borrow_receipt_app_user"
-                                 baseTableName="borrow_receipt" baseColumnNames="app_user_id"
-                                 referencedTableName="app_user" referencedColumnNames="id"/>
-    </changeSet>
-
-    <!-- Change set for adding foreign key constraints to book_receipt table -->
-    <changeSet id="add-fk-to-receipt-book" author="yourName">
         <addForeignKeyConstraint constraintName="fk_book_receipt_book"
                                  baseTableName="book_receipt" baseColumnNames="book_id"
                                  referencedTableName="book" referencedColumnNames="id"/>
@@ -51,6 +41,13 @@
         <addForeignKeyConstraint constraintName="fk_book_receipt_borrow_receipt"
                                  baseTableName="book_receipt" baseColumnNames="receipt_id"
                                  referencedTableName="borrow_receipt" referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- Change set for adding foreign key constraint to borrow_receipt table -->
+    <changeSet id="add-fk-to-borrow-receipt" author="yourName">
+        <addForeignKeyConstraint constraintName="fk_borrow_receipt_app_user"
+                                 baseTableName="borrow_receipt" baseColumnNames="app_user_id"
+                                 referencedTableName="app_user" referencedColumnNames="id"/>
     </changeSet>
 
 </databaseChangeLog>

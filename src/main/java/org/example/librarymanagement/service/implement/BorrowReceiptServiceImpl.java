@@ -5,7 +5,6 @@ import org.example.librarymanagement.common.Global;
 import org.example.librarymanagement.common.email.EmailSenderService;
 import org.example.librarymanagement.dto.request.BorrowBookRequest;
 import org.example.librarymanagement.dto.request.ReturnBorrowedRequest;
-import org.example.librarymanagement.dto.response.BookResponse;
 import org.example.librarymanagement.dto.response.BorrowedBookResponse;
 import org.example.librarymanagement.entity.AppUser;
 import org.example.librarymanagement.entity.Book;
@@ -17,13 +16,13 @@ import org.example.librarymanagement.repository.BorrowReceiptRepository;
 import org.example.librarymanagement.service.AppUserService;
 import org.example.librarymanagement.service.BookService;
 import org.example.librarymanagement.service.BorrowReceiptService;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -42,7 +41,7 @@ public class BorrowReceiptServiceImpl implements BorrowReceiptService {
         String email = Global.getCurrentLogin(resourceBundle).getUsername();
         boolean isActive = true;
         List<BorrowedBookResponse> bookResponseList = new ArrayList<>();
-        getReceiptByEmailAndActive(email, isActive).ifPresent(
+        borrowReceiptRepository.getAllByAppUser_EmailAndActive(email, isActive).ifPresent(
                 borrowReceipt -> {
                     bookResponseList.addAll(convertToBookResponse(borrowReceipt.getBookList()));
                 }
@@ -61,7 +60,7 @@ public class BorrowReceiptServiceImpl implements BorrowReceiptService {
         checkRequestList(requestList);
         checkBookPerGenre(requestList);
         isBookBorrowable(requestList);
-        checkForActiveBorrowSession();
+        checkForActiveBorrowSession(email);
 
         allBooks = toList(requestList);
 
@@ -83,12 +82,11 @@ public class BorrowReceiptServiceImpl implements BorrowReceiptService {
         boolean isActive = true;
         List<Book> currentBookList;
 
-        BorrowReceipt borrowReceipt = getReceiptByEmailAndActive(email, isActive)
+        currentBookList = borrowReceiptRepository.getAllByAppUser_EmailAndActive(email, isActive)
+                .map(BorrowReceipt::getBookList)
                 .orElseThrow(() -> new NotFoundException(
                         resourceBundle.getString("service.return-book.not-found"),
                         "service.return-book.not-found"));
-
-        currentBookList = borrowReceipt.getBookList();
 
         try{
             checkList(requestList);
@@ -99,7 +97,7 @@ public class BorrowReceiptServiceImpl implements BorrowReceiptService {
         }
 
         if (currentBookList.isEmpty()) {
-            borrowReceiptRepository.updateBorrowSession(borrowReceipt.getId());
+            borrowReceiptRepository.updateBorrowSession(email, isActive);
         }
     }
 
@@ -109,15 +107,14 @@ public class BorrowReceiptServiceImpl implements BorrowReceiptService {
 
     private void removeAndUpdateBook(Long bookId, List<Book> currentBookList) {
         currentBookList.removeIf(currentBook -> bookId.equals(currentBook.getId()));
-        updateBookQuantity(currentBookList);
+        updateBook(bookId);
     }
 
-    private void updateBookQuantity(List<Book> currentBookList) {
-        currentBookList.forEach(currentBook -> {
-            int quantity = currentBook.getQuantity() + 1;
-            currentBook.setQuantity(quantity);
-            bookService.saveBook(currentBook);
-        });
+    private void updateBook(Long bookId){
+        Book currentBook = bookService.findById(bookId);
+        int quantity = currentBook.getQuantity() + 1;
+        currentBook.setQuantity(quantity);
+        bookService.saveBook(currentBook);
     }
 
     private void checkList(List<ReturnBorrowedRequest> requestList){
@@ -151,18 +148,14 @@ public class BorrowReceiptServiceImpl implements BorrowReceiptService {
                 }).toList();
     }
 
-    private void checkForActiveBorrowSession(){
-        String email = Global.getCurrentLogin(resourceBundle).getUsername();
+    private void checkForActiveBorrowSession(String email){
         boolean isActive = true;
-        getReceiptByEmailAndActive(email, isActive).ifPresent((book) -> {
+
+        if (borrowReceiptRepository.existsByEmailAndActive(email, isActive)) {
             throw new BadRequestException(
                     resourceBundle.getString("service.borrow-book.active-session"),
                     "service.borrow-book.active-session");
-        });
-    }
-
-    private Optional<BorrowReceipt> getReceiptByEmailAndActive(String email, boolean isActive){
-        return borrowReceiptRepository.getAllByAppUser_EmailAndActive(email, isActive);
+        }
     }
 
     private void isBookBorrowable(List<BorrowBookRequest> requestList){

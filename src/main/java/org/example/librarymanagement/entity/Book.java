@@ -5,6 +5,7 @@ import lombok.*;
 import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
 import org.example.librarymanagement.entity.base.AuditableEntity;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -39,7 +40,7 @@ public class Book extends AuditableEntity {
     private int quantity;
 
     @Column(name = "price", nullable = false)
-    private double price;
+    private BigDecimal price;
 
     @Column(name = "removed", nullable = false)
     private Boolean removed;
@@ -52,7 +53,7 @@ public class Book extends AuditableEntity {
     @JoinColumn(name = "author_id")
     private Author author;
 
-    @ManyToMany(mappedBy = "bookList", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "bookList", fetch = FetchType.LAZY)
     private List<BorrowReceipt> borrowReceipts;
 
     public Book(String title, String description, int quantity) {
