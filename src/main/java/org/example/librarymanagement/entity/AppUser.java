@@ -35,6 +35,9 @@ public class AppUser extends Account{
     @Column(name = "secret_key")
     private String secretKey;
 
+    @OneToMany(mappedBy = "appUser", cascade = CascadeType.ALL)
+    private List<BorrowReceipt> borrowReceipts = new ArrayList<>();
+
     @OneToMany(mappedBy = "appUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TokenOTP> otpTokens = new ArrayList<>();
 
