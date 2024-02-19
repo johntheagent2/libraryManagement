@@ -1,11 +1,17 @@
 package org.example.librarymanagement.common.email;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import freemarker.core.ParseException;
+import freemarker.template.*;
+import jakarta.activation.DataHandler;
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.util.ByteArrayDataSource;
 import lombok.RequiredArgsConstructor;
+import org.example.librarymanagement.dto.response.BookInvoiceResponse;
+import org.example.librarymanagement.entity.Book;
+import org.example.librarymanagement.entity.BorrowReceipt;
 import org.example.librarymanagement.exception.exception.MessageException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,9 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,11 +42,17 @@ public class EmailSenderService{
     @Value("${confirmation-template}")
     private String confirmationTemplate;
 
+//    @Value(("${invoice-template}"))
+    private String invoiceTemplate = "invoiceTemplate.ftl";
+
     @Value("${mail-subject-confirmation}")
     private String confirmMailSubject;
 
     @Value("${mail-subject-reset-password}")
     private String resetPasswordSubject;
+
+    @Value("${mail-subject-invoice}")
+    private String invoice;
 
     public void sendConfirmationMail(String token, String otp, String toEmail){
         // Set up FreeMarker configuration
@@ -83,6 +96,15 @@ public class EmailSenderService{
 
     public void sendChangeRequest(String token, String toEmail){
         String tokenLink = verifyTokenLink + token;
+        changeResetSender(toEmail, tokenLink);
+    }
+
+    public void sendResetRequest(String token, String toEmail){
+        String tokenLink = verifyTokenLink + token + "&mail=" + toEmail;
+        changeResetSender(toEmail, tokenLink);
+    }
+
+    public void changeResetSender(String toEmail, String tokenLink){
         Map<String, Object> model = new HashMap<>();
         String emailBody;
         Template freemarkerTemplate;
@@ -119,38 +141,44 @@ public class EmailSenderService{
         mailSender.send(message);
     }
 
-    public void sendResetRequest(String token, String toEmail){
-        String tokenLink = verifyTokenLink + token + "&mail=" + toEmail;
+    public void sendInvoiceEmail(String toEmail, List<Book> bookList, double total) {
         Map<String, Object> model = new HashMap<>();
-        String emailBody;
         Template freemarkerTemplate;
-
+        String emailBody;
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper;
-        try {
-            helper = new MimeMessageHelper(message, true);
+        MimeMultipart mimeMultipart;
 
+        try {
+            mimeMultipart = new MimeMultipart("related");
+
+            helper = new MimeMessageHelper(message, true);
             helper.setFrom(sender);
             helper.setTo(toEmail);
-            helper.setSubject(resetPasswordSubject);
+            helper.setSubject("Invoice");
 
-            model.put("link", tokenLink);
+            model.put("email", toEmail);
+            model.put("books", bookList);
+            model.put("total", total);
 
             // Process the FreeMarker template
-            freemarkerTemplate = freemarkerConfig.getTemplate(confirmationTemplate);
+            freemarkerTemplate = freemarkerConfig.getTemplate(invoiceTemplate);
             emailBody = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, model);
-            helper.setText(emailBody, true);
 
+            // Create a new MimeBodyPart for the HTML content
+            MimeBodyPart htmlPart = new MimeBodyPart();
+            htmlPart.setContent(emailBody, "text/html; charset=utf-8");
+
+            // Add the MimeMultipart with inline images to the message
+            mimeMultipart.addBodyPart(htmlPart);
+            message.setContent(mimeMultipart);
         } catch (IOException e) {
-            throw new org.example.librarymanagement.exception.exception.IOException("util.io.exception",
-                    resourceBundle.getString("util.io.exception"));
-        }catch (TemplateException e){
-            throw new org.example.librarymanagement.exception.exception.TemplateException("freemarker.template.exception",
-                    resourceBundle.getString("freemarker.template.exception"));
-        }catch (MessagingException e){
-            throw new MessageException("jarkarta.mail.exception",
-                    resourceBundle.getString("jarkarta.mail.exception"));
+            throw new RuntimeException("Failed to read image file", e);
+        } catch (TemplateException e) {
+            throw new RuntimeException("Error processing FreeMarker template", e);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Error creating MimeMessage", e);
         }
 
         // Send email

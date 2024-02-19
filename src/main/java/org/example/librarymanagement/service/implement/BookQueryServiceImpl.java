@@ -25,7 +25,18 @@ public class BookQueryServiceImpl extends QueryService<Book> {
     private final BookRepository bookRepository;
 
     @Transactional(readOnly = true)
+    public Page<BookResponse> getAvailableBook(Pageable page) {
+        BookCriteria criteria = new BookCriteria();
+        criteria.setRemoved(false);
+        return getBookResponses(criteria, page);
+    }
+
+    @Transactional(readOnly = true)
     public Page<BookResponse> findByCriteria(BookCriteria criteria, Pageable page) {
+        return getBookResponses(criteria, page);
+    }
+
+    private Page<BookResponse> getBookResponses(BookCriteria criteria, Pageable page) {
         final Specification<Book> specification = createSpecification(criteria);
         Page<Book> books = bookRepository.findAll(specification, page);
         return books.map(book -> BookResponse.builder()

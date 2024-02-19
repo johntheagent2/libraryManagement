@@ -20,6 +20,9 @@
             <column name="description" type="VARCHAR(1000)">
                 <constraints nullable="false"/>
             </column>
+            <column name="price" type="decimal(19, 2)">
+                <constraints nullable="false"/>
+            </column>
             <column name="quantity" type="INT">
                 <constraints nullable="false"/>
             </column>

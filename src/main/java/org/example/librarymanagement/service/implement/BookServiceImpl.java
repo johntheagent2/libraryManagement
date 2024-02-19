@@ -65,6 +65,7 @@ public class BookServiceImpl implements BookService {
                     .title(request.getTitle())
                     .description(request.getDescription())
                     .quantity(currentQuantity.get())
+                    .price(request.getPrice())
                     .author(authorService.findAuthor(request.getAuthorId()))
                     .genre(genreService.findGenre(request.getGenreId()))
                     .removed(false)

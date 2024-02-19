@@ -81,11 +81,19 @@ public class ApiExceptionHandler {
                 .body(apiExceptionResponse);
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(value = {BadCredentialException.class})
     public ResponseEntity<ApiExceptionResponse> handleBadCredential(BadCredentialException exception) {
         ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse(exception.getMessage(), exception.getErrorCode());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(apiExceptionResponse);
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(value = {OptimisticLockException.class})
+    public ResponseEntity<ApiExceptionResponse> handleOptimisticLockException(OptimisticLockException exception) {
+        ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse(exception.getMessage(), exception.getErrorCode());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(apiExceptionResponse);
     }
 }
