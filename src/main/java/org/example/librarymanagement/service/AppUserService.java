@@ -25,13 +25,7 @@ public interface AppUserService {
 
     List<UserResponse> getAllUsers();
 
-    void resetWrongLoginCounter(String email);
-
     void requestResetPassword(ResetPasswordRequest request);
-
-    void resetPassword(String token, String email);
-
-    void changePassword(ChangePasswordRequest request);
 
     MfaResponse enableUserMfa();
 
@@ -41,19 +35,13 @@ public interface AppUserService {
 
     boolean validateMfaOtp(String email, int otp);
 
-    boolean checkMatchingPassword(ResetPasswordRequest request, String oldPassword);
-
     void saveUser(AppUser appUser);
 
     void updateUser(AppUser appUser);
 
     void requestChangePhoneNumber(ChangePhoneNumberRequest request);
 
-    void changePhoneNumber(OtpVerificationRequest request);
-
     void requestChangeEmail(ChangeEmailRequest request);
-
-    void changeEmail(String token);
 
     UserDetails getCurrentLogin();
 }

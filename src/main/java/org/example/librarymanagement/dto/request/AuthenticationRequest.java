@@ -1,18 +1,15 @@
 package org.example.librarymanagement.dto.request;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
+import lombok.*;
 import org.springframework.lang.Nullable;
 
-@Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
 public class AuthenticationRequest {
     @Email(message = "Invalid email address")
     private String email;

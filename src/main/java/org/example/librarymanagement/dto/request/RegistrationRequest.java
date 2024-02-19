@@ -5,9 +5,11 @@ import lombok.*;
 import org.example.librarymanagement.common.validator.phonenumber.ValidatePhoneNumber;
 import org.hibernate.validator.constraints.Length;
 
-@Data
-@AllArgsConstructor
+@Builder
 @Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class RegistrationRequest {
 
     @NotNull(message = "First Name should not be empty!")
@@ -30,6 +32,6 @@ public class RegistrationRequest {
 
     @Length(min = 8, max = 16, message = "Password should be from 8 to 16 characters")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,16}$",
-    message = "At least one uppercase letter, one lowercase letter, one number and one special character")
+            message = "At least one uppercase letter, one lowercase letter, one number and one special character")
     private String password;
 }

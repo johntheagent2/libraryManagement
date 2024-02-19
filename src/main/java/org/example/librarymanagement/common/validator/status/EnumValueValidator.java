@@ -2,7 +2,11 @@ package org.example.librarymanagement.common.validator.status;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import lombok.AllArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 
+@Validated
+@AllArgsConstructor
 public class EnumValueValidator implements ConstraintValidator<ValidateEnumValue, CharSequence> {
 
     private Class<? extends Enum<?>> enumClass;

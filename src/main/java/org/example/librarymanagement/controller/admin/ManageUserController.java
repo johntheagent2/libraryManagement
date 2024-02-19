@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.example.librarymanagement.dto.request.AdminCreateUserRequest;
 import org.example.librarymanagement.dto.request.EditUserInfoRequest;
 import org.example.librarymanagement.dto.response.UserResponse;
+import org.example.librarymanagement.service.AccountService;
 import org.example.librarymanagement.service.AppUserService;
 import org.example.librarymanagement.service.criteria.UserCriteria;
 import org.example.librarymanagement.service.implement.AppUserQueryServiceImpl;
@@ -42,13 +43,7 @@ public class ManageUserController {
             description = "Get a list of users based on specified criteria",
             tags = { "User Management", "get" })
     @GetMapping
-    public ResponseEntity<Page<UserResponse>> getUsersWithCriteria(
-            @Parameter(description = "User search criteria",
-                    in = ParameterIn.QUERY)
-            UserCriteria request,
-            @Parameter(description = "Page information",
-                    in = ParameterIn.QUERY)
-            Pageable page) {
+    public ResponseEntity<Page<UserResponse>> getUsersWithCriteria(UserCriteria request, Pageable page) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(userQueryService.findByCriteria(request, page));
     }
