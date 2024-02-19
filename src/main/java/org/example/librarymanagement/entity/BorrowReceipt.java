@@ -19,31 +19,36 @@ import java.util.List;
 public class BorrowReceipt extends AuditableEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "receipt_generator")
-    @SequenceGenerator(name = "receipt_generator", sequenceName = "receipt_generator", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "receipt_generator")
+    @SequenceGenerator(name = "receipt_generator",
+            sequenceName = "receipt_generator",
+            allocationSize = 1)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "total_price", nullable = false)
+    @Column(name = "total_price",
+            nullable = false)
     private BigDecimal totalPrice = BigDecimal.valueOf(0);
 
     @Column(name = "active")
     private boolean active = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "app_user_id", nullable = false)
+    @JoinColumn(name = "app_user_id",
+            nullable = false)
     private AppUser appUser;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "book_receipt",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "receipt_id")
+            joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "receipt_id", referencedColumnName = "id")
     )
     private List<Book> bookList;
 
-    public BorrowReceipt(List<Book> bookList, AppUser appUser){
-        if(!bookList.isEmpty()){
+    public BorrowReceipt(List<Book> bookList, AppUser appUser) {
+        if (!bookList.isEmpty()) {
             bookList.forEach(
                     (book) -> this.totalPrice = this.totalPrice.add(book.getPrice())
             );

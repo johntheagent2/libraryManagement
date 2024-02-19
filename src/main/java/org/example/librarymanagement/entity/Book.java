@@ -53,7 +53,8 @@ public class Book extends AuditableEntity {
     @JoinColumn(name = "author_id")
     private Author author;
 
-    @ManyToMany(mappedBy = "bookList", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "bookList",
+            fetch = FetchType.LAZY)
     private List<BorrowReceipt> borrowReceipts;
 
     public Book(String title, String description, int quantity) {

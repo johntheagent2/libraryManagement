@@ -122,7 +122,6 @@ class ManageBookControllerTest {
 
     @Test
     void addBook() throws Exception {
-        Long bookId = 2L;
         String addNewBookTitle = "new book title";
         int numberOfExpectedResult = 1;
         String imgPath = "src/test/resources/test/sherlock_holmes.jpg";
@@ -141,6 +140,7 @@ class ManageBookControllerTest {
                         .param("quantity", String.valueOf(3))
                         .param("genreId", String.valueOf(1L))
                         .param("authorId", String.valueOf(1L))
+                        .param("price", String.valueOf(25000))
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().is2xxSuccessful());
 
@@ -179,6 +179,7 @@ class ManageBookControllerTest {
                         .param("quantity", String.valueOf(3))
                         .param("genreId", String.valueOf(1L))
                         .param("authorId", String.valueOf(1L))
+                        .param("price", String.valueOf(2500))
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().is2xxSuccessful());
 

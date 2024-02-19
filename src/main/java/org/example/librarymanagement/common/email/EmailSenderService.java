@@ -1,17 +1,14 @@
 package org.example.librarymanagement.common.email;
 
-import freemarker.core.ParseException;
-import freemarker.template.*;
-import jakarta.activation.DataHandler;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
-import jakarta.mail.util.ByteArrayDataSource;
 import lombok.RequiredArgsConstructor;
-import org.example.librarymanagement.dto.response.BookInvoiceResponse;
 import org.example.librarymanagement.entity.Book;
-import org.example.librarymanagement.entity.BorrowReceipt;
 import org.example.librarymanagement.exception.exception.MessageException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -20,14 +17,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 @Service
 @RequiredArgsConstructor
-public class EmailSenderService{
+public class EmailSenderService {
 
     private final JavaMailSender mailSender;
     private final Configuration freemarkerConfig;
@@ -42,7 +39,7 @@ public class EmailSenderService{
     @Value("${confirmation-template}")
     private String confirmationTemplate;
 
-//    @Value(("${invoice-template}"))
+    //    @Value(("${invoice-template}"))
     private String invoiceTemplate = "invoiceTemplate.ftl";
 
     @Value("${mail-subject-confirmation}")
@@ -51,10 +48,10 @@ public class EmailSenderService{
     @Value("${mail-subject-reset-password}")
     private String resetPasswordSubject;
 
-    @Value("${mail-subject-invoice}")
+    @Value("${mail-subject-reset-password}")
     private String invoice;
 
-    public void sendConfirmationMail(String token, String otp, String toEmail){
+    public void sendConfirmationMail(String token, String otp, String toEmail) {
         // Set up FreeMarker configuration
         String tokenLink = verifyTokenLink + token;
         Map<String, Object> model = new HashMap<>();
@@ -82,10 +79,10 @@ public class EmailSenderService{
         } catch (IOException e) {
             throw new org.example.librarymanagement.exception.exception.IOException("util.io.exception",
                     resourceBundle.getString("util.io.exception"));
-        }catch (TemplateException e){
+        } catch (TemplateException e) {
             throw new org.example.librarymanagement.exception.exception.TemplateException("freemarker.template.exception",
                     resourceBundle.getString("freemarker.template.exception"));
-        }catch (MessagingException e){
+        } catch (MessagingException e) {
             throw new MessageException("jarkarta.mail.exception",
                     resourceBundle.getString("jarkarta.mail.exception"));
         }
@@ -94,17 +91,17 @@ public class EmailSenderService{
         mailSender.send(message);
     }
 
-    public void sendChangeRequest(String token, String toEmail){
+    public void sendChangeRequest(String token, String toEmail) {
         String tokenLink = verifyTokenLink + token;
         changeResetSender(toEmail, tokenLink);
     }
 
-    public void sendResetRequest(String token, String toEmail){
+    public void sendResetRequest(String token, String toEmail) {
         String tokenLink = verifyTokenLink + token + "&mail=" + toEmail;
         changeResetSender(toEmail, tokenLink);
     }
 
-    public void changeResetSender(String toEmail, String tokenLink){
+    public void changeResetSender(String toEmail, String tokenLink) {
         Map<String, Object> model = new HashMap<>();
         String emailBody;
         Template freemarkerTemplate;
@@ -129,10 +126,10 @@ public class EmailSenderService{
         } catch (IOException e) {
             throw new org.example.librarymanagement.exception.exception.IOException("util.io.exception",
                     resourceBundle.getString("util.io.exception"));
-        }catch (TemplateException e){
+        } catch (TemplateException e) {
             throw new org.example.librarymanagement.exception.exception.TemplateException("freemarker.template.exception",
                     resourceBundle.getString("freemarker.template.exception"));
-        }catch (MessagingException e){
+        } catch (MessagingException e) {
             throw new MessageException("jarkarta.mail.exception",
                     resourceBundle.getString("jarkarta.mail.exception"));
         }
@@ -156,7 +153,7 @@ public class EmailSenderService{
             helper = new MimeMessageHelper(message, true);
             helper.setFrom(sender);
             helper.setTo(toEmail);
-            helper.setSubject("Invoice");
+            helper.setSubject(invoice);
 
             model.put("email", toEmail);
             model.put("books", bookList);
