@@ -5,6 +5,8 @@ import org.example.librarymanagement.common.email.EmailSenderService;
 import org.example.librarymanagement.entity.Config;
 import org.example.librarymanagement.enumeration.ConfigType;
 import org.example.librarymanagement.service.AccountService;
+import org.example.librarymanagement.service.ConfigService;
+import org.example.librarymanagement.service.MaintenanceModeService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +15,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class MaintenanceModeServiceImpl {
+public class MaintenanceModeServiceImpl implements MaintenanceModeService {
     private RedisTemplate<String, String> redisTemplate;
     private final AccountService accountService;
     private final EmailSenderService emailSenderService;
@@ -21,11 +23,13 @@ public class MaintenanceModeServiceImpl {
     private final String MAINTENANCE_MODE_KEY = "maintenance_mode";
     private final ConfigService configService;
 
+    @Override
     public boolean isEnabled() {
         String value = redisTemplate.opsForValue().get(MAINTENANCE_MODE_KEY);
         return Boolean.parseBoolean(value);
     }
 
+    @Override
     @Transactional
     public void setMode(boolean enabled) {
         List<String> mailList;

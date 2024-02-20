@@ -3,7 +3,7 @@ package org.example.librarymanagement.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.example.librarymanagement.service.implement.MaintenanceModeServiceImpl;
+import org.example.librarymanagement.service.MaintenanceModeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("${admin-mapping}/maintenance")
 public class MaintenanceController {
 
-    private final MaintenanceModeServiceImpl maintenanceModeService;
+    private final MaintenanceModeService maintenanceModeService;
 
     @Operation(summary = "Enable maintenance",
             description = "Turn on maintenance mode",

@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.example.librarymanagement.common.Global;
 import org.example.librarymanagement.exception.dto.ApiExceptionResponse;
-import org.example.librarymanagement.service.implement.MaintenanceModeServiceImpl;
+import org.example.librarymanagement.service.MaintenanceModeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +23,7 @@ import java.util.ResourceBundle;
 @Component
 public class MaintenanceModeFilter extends OncePerRequestFilter {
 
-    private MaintenanceModeServiceImpl maintenanceModeService;
+    private MaintenanceModeService maintenanceModeService;
     private ResourceBundle resourceBundle;
 
     @Override
