@@ -42,6 +42,8 @@ public class EmailSenderService {
     //    @Value(("${invoice-template}"))
     private String invoiceTemplate = "invoiceTemplate.ftl";
 
+    private String maintenanceTemplate = "maintenanceTemplate.ftl";
+
     @Value("${mail-subject-confirmation}")
     private String confirmMailSubject;
 
@@ -50,6 +52,9 @@ public class EmailSenderService {
 
     @Value("${mail-subject-reset-password}")
     private String invoice;
+
+    @Value("${mail-subject-maintenance}")
+    private String maintenance;
 
     public void sendConfirmationMail(String token, String otp, String toEmail) {
         // Set up FreeMarker configuration
@@ -180,5 +185,35 @@ public class EmailSenderService {
 
         // Send email
         mailSender.send(message);
+    }
+
+    public void sendMaintenanceMailToAllUser(List<String> toEmails) {
+        Map<String, Object> model = new HashMap<>();
+        Template freemarkerTemplate;
+        String emailBody;
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper;
+
+        try {
+            helper = new MimeMessageHelper(message, true);
+            helper.setFrom(sender);
+            // Set recipients in "To" or "bcc" field based on your preference
+            helper.setBcc(toEmails.toArray(new String[0])); // "bcc" field
+            helper.setSubject(maintenance);
+
+            freemarkerTemplate = freemarkerConfig.getTemplate(maintenanceTemplate);
+            emailBody = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, model);
+            helper.setText(emailBody, true);
+
+            // Send email
+            mailSender.send(message);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read image file", e);
+        } catch (TemplateException e) {
+            throw new RuntimeException("Error processing FreeMarker template", e);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Error creating MimeMessage", e);
+        }
     }
 }

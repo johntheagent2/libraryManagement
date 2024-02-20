@@ -1,6 +1,7 @@
 package org.example.librarymanagement.config.security;
 
 import lombok.AllArgsConstructor;
+import org.example.librarymanagement.config.MaintenanceModeFilter;
 import org.example.librarymanagement.config.security.jwtConfig.JwtAuthenticationFilter;
 import org.example.librarymanagement.service.CustomUserDetailFacade;
 import org.springframework.context.annotation.Bean;
@@ -21,14 +22,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 @EnableWebSecurity
 @EnableMethodSecurity
-public class SecurityConfiguration{
+public class SecurityConfiguration {
 
     private final CustomUserDetailFacade appUserService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final MaintenanceModeFilter maintenanceModeFilter;
 
     @Bean
-    protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
+    protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
@@ -51,6 +53,7 @@ public class SecurityConfiguration{
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(daoAuthenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(maintenanceModeFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin(AbstractHttpConfigurer::disable);
         return httpSecurity.build();
     }

@@ -1,6 +1,5 @@
 package org.example.librarymanagement.repository;
 
-import org.example.librarymanagement.entity.AppUser;
 import org.example.librarymanagement.entity.base.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
