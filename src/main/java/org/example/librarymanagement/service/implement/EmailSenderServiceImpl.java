@@ -1,4 +1,4 @@
-package org.example.librarymanagement.common.email;
+package org.example.librarymanagement.service.implement;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -10,6 +10,7 @@ import jakarta.mail.internet.MimeMultipart;
 import lombok.RequiredArgsConstructor;
 import org.example.librarymanagement.entity.Book;
 import org.example.librarymanagement.exception.exception.MessageException;
+import org.example.librarymanagement.service.EmailSenderService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +26,7 @@ import java.util.ResourceBundle;
 
 @Service
 @RequiredArgsConstructor
-public class EmailSenderService {
+public class EmailSenderServiceImpl implements EmailSenderService {
 
     private final JavaMailSender mailSender;
     private final Configuration freemarkerConfig;
@@ -56,6 +58,7 @@ public class EmailSenderService {
     @Value("${mail-subject-maintenance}")
     private String maintenance;
 
+    @Override
     public void sendConfirmationMail(String token, String otp, String toEmail) {
         // Set up FreeMarker configuration
         String tokenLink = verifyTokenLink + token;
@@ -96,16 +99,19 @@ public class EmailSenderService {
         mailSender.send(message);
     }
 
+    @Override
     public void sendChangeRequest(String token, String toEmail) {
         String tokenLink = verifyTokenLink + token;
         changeResetSender(toEmail, tokenLink);
     }
 
+    @Override
     public void sendResetRequest(String token, String toEmail) {
         String tokenLink = verifyTokenLink + token + "&mail=" + toEmail;
         changeResetSender(toEmail, tokenLink);
     }
 
+    @Override
     public void changeResetSender(String toEmail, String tokenLink) {
         Map<String, Object> model = new HashMap<>();
         String emailBody;
@@ -143,7 +149,8 @@ public class EmailSenderService {
         mailSender.send(message);
     }
 
-    public void sendInvoiceEmail(String toEmail, List<Book> bookList, double total) {
+    @Override
+    public void sendInvoiceEmail(String toEmail, List<Book> bookList, BigDecimal total) {
         Map<String, Object> model = new HashMap<>();
         Template freemarkerTemplate;
         String emailBody;
@@ -162,7 +169,7 @@ public class EmailSenderService {
 
             model.put("email", toEmail);
             model.put("books", bookList);
-            model.put("total", total);
+            model.put("total", total.doubleValue());
 
             // Process the FreeMarker template
             freemarkerTemplate = freemarkerConfig.getTemplate(invoiceTemplate);
@@ -187,6 +194,7 @@ public class EmailSenderService {
         mailSender.send(message);
     }
 
+    @Override
     public void sendMaintenanceMailToAllUser(List<String> toEmails) {
         Map<String, Object> model = new HashMap<>();
         Template freemarkerTemplate;

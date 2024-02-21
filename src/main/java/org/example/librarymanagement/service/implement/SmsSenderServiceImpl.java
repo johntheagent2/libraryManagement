@@ -1,4 +1,4 @@
-package org.example.librarymanagement.common.sms;
+package org.example.librarymanagement.service.implement;
 
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
@@ -10,7 +10,7 @@ import java.util.ResourceBundle;
 
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
-public class SmsSenderService {
+public class SmsSenderServiceImpl implements org.example.librarymanagement.service.SmsSenderService {
 
     @Value("${account-sid}")
     private String accountSid;
@@ -23,7 +23,8 @@ public class SmsSenderService {
 
     private final ResourceBundle resourceBundle;
 
-    public void sendSms(String receiver, String otp){
+    @Override
+    public void sendSms(String receiver, String otp) {
         Twilio.init(accountSid, authToken);
         Message.creator(
                 new PhoneNumber(resourceBundle.getString("phone.phone-country-code") + receiver),

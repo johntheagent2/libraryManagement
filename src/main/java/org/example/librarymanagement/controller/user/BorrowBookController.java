@@ -28,18 +28,18 @@ public class BorrowBookController {
 
     @Operation(summary = "Get All Available Books",
             description = "Get All Available Books",
-            tags = { "Borrow Book Management", "get" })
+            tags = {"Borrow Book Management", "get"})
     @GetMapping
-    public ResponseEntity<Page<BookResponse>> getAvailableBook(Pageable page){
+    public ResponseEntity<Page<BookResponse>> getAvailableBook(Pageable page) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(bookQueryService.getAvailableBook(page));
     }
 
     @Operation(summary = "Borrow Books",
             description = "Borrow one book per genre",
-            tags = { "Borrow Book Management", "post" })
+            tags = {"Borrow Book Management", "post"})
     @PostMapping
-    public ResponseEntity<Void> borrowBook(@RequestBody List<BorrowBookRequest> requestList){
+    public ResponseEntity<Void> borrowBook(@RequestBody List<BorrowBookRequest> requestList) {
         borrowReceiptService.borrow(requestList);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
@@ -47,18 +47,18 @@ public class BorrowBookController {
 
     @Operation(summary = "Get Current Borrowed Books",
             description = "Get Current Borrowed Books",
-            tags = { "Get Current Borrowed Books", "get" })
+            tags = {"Get Current Borrowed Books", "get"})
     @GetMapping("/current")
-    public ResponseEntity<List<BorrowedBookResponse>> getCurrentBorrowedBook(){
+    public ResponseEntity<List<BorrowedBookResponse>> getCurrentBorrowedBook() {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(borrowReceiptService.getCurrentBorrowed());
     }
 
     @Operation(summary = "Return Current Borrowed Books",
             description = "Return Current Borrowed Books",
-            tags = { "Return Current Borrowed Books", "post" })
+            tags = {"Return Current Borrowed Books", "post"})
     @PostMapping("/return")
-    public ResponseEntity<Void> returnBorrowedBook(@RequestBody List<ReturnBorrowedRequest> requestList){
+    public ResponseEntity<Void> returnBorrowedBook(@RequestBody List<ReturnBorrowedRequest> requestList) {
         borrowReceiptService.returnBorrowed(requestList);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .build();

@@ -1,16 +1,16 @@
 package org.example.librarymanagement.service.implement;
 
 import lombok.AllArgsConstructor;
-import org.example.librarymanagement.common.email.EmailSenderService;
 import org.example.librarymanagement.dto.request.RegistrationRequest;
-import org.example.librarymanagement.entity.ConfirmationToken;
 import org.example.librarymanagement.entity.AppUser;
+import org.example.librarymanagement.entity.ConfirmationToken;
 import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.enumeration.Role;
 import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.example.librarymanagement.exception.exception.NotFoundException;
 import org.example.librarymanagement.service.AppUserService;
 import org.example.librarymanagement.service.ConfirmationTokenService;
+import org.example.librarymanagement.service.EmailSenderService;
 import org.example.librarymanagement.service.RegistrationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
 
 @Service
 @AllArgsConstructor
-public class RegistrationServiceImp implements RegistrationService{
+public class RegistrationServiceImp implements RegistrationService {
 
     private final AppUserService appUserService;
     private final ConfirmationTokenService confirmationTokenService;
@@ -29,8 +29,8 @@ public class RegistrationServiceImp implements RegistrationService{
 
 
     @Override
-    public void register(RegistrationRequest request){
-        if(appUserService.findByEmail(request.getEmail()).isPresent()){
+    public void register(RegistrationRequest request) {
+        if (appUserService.findByEmail(request.getEmail()).isPresent()) {
             throw new BadRequestException("user.email.email-existed",
                     resourceBundle.getString("user.email.email-existed"));
         }
@@ -60,7 +60,7 @@ public class RegistrationServiceImp implements RegistrationService{
 
     @Override
     @Transactional
-    public void confirmToken(String token){
+    public void confirmToken(String token) {
         ConfirmationToken confirmationToken = confirmationTokenService.findConfirmationToken(token)
                 .orElseThrow(() -> new NotFoundException("confirmation-token.link.link-not-found",
                         resourceBundle.getString("confirmation-token.link.link-not-found")));
@@ -73,7 +73,7 @@ public class RegistrationServiceImp implements RegistrationService{
 
     @Override
     @Transactional
-    public void confirmOtpToken(String otp){
+    public void confirmOtpToken(String otp) {
         ConfirmationToken confirmationToken = confirmationTokenService.findConfirmationOTP(otp)
                 .orElseThrow(() -> new BadRequestException("confirmation-token.otp.otp-expired",
                         resourceBundle.getString("confirmation-token.otp.otp-expired")));
@@ -85,7 +85,7 @@ public class RegistrationServiceImp implements RegistrationService{
     }
 
     @Override
-    public void verifyExpiryDate(ConfirmationToken confirmationToken){
+    public void verifyExpiryDate(ConfirmationToken confirmationToken) {
         LocalDateTime expiredDateTime = confirmationToken.getExpiresAt();
 
         if (expiredDateTime.isBefore(LocalDateTime.now())) {

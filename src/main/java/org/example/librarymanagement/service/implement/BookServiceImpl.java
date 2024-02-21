@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +55,6 @@ public class BookServiceImpl implements BookService {
         String fileName;
         Book book;
         AtomicInteger currentQuantity = new AtomicInteger(request.getQuantity());
-        AtomicLong id = new AtomicLong();
         try {
             fileName = BookFileProcess.saveUploadedFile(request.getPicture(), resourceBundle);
 
@@ -78,6 +76,8 @@ public class BookServiceImpl implements BookService {
                                 book.setQuantity(
                                         book.getQuantity() + existedBook.getQuantity()
                                 );
+                                // Set version property when updating existing book
+                                book.setVersion(existedBook.getVersion());
                             });
 
 
@@ -91,6 +91,7 @@ public class BookServiceImpl implements BookService {
         }
     }
 
+
     @Override
     @Transactional
     public void addListOfBooks(MultipartFile file) {
@@ -102,27 +103,32 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public void editBook(Long id, BookCreateRequest request) {
-        String fileName;
-        Book book;
-        String currentImg;
         try {
-            fileName = BookFileProcess.saveUploadedFile(request.getPicture(), resourceBundle);
-            currentImg = findById(id).getPicture();
+            // Retrieve the existing book from the database
+            Book book = findById(id);
+            String fileName;
+
+            if (request.getPicture() == null) {// Update the properties of the existing book
+                fileName = book.getPicture();
+            } else {
+                fileName = BookFileProcess.saveUploadedFile(request.getPicture(), resourceBundle);
+            }
+
+            String currentImg = book.getPicture();
             if (!currentImg.equals(defaultBookCover)) {
                 BookFileProcess.deleteFile(currentImg);
             }
-            book = Book.builder()
-                    .id(id)
-                    .picture(fileName)
-                    .title(request.getTitle())
-                    .description(request.getDescription())
-                    .quantity(request.getQuantity())
-                    .author(authorService.findAuthor(request.getAuthorId()))
-                    .genre(genreService.findGenre(request.getGenreId()))
-                    .removed(request.isRemoved())
-                    .build();
-            saveBook(book);
 
+            book.setPicture(fileName);
+            book.setTitle(request.getTitle());
+            book.setDescription(request.getDescription());
+            book.setQuantity(request.getQuantity());
+            book.setAuthor(authorService.findAuthor(request.getAuthorId()));
+            book.setGenre(genreService.findGenre(request.getGenreId()));
+            book.setRemoved(request.isRemoved());
+
+            // Save the updated book back to the database
+            saveBook(book);
         } catch (IOException e) {
             throw new org.example.librarymanagement.exception.exception.IOException(
                     resourceBundle.getString("util.io.exception"),

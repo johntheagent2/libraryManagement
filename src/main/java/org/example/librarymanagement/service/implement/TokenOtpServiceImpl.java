@@ -2,20 +2,18 @@ package org.example.librarymanagement.service.implement;
 
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.common.Global;
-import org.example.librarymanagement.common.email.EmailSenderService;
-import org.example.librarymanagement.common.sms.SmsSenderService;
 import org.example.librarymanagement.entity.AppUser;
 import org.example.librarymanagement.entity.TokenOTP;
 import org.example.librarymanagement.enumeration.ChangeType;
 import org.example.librarymanagement.exception.exception.BadCredentialException;
 import org.example.librarymanagement.repository.TokenOtpRepository;
+import org.example.librarymanagement.service.EmailSenderService;
+import org.example.librarymanagement.service.SmsSenderService;
 import org.example.librarymanagement.service.TokenOtpService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Random;
 import java.util.ResourceBundle;
-import java.util.UUID;
 
 @AllArgsConstructor
 @Service
@@ -35,7 +33,7 @@ public class TokenOtpServiceImpl implements TokenOtpService {
                 }));
     }
 
-    public void delete(Long id){
+    public void delete(Long id) {
         tokenOtpRepository.deleteById(id);
     }
 
@@ -44,9 +42,9 @@ public class TokenOtpServiceImpl implements TokenOtpService {
         String tokenOtp = generateBasedOnType(type);
         LocalDateTime expirationDate = LocalDateTime.now();
 
-        if(type.equals(ChangeType.CHANGE_PHONE_NUMBER)){
+        if (type.equals(ChangeType.CHANGE_PHONE_NUMBER)) {
             expirationDate = expirationDate.plusSeconds(40);
-        }else{
+        } else {
             expirationDate = expirationDate.plusMinutes(20);
         }
 
@@ -71,7 +69,7 @@ public class TokenOtpServiceImpl implements TokenOtpService {
 
     @Override
     public void checkExpiration(LocalDateTime expirationDate) {
-        if(expirationDate.isBefore(LocalDateTime.now())){
+        if (expirationDate.isBefore(LocalDateTime.now())) {
             throw new BadCredentialException(
                     resourceBundle.getString("confirmation-token.otp.otp-expired"),
                     "confirmation-token.otp.otp-expired"
@@ -92,21 +90,20 @@ public class TokenOtpServiceImpl implements TokenOtpService {
         tokenOtpRepository.deleteById(id);
     }
 
-    public String generateBasedOnType(ChangeType type){
-        if(type.equals(ChangeType.CHANGE_EMAIL) || type.equals(ChangeType.RESET_PASSWORD)){
+    public String generateBasedOnType(ChangeType type) {
+        if (type.equals(ChangeType.CHANGE_EMAIL) || type.equals(ChangeType.RESET_PASSWORD)) {
             return Global.UUIDgenrator();
-        }else {
+        } else {
             return Global.otpGenerator();
         }
     }
 
     private void sendTokenOTP(String tokenOtp, String request, ChangeType type) {
-        if(type.equals(ChangeType.CHANGE_EMAIL)){
+        if (type.equals(ChangeType.CHANGE_EMAIL)) {
             emailSenderService.sendChangeRequest(tokenOtp, request);
-        }else if(type.equals(ChangeType.RESET_PASSWORD)){
+        } else if (type.equals(ChangeType.RESET_PASSWORD)) {
             emailSenderService.sendResetRequest(tokenOtp, request);
-        }
-        else {
+        } else {
             smsSenderService.sendSms(request, tokenOtp);
         }
     }
