@@ -1,15 +1,17 @@
 package org.example.librarymanagement.service;
 
-import org.example.librarymanagement.dto.request.*;
-import org.example.librarymanagement.dto.response.MfaResponse;
-import org.example.librarymanagement.entity.AppUser;
+import org.example.librarymanagement.dto.request.ChangePasswordRequest;
+import org.example.librarymanagement.dto.request.OtpVerificationRequest;
+import org.example.librarymanagement.dto.request.ResetPasswordRequest;
 import org.example.librarymanagement.entity.base.Account;
-import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AccountService {
     Optional<Account> findByEmail(String email);
+
+    List<String> getAllEmail();
 
     void resetWrongLoginCounter(String email);
 

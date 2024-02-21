@@ -8,6 +8,7 @@ import org.example.librarymanagement.dto.request.ResetPasswordRequest;
 import org.example.librarymanagement.entity.TokenOTP;
 import org.example.librarymanagement.entity.base.Account;
 import org.example.librarymanagement.enumeration.ChangeType;
+import org.example.librarymanagement.enumeration.Role;
 import org.example.librarymanagement.exception.exception.BadRequestException;
 import org.example.librarymanagement.repository.AccountRepository;
 import org.example.librarymanagement.repository.AppUserRepository;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -38,6 +40,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Optional<Account> findByEmail(String email) {
         return accountRepository.findAccountByEmail(email);
+    }
+
+    @Override
+    public List<String> getAllEmail() {
+        return accountRepository.findAll()
+                .stream()
+                .filter(account -> account.getRole().equals(Role.ROLE_USER))
+                .map(Account::getEmail).toList();
     }
 
     @Override
