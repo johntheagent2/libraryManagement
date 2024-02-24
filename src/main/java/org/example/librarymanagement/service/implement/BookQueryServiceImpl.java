@@ -48,11 +48,13 @@ public class BookQueryServiceImpl extends QueryService<Book> {
                                                 TimeCriteria createdDate,
                                                 TimeCriteria lastModifiedDate,
                                                 Pageable page) {
-        final Specification<Book> specification = createSpecification(criteria)
+        Specification<Book> specification = createSpecification(criteria)
                 .and(timeQueryService.createCreatedDateSpecification(createdDate))
                 .and(timeQueryService.createLastModifiedDateSpecification(lastModifiedDate));
+
         return toResponse(page, specification);
     }
+
 
     private Page<BookResponse> toResponse(Pageable page, Specification<Book> specification) {
         Page<Book> books = bookRepository.findAll(specification, page);

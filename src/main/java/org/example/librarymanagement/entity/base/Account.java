@@ -6,23 +6,21 @@
 package org.example.librarymanagement.entity.base;
 
 import jakarta.persistence.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.example.librarymanagement.config.audit.AuditingEntityListenerImpl;
 import org.example.librarymanagement.entity.CustomUserDetails;
 import org.example.librarymanagement.entity.Session;
-import org.example.librarymanagement.entity.TokenOTP;
 import org.example.librarymanagement.enumeration.AccountStatus;
 import org.example.librarymanagement.enumeration.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Setter
 @Getter
@@ -55,12 +53,15 @@ public class Account {
     private AccountStatus status;
 
     @Column(name = "enabled", nullable = false)
+    @Builder.Default
     private Boolean enabled = true;
 
     @Column(name = "count_wrong_login", nullable = false)
+    @Builder.Default
     private int countWrongLogin = 0;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Session> sessionList = new ArrayList<>();
 
     public Account(String email, String phoneNumber, String password, Role role, AccountStatus status) {
@@ -71,7 +72,7 @@ public class Account {
         this.password = password;
     }
 
-    public UserDetails toUserDetails(){
+    public UserDetails toUserDetails() {
         return new CustomUserDetails(this);
     }
 
@@ -83,7 +84,7 @@ public class Account {
         return this.enabled;
     }
 
-    public void wrongLoginCount(){
+    public void wrongLoginCount() {
         ++this.countWrongLogin;
     }
 

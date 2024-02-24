@@ -34,13 +34,13 @@ public class TimeQueryServiceImpl<T> extends QueryService<AuditableEntity> {
             specification = specification.and((root, query, criteriaBuilder)
                     -> criteriaBuilder.greaterThanOrEqualTo(root.get(AuditableEntity_.LAST_MODIFIED_DATE)
                             .as(LocalDateTime.class),
-                    criteria.getFormatFromTime()));
+                    criteria.getModifiedFromTime()));
         }
         if (criteria.getToTime() != null) {
             specification = specification.and((root, query, criteriaBuilder)
                     -> criteriaBuilder.lessThanOrEqualTo(root.get(AuditableEntity_.LAST_MODIFIED_DATE)
                             .as(LocalDateTime.class),
-                    criteria.getFormatToTime()));
+                    criteria.getModifiedToTime()));
         }
         return specification;
     }

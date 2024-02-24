@@ -1,6 +1,7 @@
 package org.example.librarymanagement.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,7 +19,7 @@ import java.util.List;
 @Setter
 @SuperBuilder
 @Table(name = "app_user")
-public class AppUser extends Account{
+public class AppUser extends Account {
 
     @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
@@ -30,15 +31,18 @@ public class AppUser extends Account{
     private String address;
 
     @Column(name = "mfa", nullable = false)
+    @Builder.Default
     private Boolean mfa = false;
 
     @Column(name = "secret_key")
     private String secretKey;
 
     @OneToMany(mappedBy = "appUser", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<BorrowReceipt> borrowReceipts = new ArrayList<>();
 
     @OneToMany(mappedBy = "appUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<TokenOTP> otpTokens = new ArrayList<>();
 
     public AppUser(String firstName, String lastName, String address, String email, String phoneNumber, String password, Role role, AccountStatus status) {
