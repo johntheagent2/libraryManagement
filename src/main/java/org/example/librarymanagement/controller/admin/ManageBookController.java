@@ -41,11 +41,10 @@ public class ManageBookController {
             tags = {"Book Management", "get"})
     @GetMapping("/search")
     public ResponseEntity<Page<BookResponse>> getQueriedBooks(BookCriteria request,
-                                                              TimeCriteria createdDate,
-                                                              TimeCriteria lastModifiedDate,
+                                                              TimeCriteria timeCriteria,
                                                               Pageable page) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(bookQueryService.findByCriteria(request, createdDate, lastModifiedDate, page));
+                .body(bookQueryService.findByCriteria(request, timeCriteria, page));
     }
 
     @Operation(summary = "Add Book with CSV",

@@ -32,10 +32,9 @@ public class BookQueryServiceImpl extends QueryService<Book> {
 
     @Transactional(readOnly = true)
     public Page<BookResponse> findByCriteria(BookCriteria criteria,
-                                             TimeCriteria createdDate,
-                                             TimeCriteria lastModifiedDate,
+                                             TimeCriteria timeCriteria,
                                              Pageable page) {
-        return getBookResponses(criteria, createdDate, lastModifiedDate, page);
+        return getBookResponses(criteria, timeCriteria, page);
     }
 
     private Page<BookResponse> getBookResponses(BookCriteria criteria, Pageable page) {
@@ -45,12 +44,10 @@ public class BookQueryServiceImpl extends QueryService<Book> {
 
 
     private Page<BookResponse> getBookResponses(BookCriteria criteria,
-                                                TimeCriteria createdDate,
-                                                TimeCriteria lastModifiedDate,
+                                                TimeCriteria timeCriteria,
                                                 Pageable page) {
         Specification<Book> specification = createSpecification(criteria)
-                .and(timeQueryService.createCreatedDateSpecification(createdDate))
-                .and(timeQueryService.createLastModifiedDateSpecification(lastModifiedDate));
+                .and(timeQueryService.createTimeSpecification(timeCriteria));
 
         return toResponse(page, specification);
     }

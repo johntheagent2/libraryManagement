@@ -16,17 +16,17 @@ import java.util.Objects;
 @NoArgsConstructor
 public class TimeCriteria implements Criteria {
 
-    String fromTime;
+    String createdDateFromTime;
 
-    String toTime;
+    String createdDatetoTime;
 
     String modifiedFromTime;
 
     String modifiedToTime;
 
     public TimeCriteria(TimeCriteria other) {
-        this.fromTime = other.fromTime;
-        this.toTime = other.toTime;
+        this.createdDateFromTime = other.createdDateFromTime;
+        this.createdDatetoTime = other.createdDatetoTime;
         this.modifiedFromTime = other.modifiedFromTime;
         this.modifiedToTime = other.modifiedToTime;
     }
@@ -41,18 +41,19 @@ public class TimeCriteria implements Criteria {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         TimeCriteria that = (TimeCriteria) object;
-        return Objects.equals(fromTime, that.fromTime) && Objects.equals(toTime, that.toTime) && Objects.equals(modifiedFromTime, that.modifiedFromTime) && Objects.equals(modifiedToTime, that.modifiedToTime);
+        return Objects.equals(createdDateFromTime, that.createdDateFromTime) && Objects.equals(createdDatetoTime, that.createdDatetoTime)
+                && Objects.equals(modifiedFromTime, that.modifiedFromTime) && Objects.equals(modifiedToTime, that.modifiedToTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fromTime, toTime, modifiedFromTime, modifiedToTime);
+        return Objects.hash(createdDateFromTime, createdDatetoTime, modifiedFromTime, modifiedToTime);
     }
 
     public LocalDateTime getFormatFromTime() {
         LocalDateTime from;
         try {
-            from = fromString(this.fromTime);
+            from = fromString(this.createdDateFromTime);
         } catch (DateTimeParseException ex) {
             throw new BadRequestException("Please enter right format of date ddMMyyyy HHmmss",
                     "service.time-criteria.from-time-invalid");
@@ -65,7 +66,7 @@ public class TimeCriteria implements Criteria {
         LocalDateTime from;
         try {
             from = getFormatFromTime();
-            to = fromString(this.toTime);
+            to = fromString(this.createdDatetoTime);
             if (from.isAfter(to)) {
                 throw new BadRequestException("The from time must is smaller than to time",
                         "service.time-criteria.from-to-invalid");
