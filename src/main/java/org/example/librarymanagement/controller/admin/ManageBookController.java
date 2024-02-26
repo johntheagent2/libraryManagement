@@ -8,6 +8,7 @@ import org.example.librarymanagement.dto.request.BookCreateRequest;
 import org.example.librarymanagement.dto.response.BookResponse;
 import org.example.librarymanagement.service.BookService;
 import org.example.librarymanagement.service.criteria.BookCriteria;
+import org.example.librarymanagement.service.criteria.ModifiedTimeCriteria;
 import org.example.librarymanagement.service.criteria.TimeCriteria;
 import org.example.librarymanagement.service.implement.BookQueryServiceImpl;
 import org.springframework.data.domain.Page;
@@ -42,9 +43,10 @@ public class ManageBookController {
     @GetMapping("/search")
     public ResponseEntity<Page<BookResponse>> getQueriedBooks(BookCriteria request,
                                                               TimeCriteria timeCriteria,
+                                                              ModifiedTimeCriteria modifiedTimeCriteria,
                                                               Pageable page) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(bookQueryService.findByCriteria(request, timeCriteria, page));
+                .body(bookQueryService.findByCriteria(request, timeCriteria, modifiedTimeCriteria, page));
     }
 
     @Operation(summary = "Add Book with CSV",

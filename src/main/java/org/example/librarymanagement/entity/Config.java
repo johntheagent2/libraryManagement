@@ -19,7 +19,7 @@ public class Config {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "key", nullable = false)
+    @Column(name = "key", nullable = false, unique = true)
     private String key;
 
     @Enumerated(EnumType.STRING)

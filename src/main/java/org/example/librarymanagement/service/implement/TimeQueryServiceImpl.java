@@ -2,6 +2,7 @@ package org.example.librarymanagement.service.implement;
 
 import org.example.librarymanagement.entity.base.AuditableEntity;
 import org.example.librarymanagement.entity.base.AuditableEntity_;
+import org.example.librarymanagement.service.criteria.ModifiedTimeCriteria;
 import org.example.librarymanagement.service.criteria.TimeCriteria;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -13,29 +14,34 @@ import java.time.LocalDateTime;
 public class TimeQueryServiceImpl<T> extends QueryService<AuditableEntity> {
     protected Specification<T> createTimeSpecification(TimeCriteria criteria) {
         Specification<T> specification = Specification.where(null);
-        if (criteria.getFormatFromTime() != null) {
+        if (criteria.getCreatedDateFromTime() != null) {
             specification = specification.and((root, query, criteriaBuilder)
                     -> criteriaBuilder.greaterThanOrEqualTo(root.get(AuditableEntity_.CREATED_DATE)
                             .as(LocalDateTime.class),
                     criteria.getFormatFromTime()));
         }
-        if (criteria.getFormatToTime() != null) {
+        if (criteria.getCreatedDateToTime() != null) {
             specification = specification.and((root, query, criteriaBuilder)
                     -> criteriaBuilder.lessThanOrEqualTo(root.get(AuditableEntity_.CREATED_DATE)
                             .as(LocalDateTime.class),
                     criteria.getFormatToTime()));
         }
-        if (criteria.getModifiedFromTime() != null) {
+        return specification;
+    }
+
+    protected Specification<T> modifiedTimeSpecification(ModifiedTimeCriteria modifiedTimeCriteria) {
+        Specification<T> specification = Specification.where(null);
+        if (modifiedTimeCriteria.getModifiedFromTime() != null) {
             specification = specification.and((root, query, criteriaBuilder)
                     -> criteriaBuilder.greaterThanOrEqualTo(root.get(AuditableEntity_.LAST_MODIFIED_DATE)
                             .as(LocalDateTime.class),
-                    criteria.getModifiedFromTime()));
+                    modifiedTimeCriteria.getFormatFromTime()));
         }
-        if (criteria.getModifiedToTime() != null) {
+        if (modifiedTimeCriteria.getModifiedToTime() != null) {
             specification = specification.and((root, query, criteriaBuilder)
                     -> criteriaBuilder.lessThanOrEqualTo(root.get(AuditableEntity_.LAST_MODIFIED_DATE)
                             .as(LocalDateTime.class),
-                    criteria.getModifiedToTime()));
+                    modifiedTimeCriteria.getFormatToTime()));
         }
         return specification;
     }

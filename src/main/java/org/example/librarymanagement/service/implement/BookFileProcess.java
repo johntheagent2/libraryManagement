@@ -51,10 +51,13 @@ public class BookFileProcess {
                 Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
                 CSVReader csvReader = new CSVReader(reader)
         ) {
-            // Skip header
-            csvReader.skip(1);
-            while ((line = csvReader.readNext()) != null) {
+            String[] header = csvReader.readNext();
 
+            if (!isValidHeader(header)) {
+                throw new IllegalArgumentException("Invalid CSV header");
+            }
+
+            while ((line = csvReader.readNext()) != null) {
                 title = line[0];
                 description = line[1];
                 priceStr = line[2];
@@ -83,6 +86,28 @@ public class BookFileProcess {
         }
         return bookList;
     }
+
+    private static boolean isValidHeader(String[] header) {
+        String[] requiredFields = {"title", "description", "price", "quantity", "genreId", "authorId"};
+
+        if (header == null || header.length != 6) {
+            return false;
+        }
+        for (String field : requiredFields) {
+            boolean found = false;
+            for (String columnHeader : header) {
+                if (columnHeader.trim().equalsIgnoreCase(field)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     public static void validateCSV(MultipartFile file, ResourceBundle resourceBundle) {
         long maxSize = 5 * 1024 * 1024;

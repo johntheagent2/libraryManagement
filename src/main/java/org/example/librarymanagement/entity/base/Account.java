@@ -6,7 +6,6 @@
 package org.example.librarymanagement.entity.base;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
@@ -53,15 +52,12 @@ public class Account {
     private AccountStatus status;
 
     @Column(name = "enabled", nullable = false)
-    @Builder.Default
     private Boolean enabled = true;
 
     @Column(name = "count_wrong_login", nullable = false)
-    @Builder.Default
     private int countWrongLogin = 0;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<Session> sessionList = new ArrayList<>();
 
     public Account(String email, String phoneNumber, String password, Role role, AccountStatus status) {
