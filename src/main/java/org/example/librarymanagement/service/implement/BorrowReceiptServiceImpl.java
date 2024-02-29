@@ -68,7 +68,7 @@ public class BorrowReceiptServiceImpl implements BorrowReceiptService {
             appUser = appUserService.getAppUser(email);
             borrowReceipt = new BorrowReceipt(allBooks, appUser);
             borrowReceiptRepository.save(borrowReceipt);
-            emailSenderService.sendInvoiceEmail(email, allBooks, borrowReceipt.getTotalPrice());
+//            emailSenderService.sendInvoiceEmail(email, allBooks, borrowReceipt.getTotalPrice());
         } catch (OptimisticLockException e) {
             throw new OptimisticLockException(resourceBundle.getString("service.borrow-book.conflict"),
                     "service.borrow-book.conflict");
@@ -113,6 +113,9 @@ public class BorrowReceiptServiceImpl implements BorrowReceiptService {
     private void updateBook(Long bookId) {
         Book currentBook = bookService.findById(bookId);
         int quantity = currentBook.getQuantity() + 1;
+        if (quantity > 0) {
+            currentBook.setRemoved(false);
+        }
         currentBook.setQuantity(quantity);
         bookService.saveBook(currentBook);
     }
@@ -143,6 +146,9 @@ public class BorrowReceiptServiceImpl implements BorrowReceiptService {
                 .map(book -> {
                     Book currentBook = bookService.findById(book.getId());
                     currentBook.setQuantity(currentBook.getQuantity() - 1);
+                    if (currentBook.getQuantity() == 0) {
+                        currentBook.setRemoved(true);
+                    }
                     bookService.saveBook(currentBook);
                     return currentBook;
                 }).toList();

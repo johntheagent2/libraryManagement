@@ -1,5 +1,6 @@
 package org.example.librarymanagement.dto.request;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -27,6 +28,7 @@ public class BookCreateRequest {
 
     @NotNull(message = "Price should not be null")
     @Min(value = 0, message = "Price smallest value is 0")
+    @Max(value = 99999, message = "Price to high")
     private BigDecimal price;
 
     @NotNull(message = "Genre Id should not be null")

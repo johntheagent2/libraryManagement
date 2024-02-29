@@ -104,22 +104,23 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public void editBook(Long id, BookCreateRequest request) {
         try {
-            // Retrieve the existing book from the database
             Book book = findById(id);
-            String fileName;
-
-            if (request.getPicture() == null) {// Update the properties of the existing book
-                fileName = book.getPicture();
-            } else {
-                fileName = BookFileProcess.saveUploadedFile(request.getPicture(), resourceBundle);
-            }
-
             String currentImg = book.getPicture();
-            if (!currentImg.equals(defaultBookCover)) {
-                BookFileProcess.deleteFile(currentImg);
+
+            if (request.getPicture() != null && !request.getPicture().isEmpty()) {
+                String newFileName = BookFileProcess.saveUploadedFile(request.getPicture(), resourceBundle);
+
+                if (!currentImg.equals(defaultBookCover)) {
+                    BookFileProcess.deleteFile(currentImg);
+                }
+                book.setPicture(newFileName);
+            } else {
+                if (!currentImg.equals(defaultBookCover)) {
+                    BookFileProcess.deleteFile(currentImg);
+                }
+                book.setPicture(defaultBookCover);
             }
 
-            book.setPicture(fileName);
             book.setTitle(request.getTitle());
             book.setDescription(request.getDescription());
             book.setQuantity(request.getQuantity());
@@ -127,7 +128,6 @@ public class BookServiceImpl implements BookService {
             book.setGenre(genreService.findGenre(request.getGenreId()));
             book.setRemoved(request.isRemoved());
 
-            // Save the updated book back to the database
             saveBook(book);
         } catch (IOException e) {
             throw new org.example.librarymanagement.exception.exception.IOException(
@@ -136,6 +136,7 @@ public class BookServiceImpl implements BookService {
             );
         }
     }
+
 
     @Override
     public Book findById(Long id) {

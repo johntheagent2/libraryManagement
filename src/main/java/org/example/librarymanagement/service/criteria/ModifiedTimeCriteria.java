@@ -14,15 +14,15 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TimeCriteria implements Criteria {
+public class ModifiedTimeCriteria implements Criteria {
 
-    String createdDateFromTime;
+    String modifiedFromTime;
 
-    String createdDateToTime;
+    String modifiedToTime;
 
-    public TimeCriteria(TimeCriteria other) {
-        this.createdDateFromTime = other.createdDateFromTime;
-        this.createdDateToTime = other.createdDateToTime;
+    public ModifiedTimeCriteria(ModifiedTimeCriteria other) {
+        this.modifiedFromTime = other.modifiedFromTime;
+        this.modifiedToTime = other.modifiedToTime;
     }
 
     @Override
@@ -34,19 +34,19 @@ public class TimeCriteria implements Criteria {
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
-        TimeCriteria that = (TimeCriteria) object;
-        return Objects.equals(createdDateFromTime, that.createdDateFromTime) && Objects.equals(createdDateToTime, that.createdDateToTime);
+        ModifiedTimeCriteria that = (ModifiedTimeCriteria) object;
+        return Objects.equals(modifiedFromTime, that.modifiedFromTime) && Objects.equals(modifiedToTime, that.modifiedToTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(createdDateFromTime, createdDateToTime);
+        return Objects.hash(modifiedFromTime, modifiedToTime);
     }
 
     public LocalDateTime getFormatFromTime() {
         LocalDateTime from;
         try {
-            from = fromString(this.createdDateFromTime);
+            from = fromString(this.modifiedFromTime);
         } catch (DateTimeParseException ex) {
             throw new BadRequestException("Please enter right format of date ddMMyyyy HHmmss",
                     "service.time-criteria.from-time-invalid");
@@ -59,7 +59,7 @@ public class TimeCriteria implements Criteria {
         LocalDateTime from;
         try {
             from = getFormatFromTime();
-            to = fromString(this.createdDateToTime);
+            to = fromString(this.modifiedToTime);
             if (from.isAfter(to)) {
                 throw new BadRequestException("The from time must is smaller than to time",
                         "service.time-criteria.from-to-invalid");

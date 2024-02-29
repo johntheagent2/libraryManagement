@@ -2,11 +2,13 @@ package org.example.librarymanagement.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.librarymanagement.dto.request.BookCreateRequest;
 import org.example.librarymanagement.dto.response.BookResponse;
 import org.example.librarymanagement.service.BookService;
 import org.example.librarymanagement.service.criteria.BookCriteria;
+import org.example.librarymanagement.service.criteria.ModifiedTimeCriteria;
 import org.example.librarymanagement.service.criteria.TimeCriteria;
 import org.example.librarymanagement.service.implement.BookQueryServiceImpl;
 import org.springframework.data.domain.Page;
@@ -16,8 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Tag(name = "Admin Book Management", description = "Admin Book Management APIs")
 @RequestMapping("${admin-mapping}/books")
@@ -32,9 +32,9 @@ public class ManageBookController {
             description = "Get all books",
             tags = {"Book Management", "get"})
     @GetMapping
-    public ResponseEntity<List<BookResponse>> getAllBook() {
+    public ResponseEntity<Page<BookResponse>> getAvailableBook(Pageable page) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(bookService.getAllBooks());
+                .body(bookQueryService.getAvailableBook(page));
     }
 
     @Operation(summary = "Search Books",
@@ -42,11 +42,11 @@ public class ManageBookController {
             tags = {"Book Management", "get"})
     @GetMapping("/search")
     public ResponseEntity<Page<BookResponse>> getQueriedBooks(BookCriteria request,
-                                                              TimeCriteria createdDate,
-                                                              TimeCriteria lastModifiedDate,
+                                                              TimeCriteria timeCriteria,
+                                                              ModifiedTimeCriteria modifiedTimeCriteria,
                                                               Pageable page) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(bookQueryService.findByCriteria(request, createdDate, lastModifiedDate, page));
+                .body(bookQueryService.findByCriteria(request, timeCriteria, modifiedTimeCriteria, page));
     }
 
     @Operation(summary = "Add Book with CSV",
@@ -63,7 +63,7 @@ public class ManageBookController {
             description = "Add a single book",
             tags = {"Book Management", "post"})
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<Void> addBook(@ModelAttribute BookCreateRequest request) {
+    public ResponseEntity<Void> addBook(@Valid @ModelAttribute BookCreateRequest request) {
         bookService.addBook(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();

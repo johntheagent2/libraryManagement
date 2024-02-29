@@ -8,6 +8,7 @@ import org.example.librarymanagement.entity.Book_;
 import org.example.librarymanagement.entity.Genre_;
 import org.example.librarymanagement.repository.BookRepository;
 import org.example.librarymanagement.service.criteria.BookCriteria;
+import org.example.librarymanagement.service.criteria.ModifiedTimeCriteria;
 import org.example.librarymanagement.service.criteria.TimeCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,10 +33,10 @@ public class BookQueryServiceImpl extends QueryService<Book> {
 
     @Transactional(readOnly = true)
     public Page<BookResponse> findByCriteria(BookCriteria criteria,
-                                             TimeCriteria createdDate,
-                                             TimeCriteria lastModifiedDate,
+                                             TimeCriteria timeCriteria,
+                                             ModifiedTimeCriteria modifiedTimeCriteria,
                                              Pageable page) {
-        return getBookResponses(criteria, createdDate, lastModifiedDate, page);
+        return getBookResponses(criteria, timeCriteria, modifiedTimeCriteria, page);
     }
 
     private Page<BookResponse> getBookResponses(BookCriteria criteria, Pageable page) {
@@ -45,14 +46,16 @@ public class BookQueryServiceImpl extends QueryService<Book> {
 
 
     private Page<BookResponse> getBookResponses(BookCriteria criteria,
-                                                TimeCriteria createdDate,
-                                                TimeCriteria lastModifiedDate,
+                                                TimeCriteria timeCriteria,
+                                                ModifiedTimeCriteria modifiedTimeCriteria,
                                                 Pageable page) {
-        final Specification<Book> specification = createSpecification(criteria)
-                .and(timeQueryService.createCreatedDateSpecification(createdDate))
-                .and(timeQueryService.createLastModifiedDateSpecification(lastModifiedDate));
+        Specification<Book> specification = createSpecification(criteria)
+                .and(timeQueryService.createTimeSpecification(timeCriteria))
+                .and(timeQueryService.modifiedTimeSpecification(modifiedTimeCriteria));
+
         return toResponse(page, specification);
     }
+
 
     private Page<BookResponse> toResponse(Pageable page, Specification<Book> specification) {
         Page<Book> books = bookRepository.findAll(specification, page);

@@ -28,10 +28,6 @@ public class BookCriteria implements Criteria, Serializable {
 
     private LongFilter authorId;
 
-    private String createdDateFromTime;
-
-    private String createdDateToTime;
-
     private Boolean removed;
 
     private Boolean distinct;
@@ -43,8 +39,6 @@ public class BookCriteria implements Criteria, Serializable {
         this.quantity = other.quantity == null ? null : other.quantity.copy();
         this.genreId = other.genreId == null ? null : other.genreId.copy();
         this.authorId = other.authorId == null ? null : other.authorId.copy();
-        this.createdDateFromTime = other.createdDateFromTime;
-        this.createdDateToTime = other.createdDateToTime;
         this.removed = other.removed;
         this.distinct = other.distinct;
     }
@@ -63,8 +57,6 @@ public class BookCriteria implements Criteria, Serializable {
         return Objects.equals(id, that.id) && Objects.equals(title, that.title)
                 && Objects.equals(description, that.description) && Objects.equals(quantity, that.quantity)
                 && Objects.equals(genreId, that.genreId) && Objects.equals(authorId, that.authorId)
-                && Objects.equals(createdDateFromTime, that.createdDateFromTime)
-                && Objects.equals(createdDateToTime, that.createdDateToTime)
                 && Objects.equals(removed, that.removed)
                 && Objects.equals(distinct, that.distinct);
     }
@@ -72,7 +64,6 @@ public class BookCriteria implements Criteria, Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, title, description,
-                quantity, genreId, authorId,
-                createdDateFromTime, createdDateToTime, removed, distinct);
+                quantity, genreId, authorId, removed, distinct);
     }
 }

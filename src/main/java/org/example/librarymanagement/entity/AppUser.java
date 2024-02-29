@@ -18,7 +18,7 @@ import java.util.List;
 @Setter
 @SuperBuilder
 @Table(name = "app_user")
-public class AppUser extends Account{
+public class AppUser extends Account {
 
     @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
